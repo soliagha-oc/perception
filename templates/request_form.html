@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>PERCEPTION Accessibility Review</title>
+    <link rel="stylesheet" href="static/bootstrap.min.css" media="screen">
+    <link rel="stylesheet" href="static/bootstrap-theme.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<style type="">
+    label {
+        display: block;
+        padding-left: 15px;
+        text-indent: -15px;
+    }
+    input {
+        width: 16px;
+        height: 16px;
+        padding: 0;
+        margin:0;
+        vertical-align: bottom;
+        position: relative;
+        top: -1px;
+        *overflow: hidden;
+    }
+    div {
+      float:left;
+      width:100%;
+      overflow:hidden;
+    }
+    .div-blu {
+      background-color:#dddddd;
+      border: 3px solid blue;
+      padding: 10px;
+    }
+    .div-org {
+      background-color:#dddddd;
+      border: 3px solid orange;
+      padding: 10px;
+    }
+    .div-blk {
+      background-color:#dddddd;
+      border: 3px solid black;
+      padding: 10px;
+    }
+    .div-grn {
+      background-color:#dddddd;
+      border: 3px solid green;
+      padding: 10px;
+    }
+    .div-red {
+      background-color:#dddddd;
+      border: 3px solid red;
+      padding: 10px;
+     }
+    .header {
+      padding:5px 0px;
+    }
+
+</style>
+
+<body>
+<div class="container">
+    <h1>PERCEPTION Accessibility Review</h1>
+    <form action="" method="post" role="form" enctype="multipart/form-data">
+        {{ form.csrf }}
+        <div class="form-group">
+            <div class="header">
+                Please specify the following information:<br><br>
+            </div>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for message in messages %}
+                {% if "Error" not in message[1]: %}
+                <div class="alert alert-info">
+                    <strong>Success! </strong> {{ message[1] }}
+                </div>
+                {% endif %}
+                {% if "Error" in message[1]: %}
+                <div class="alert alert-warning">
+                    <strong>{{ message[1] }}</strong>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            <div class="div-blk">
+                <div>
+                    <label for="report_name">Report Name:</label>
+                    <input type="text" class="form-control" id="report_name" name="report_name"
+                           placeholder="Friendly client name. Used to name all reports.">
+                </div>
+                <div>
+                    <label for="email">Email:</label>
+                    This email will be used to contact you as each report is ready
+                    (one email per report). Report times can vary based on the size
+                    or the requested site.
+                    <input type="text" class="form-control" id="email" name="email"
+                           placeholder="This email will be used to update you.">
+                </div>
+                <div>
+                    <label for="url">URL:</label>
+                    Copy and paste URL here. Be sure to provide the exact URL as it appears in the browser.
+                    If the URL cannot resolve, all scans will fail.
+                    <input type="text" class="form-control" id="url" name="url"
+                           placeholder="Enter scan URL as it appears in the browser.">
+                    <hr>
+                </div>
+            </div>
+            <div class="header">
+                <h2>Spider SEO Reports</h2>
+                These spider crawls are run using Screaming Frog SEO Spider. Crawls can run internally and externally.
+            </div>
+            <div class="div-grn">
+                <div>
+                    This spider will scrape all internal or external links for a given URL. This is not an accessibility
+                    audit but an asset audit.
+                </div>
+                <div>
+                    <label for="SEOInternal">
+                        <input type="checkbox" id="SEOInternal" name="SEOInternal" value="TRUE">
+                        Internal URL spider crawl</label> - To learn more about the number of assets a client owns, use
+                    the "Internal" scan.
+                </div>
+                <div>
+                    <label for="SEOExternal">
+                        <input type="checkbox" id="SEOExternal" name="SEOExternal" value="TRUE">
+                        External URL spider crawl</label> - To learn more about the number of assets a client owns and
+                    links to by reference, use the "External" scan.
+                </div>
+                <!-- div>
+                    To scan for PDFs only, use the "Crawl for PDFs only" selection.
+                    <label for="SEO">
+                        <input disabled type="checkbox" id="SEO" name="SEO" value="on-pdf">
+                        Crawl for PDFs only</label>
+                </div-->
+            </div>
+            <div class="header">
+                <h2>PDF Reports</h2>
+                To audit the list(s) of PDFs, select the "Run detailed PDFAudit on PDFs discovered"
+                selection. As the number of PDFs is probably unknown, you may wish to read and assess
+                the report before making the request.
+            </div>
+            <div class="div-red">
+                <label for="PDFAudit">
+                    <input type="checkbox" id="PDFAudit" name="PDFAudit" value="TRUE">
+                    Run detailed PDFAudit on PDFs discovered</label>
+            </div>
+            <div class="header">
+                <h2>Lighthouse by Google</h2>
+                Lighthouse by Google for Chrome.
+            </div>
+            <div class="div-org">
+                <label for="lighthouse-mobile">
+                    <input type="checkbox" id="lighthouse-mobile" name="lighthouse-mobile" value="TRUE">
+                    Run Lighthouse report for mobile</label>
+                <label for="lighthouse-mobile">
+                    <input type="checkbox" id="lighthouse-desktop" name="lighthouse-desktop" value="TRUE">
+                    Run Lighthouse report for desktop</label>
+            </div>
+            <div class="header">
+                <h2>AXE by Deque</h2>
+                AXE by Deque...
+            </div>
+            <div class="div-blu">
+                <label for="AXEChrome">
+                    <input type="checkbox" id="AXEChrome" name="AXEChrome" value="TRUE">
+                    Run AXE report Chrome</label>
+                <label for="AXEFirefox">
+                    <input type="checkbox" id="AXEFirefox" name="AXEFirefox" value="TRUE">
+                    Run AXE report Firefox</label>
+                <!--label for="AXEEdge">
+                    <input type="checkbox" id="AXEEdge" name="AXEEdge" value="TRUE">
+                    Run AXE report Edge</label-->
+            </div>
+            <!-- div>
+                <h2>SortSite Reports</h2>
+                <a href="https://www.powermapper.com/products/sortsite/">SortSite</a> is a one-click web site
+                testing tool used by federal agencies, Fortune 100 corporations and independent consultancies.
+                PDFs are excluded from these scans.
+                <ul>
+                    <li>Base scan for rules <b><i>WCAG Only</i></b>;</li>
+                    <li>Extended scan includes rules for <b><i>WCAG, 508, Accessibility, Privacy</i></b></li>
+                </ul>
+            </div>
+            <div class="header">
+                <b>Scan for WCAG 2.0</b>
+            </div>
+            <div class="div-sst">
+                <div>
+                    <label for="WCAG20AA">
+                        <input type="checkbox" id="WCAG20AA" name="WCAG20AA">
+                        WCAG 2.0 AA</label>
+                    <label for="WCAG20AAExt">
+                        <input type="checkbox" id="WCAG20AAExt" name="WCAG20AAExt">
+                        WCAG 2.0 AA Extended</label>
+                    <label for="WCAG20AAA">
+                        <input type="checkbox" id="WCAG20AAA" name="WCAG20AAA">
+                        WCAG 2.0 AAA</label>
+                    <label for="WCAG20AAAExt">
+                        <input type="checkbox" id="WCAG20AAAExt" name="WCAG20AAAExt">
+                        WCAG 2.0 AAA Extended</label>
+                </div>
+            </div>
+
+            <div class="header">
+                <b>Scan for WCAG 2.1</b>
+            </div>
+            <div class="div-sst">
+                <div>
+                    <label for="WCAG21AA">
+                        <input type="checkbox" id="WCAG21AA" name="WCAG21AA">
+                        WCAG 2.1 AA</label>
+                    <label for="WCAG21AAExt">
+                        <input type="checkbox" id="WCAG21AAExt" name="WCAG21AAExt">
+                        WCAG 2.1 AA Extended</label>
+                    <label for="WCAG21AAA">
+                        <input type="checkbox" id="WCAG21AAA" name="WCAG21AAA">
+                        WCAG 2.1 AAA</label>
+                    <label for="WCAG21AAAExt">
+                        <input type="checkbox" id="WCAG21AAAExt" name="WCAG21AAAExt">
+                        WCAG 2.1 AAA Extended </label>
+                </div>
+            </div>
+
+            <div class="header">
+                <h2>Advanced and Other Tools</h2>
+                These tools require you to provide a single PDF (filename.pdf) or a list of PDFs in a CSV file
+                with a header labeled "Address" (<a href="/static/internal_pdf.csv">sample</a>).
+            </div>
+
+            <div class="header"></div>
+            <div class="div-adv">
+                <div>
+                    <label for="upload">Provide PDF or CSV file:</label>
+                    <input type="file" multiple style="width: 100%;height: 24px;"
+                           id="upload" name="upload" value="YYYYYOOOOOO">
+                </div>
+                <div>
+                    <label for="pac">Run accessibility reports:</label>
+                    <input type="checkbox" id="adobe" name="adobe" value="on">
+                    Run Adobe Acrobat accessibility report<br>
+                    <input type="checkbox" id="commonlook" name="commonlook" value="on">
+                    Run Commonlook accessibility reports (Structural: ISO 32000;
+                    Accessibility: 508, WCAG 2.0, PDF/UA 1.0, HHS)<br>
+                    <input disabled type="checkbox" id="pac" name="pac" value="on">
+                    Run PAC 3 accessibility report<br>
+                    <hr>
+                </div>
+                <div>
+                    <label for="PDFAudit-upload">
+                        <input disabled type="checkbox" id="PDFAudit-upload" name="PDFAudit-upload" value="on">
+                         Run detailed PDFAudit on PDFs provided (file or CSV).</label>
+                    <hr>
+                </div>
+                <div>
+                    <label>Run Adobe Acrobat Preflight:<br></label>
+                    <input disabled type="checkbox" id="preflight-t" name="preflight-t">
+                    Flatten images (transparency)<br>
+                    <input disabled type="checkbox" id="preflight-f" name="preflight-f">
+                    Flatten form fields<br>
+                    <input disabled type="checkbox" id="preflight-e" name="preflight-e">
+                    Embed fonts (if possible)<br>
+                    <input disabled type="checkbox" id="preflight-o" name="preflight-o">
+                    OCR and enhance
+                    <hr>
+                </div>
+                <div>
+                    <label for="abbyy">
+                        <input disabled type="checkbox" id="abbyy" name="abbyy">
+                        Run ABBYY Finereader OCR process</label>
+                </div-->
+        </div>
+        <div class="header">
+            <h2>Submit request</h2>
+        </div>
+        <div class="div-def">
+            <button type=reset class="btn btn-danger" style="width:100%; height:40px">
+                Reset entire form
+            </button>
+            <hr>
+            <button type="submit" class="btn btn-success"
+                    style="width: 100%;height: 40px;">Submit Request(s)
+            </button>
+        </div>
+    </form>
+    <br>
+</div>
+</body>
+</html>
