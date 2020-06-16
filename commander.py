@@ -195,10 +195,11 @@ class CMDWriter:
 
     def axe_controller(self):
         # AXE count total links
+        # TODO: Add switch for "external"
         first_line = True
         row_count = sum(1 for row in csv.reader(open(self.destination_folder + '\\internal_html.csv', 'r',
                                                      encoding='utf8'), delimiter=','))
-        row_count_i = row_count
+        row_count_i = row_count - 1
         # Open HTML CSV list
         with open(self.destination_folder + '\\internal_html.csv', 'r', encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
@@ -224,10 +225,11 @@ class CMDWriter:
                                 row_count_i -= 1
                                 jump = True
                                 fl = False
-                                msg = (' >>> Remaining URLs for [AXE]: ' + (row_count_i - 1).__str__() +
+                                msg = (' >>> Remaining URLs for [AXE]: ' + row_count_i.__str__() +
                                        ' out of ' + row_count.__str__() +
                                        ' ' + (datetime.datetime.now().__str__()[:-7]))
-                                utils.logline(self.log + '_axe_chrome_log.txt', msg)
+                                if row_count_i >= 0:
+                                    utils.logline(self.log + '_axe_chrome_log.txt', msg)
                                 print(msg)
                                 break
                             else:
@@ -243,6 +245,7 @@ class CMDWriter:
                         # print(threading.active_count().__str__() + ' THREADS RUNNING >> LIGHTHOUSE >> TAKE 10')
                         time.sleep(5)
 
+                    row_count_i -= 1
                     # CHROME THREAD
                     if self.AXEChrome:
                         thread = Thread(target=CMDWriter.axeChrome, args=(self, row[0]))
@@ -253,12 +256,11 @@ class CMDWriter:
                         thread_monitor.start()
 
                         # Log "Remaining URLs" to progress log
-                        msg = (' >>> Remaining URLs for [AXE]: ' + (row_count_i - 1).__str__() +
+                        msg = (' >>> Remaining URLs for [AXE]: ' + row_count_i.__str__() +
                                ' out of ' + row_count.__str__() +
                                ' ' + (datetime.datetime.now().__str__()[:-7]))
                         print(msg)
                         utils.logline(self.log + '_axe_chrome_log.txt', msg)
-                        row_count_i -= 1
 
                     # FIREFOX THREAD
                     if self.AXEFirefox:
@@ -270,12 +272,11 @@ class CMDWriter:
                         thread_monitor.start()
 
                         # Log "Remaining URLs" to progress log
-                        msg = (' >>> Remaining URLs for [AXE]: ' + (row_count_i - 1).__str__() +
+                        msg = (' >>> Remaining URLs for [AXE]: ' + row_count_i.__str__() +
                                ' out of ' + row_count.__str__() +
                                ' ' + (datetime.datetime.now().__str__()[:-7]))
                         print(msg)
                         utils.logline(self.log + '_axe_firefox_log.txt', msg)
-                        row_count_i -= 1
 
                     # EDGE THREAD
                     if self.AXEEdge:
@@ -287,12 +288,11 @@ class CMDWriter:
                         thread_monitor.start()
 
                     # Log "Remaining URLs" to progress log
-                    msg = (' >>> Remaining URLs for [AXE]: ' + (row_count_i - 1).__str__() +
+                    msg = (' >>> Remaining URLs for [AXE]: ' + row_count_i.__str__() +
                            ' out of ' + row_count.__str__() +
                            ' ' + (datetime.datetime.now().__str__()[:-7]))
                     print(msg)
                     utils.logline(self.log + '_axe_edge_log.txt', msg)
-                    row_count_i -= 1
 
                 except Exception as e:
                     msg = e.__str__() + ' AXE CONTROLLER:01' + '\n'
@@ -457,20 +457,25 @@ class CMDWriter:
 
     @staticmethod
     def pdf(cvs_path, scope=False):
-        os.chdir(cvs_path)
+        '''os.chdir(cvs_path)
         file_list = os.listdir('.')
-        pattern = "*pdf*"
+        pattern = "*pdf*"'''
 
-        for entry in file_list:
+        # Default to internal
+        file = 'internal_pdf.csv'
+        if scope == 'external':
+            file = 'external_pdf.csv'
+        PDFA().pdf_csv(file, cvs_path, scope)
+        '''for entry in file_list:
             if fnmatch.fnmatch(entry, pattern):
                 print(entry)
-                PDFA().pdf_csv(entry, cvs_path, scope)
+                PDFA().pdf_csv(entry, cvs_path, scope)'''
 
     def lighthouse_controller(self):
         first_line = True
         row_count = sum(1 for row in csv.reader(open(self.destination_folder + '\\internal_html.csv', 'r',
                                                      encoding='utf8'), delimiter=','))
-        row_count_i = row_count
+        row_count_i = row_count - 1
         # Open HTML list
         with open(self.destination_folder + '\\internal_html.csv', 'r', encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')

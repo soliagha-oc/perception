@@ -1,10 +1,8 @@
+import threading
 from flask import Flask, render_template, flash, request
 from wtforms import Form, TextField, validators, StringField
 from commander import CMDWriter
-import report
 from report import Table, Item, PDFItem, PDFTable, CommanderTable, CommanderItem, DashTable, DashItem
-import utils as u
-import threading
 from globals import Globals
 
 # App config
@@ -112,10 +110,9 @@ def action_restart():
     report_name = request.args.get('id')
     report_type = request.args.get('report_type')
     if report_type == 'pdf_internal':
-        CMDWriter.pdf(Globals.gbl_report_folder + id + '\\' + 'SPIDER_' + id + '\\',
-                      scope='internal')  # internal_pdf.csv')
+        CMDWriter.pdf(Globals.gbl_report_folder + report_name + '\\' + 'SPIDER\\', scope='internal')
     if report_type == 'pdf_external':
-        CMDWriter.pdf(Globals.gbl_report_folder + id + '\\' + 'SPIDER_' + id + '\\', scope='external')
+        CMDWriter.pdf(Globals.gbl_report_folder + report_name + '\\' + 'SPIDER\\', scope='external')
     if report_type == 'spider':
         url = 'RESTART'
         email = False

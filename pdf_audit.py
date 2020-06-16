@@ -28,6 +28,16 @@ from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.layout import LAParams  # , LTTextBox, LTTextLine
 from threading import Thread, Event
 
+'''
+import pdf2txt
+import tabula
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfinterp import resolve1
+from PDFInterpreter import both PDFResourceManager and PDFPageInterpreter
+from pdfminer.pdfdevice import PDFDevice
+'''
 
 stop_event = Event()
 global document
@@ -98,6 +108,18 @@ class PDFAudit:
 
         print(process_name + ':[COMPLETED IN ' + i.__str__() + ' seconds for: ' + thread.getName() + ']')
 
+    '''def process_pdf(self, line_count, file):
+        i = 0
+        while True:
+            i += 1
+            print('PROCESSING: ' + i.__str__())
+            time.sleep(1)
+            PDFAudit.pdf_thread(self, line_count, file)
+            # Here we make the check if the other thread sent a signal to stop execution.
+            if i == 90:
+                print('XXXXXXXXXXXXXXXXXXXXXXXXX PDF THREAD TIMED OUT XXXXXXXXXXXXXXXXXXXXXX')
+                break'''
+
     def pdf_csv(self, csv_to_audit, source_folder, scope):
         # Define CSV
         self.csv_header = (['csvline', 'url', 'filename', 'local_path',
@@ -142,6 +164,7 @@ class PDFAudit:
 
         row_count = sum(1 for row in csv.reader(open(source_folder + '\\' + csv_to_audit, 'r',
                                                      encoding='utf8'), delimiter=','))
+
         row_count_i = row_count - 2
         with open(source_folder + '\\' + csv_to_audit, encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')

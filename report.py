@@ -80,7 +80,8 @@ class PDFItem(object):
                     for fail in istagged.most_common():
                         if fail[0] == 'FALSE':
                             error_count += fail[1]
-                        if fail[0].find('IsTagged: type object \'PDFDocument\' has no attribute \'is_extractable\'') >= 0:
+                        if fail[0].find(
+                                'IsTagged: type object \'PDFDocument\' has no attribute \'is_extractable\'') >= 0:
                             error_count += fail[1]
 
                     csv_writer.writerow([error_count, 'Untagged PDFs', 'Untagged PDFs ...'])
@@ -430,6 +431,7 @@ class DashItem(object):
         items = []
         i = 0
         try:
+            # Write the dash
             with open(csv_path, encoding="utf8") as f:
                 csv_file = csv.reader(f)
                 for row in csv_file:
@@ -456,8 +458,6 @@ class DashItem(object):
                     elif line == 60:
                         gdrive_items.append(DashItem(line, 'URL: ' + row[0], row[1], row[2], row[3], row[4]))
                     elif line == 69 or line == 70:
-                        gdrive_items.append(DashItem(line, 'Page Titles: ' + row[0], row[1], row[2], row[3], row[4]))
-                    elif line == 80 or line == 81:
                         gdrive_items.append(DashItem(line, 'Page Titles: ' + row[0], row[1], row[2], row[3], row[4]))
                     elif line == 80 or line == 81:
                         gdrive_items.append(DashItem(line, 'Meta Description: ' + row[0], row[1], row[2], row[3], row[4]))
@@ -544,9 +544,14 @@ class DashItem(object):
 
 class DashTable(Table):
     # Define table columns
+    # id = Col('id')
+    # test = Col('Test')
+    # url = Col('URL')
+    # url = LinkCol('url', 'flask_link', url_kwargs=dict(id='id'), allow_sort=False)
     error_count = Col('Error Count')
     error = Col('Error')
     error_description = Col('Error Description')
+    # report_type = Col('report_type')
     allow_sort = True
 
     # TODO: Column key sort
@@ -556,3 +561,32 @@ class DashTable(Table):
         else:
             direction = 'asc'
         return url_for('index', sort=col_key, direction=direction)
+
+
+'''
+@app.route('/')
+# @app.route('/report/')
+def index():
+    sort = request.args.get('sort', 'id')
+    reverse = (request.args.get('direction', 'asc') == 'desc')
+    table = SortableTable(Item.get_sorted_by(sort, reverse),
+                          sort_by=sort,
+                          sort_reverse=reverse)
+
+    return render_template("report.html",
+                           table=table,
+                           title='<h1>Lighthouse Accessibility Results</h1><br>Lighthouse is a ... The following violations where ...')
+
+
+
+@app.route('/item/<id>')
+def flask_link(id):
+    element = Item.get_element_by_id(id)
+    return '<h1>{}</h1><p>{}</p><hr><small>id: {}</small>'.format(
+        element.name, element.description, element.id)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+'''
