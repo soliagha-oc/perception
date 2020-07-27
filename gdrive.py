@@ -96,27 +96,78 @@ class GDRIVE:
 
         # CREATE FROM TEMPLATE
         sheet = gs.open_by_key(sheet_id)
-
+        worksheet = None
         # source.duplicate_sheet(source.id, new_sheet_name=self.folder_name)
         # titles_list = []
         # for spreadsheet in gs.openall():
         #    titles_list.append(spreadsheet.title)
-        worksheet = None
+
+        t_worksheet_id = 0
+        worksheets = sheet.worksheets()
         sheet_range = ''
+
         if self.report_type == 'dash':
-            worksheet = sheet.get_worksheet(1)
-            sheet_range = 'DASHBOARD!A4:Z1000'
+            try:
+                ws_index = 0
+                for ws in worksheets:
+                    if ws.title == 'DASHBOARD':
+                        sheet.del_worksheet(ws)
+                ts = gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
+                worksheets = sheet.worksheets()
+                mysheet = worksheets.__getitem__(worksheets.__len__() - 1)
+                mysheet.update_title('DASHBOARD')
+                mysheet.update_index(ws_index)
+                worksheet = sheet.get_worksheet(ws_index)
+                sheet_range = 'DASHBOARD!A4:Z1000'
+            except Exception as e:
+                print(e.__str__())
         if self.report_type == 'axe_c_summary':
-            worksheet = sheet.get_worksheet(2)
+            ws_index = 2
+            for ws in worksheets:
+                if ws.title == 'AXE':
+                    sheet.del_worksheet(ws)
+            ts = gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
+            worksheets = sheet.worksheets()
+            mysheet = worksheets.__getitem__(worksheets.__len__() - 1)
+            mysheet.update_title('AXE')
+            mysheet.update_index(ws_index)
+            worksheet = sheet.get_worksheet(ws_index)
             sheet_range = 'AXE!A10:Z1000'
         if self.report_type == 'lighthouse':
-            worksheet = sheet.get_worksheet(3)
+            ws_index = 3
+            for ws in worksheets:
+                if ws.title == 'LIGHTHOUSE':
+                    sheet.del_worksheet(ws)
+            ts = gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
+            worksheets = sheet.worksheets()
+            mysheet = worksheets.__getitem__(worksheets.__len__() - 1)
+            mysheet.update_title('LIGHTHOUSE')
+            mysheet.update_index(ws_index)
+            worksheet = sheet.get_worksheet(ws_index)
             sheet_range = 'LIGHTHOUSE!A10:Z1000'
         if self.report_type == 'pdf_internal':
-            worksheet = sheet.get_worksheet(4)
+            ws_index = 4
+            for ws in worksheets:
+                if ws.title == 'PDF INTERNAL':
+                    sheet.del_worksheet(ws)
+            ts = gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
+            worksheets = sheet.worksheets()
+            mysheet = worksheets.__getitem__(worksheets.__len__() - 1)
+            mysheet.update_title('PDF INTERNAL')
+            mysheet.update_index(ws_index)
+            worksheet = sheet.get_worksheet(ws_index)
             sheet_range = worksheet.title
         if self.report_type == 'pdf_external':
-            worksheet = sheet.get_worksheet(5)
+            ws_index = 5
+            for ws in worksheets:
+                if ws.title == 'PDF EXTERNAL':
+                    sheet.del_worksheet(ws)
+            ts = gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
+            worksheets = sheet.worksheets()
+            mysheet = worksheets.__getitem__(worksheets.__len__() - 1)
+            mysheet.update_title('PDF EXTERNAL')
+            mysheet.update_index(ws_index)
+            worksheet = sheet.get_worksheet(ws_index)
             sheet_range = worksheet.title
         '''if self.report_type == 'axe_c':
             worksheet = sheet.get_worksheet(6)
@@ -149,6 +200,25 @@ class GDRIVE:
             sheets = build('sheets', 'v4', credentials=self.get_creds(SCOPES_SHEETS))
             clear = sheets.spreadsheets().values().clear(
                 spreadsheetId=sheet.id, range=sheet_range, body={}).execute()
+
+            # The ID of the spreadsheet containing the sheet to copy.
+            spreadsheet_id = template_id  # TODO: Update placeholder value.
+
+            # The ID of the sheet to copy.
+            # sheet_id = worksheet.id  # TODO: Update placeholder value.
+            '''  from googleapiclient import discovery
+
+            service = discovery.build('sheets', 'v4', credentials=self.get_creds(SCOPES_SHEETS))
+            copy_sheet_to_another_spreadsheet_request_body = {
+                # The ID of the spreadsheet to copy the sheet to.
+                'destination_spreadsheet_id': sheet_id,  # TODO: Update placeholder value.
+
+                # TODO: Add desired entries to the request body.
+            }
+
+            rq = service.spreadsheets().sheets().copyTo(spreadsheetId=template_id, sheetId=t_worksheet_id,
+                                                   body=copy_sheet_to_another_spreadsheet_request_body)
+            response = rq.execute()'''
 
             result = sheets.spreadsheets().values().update(
                 spreadsheetId=sheet.id, range=sheet_range,

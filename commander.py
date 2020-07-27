@@ -197,11 +197,11 @@ class CMDWriter:
         # AXE count total links
         # TODO: Add switch for "external"
         first_line = True
-        row_count = sum(1 for row in csv.reader(open(self.destination_folder + '\\internal_html.csv', 'r',
+        row_count = sum(1 for row in csv.reader(open(self.destination_folder + 'internal_html.csv', 'r',
                                                      encoding='utf8'), delimiter=','))
         row_count_i = row_count - 1
         # Open HTML CSV list
-        with open(self.destination_folder + '\\internal_html.csv', 'r', encoding='utf8') as csv_file:
+        with open(self.destination_folder + 'internal_html.csv', 'r', encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             destination_folder = self.report_folder + 'AXE\\CHROME\\AXEChrome_REPORT.csv'
             # Check for completed URLs
@@ -450,6 +450,7 @@ class CMDWriter:
                         msg = datetime.datetime.now().__str__()[:-7] + ' ' + csv_row[i].__str__()
                         print(msg)
                         utils.logline(self.log + '_axe_log.txt', msg)
+            os.remove(destination_folder + '\\' + urllib.parse.quote_plus(axe_url) + '.json')
         except Exception as e:
             msg = e.__str__() + ' AXE RUNNER:02'
             utils.logline(self.log + browser + '_axe_log.txt', msg)
@@ -473,13 +474,16 @@ class CMDWriter:
 
     def lighthouse_controller(self):
         first_line = True
-        row_count = sum(1 for row in csv.reader(open(self.destination_folder + '\\internal_html.csv', 'r',
+        row_count = sum(1 for row in csv.reader(open(self.destination_folder + 'internal_html.csv', 'r',
                                                      encoding='utf8'), delimiter=','))
         row_count_i = row_count - 1
         # Open HTML list
-        with open(self.destination_folder + '\\internal_html.csv', 'r', encoding='utf8') as csv_file:
+        with open(self.destination_folder + 'internal_html.csv', 'r', encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             destination_folder = self.report_folder + 'LIGHTHOUSE\\LIGHTHOUSE_REPORT.csv'
+            destination_file = destination_folder + 'LIGHTHOUSE_REPORT.csv'
+            '''if not os.path.exists(destination_folder):
+                os.makedirs(destination_folder)'''
             for row in csv_reader:
                 if first_line:
                     first_line = False
@@ -495,15 +499,17 @@ class CMDWriter:
                                 jump = True
                                 fl = False
                                 continue
+                            # If match found:
                             if row[0] in completed_url:
+                                row_count_i -= 1
                                 jump = True
                                 fl = False
                                 msg = (' >>> Remaining URLs for [Lighthouse]: ' + (row_count_i - 1).__str__() +
                                        ' out of ' + row_count.__str__() +
                                        ' ' + (datetime.datetime.now().__str__()[:-7]))
+                                if row_count_i >= 0:
+                                    utils.logline(self.log + '_lighthouse_chrome_log.txt', msg)
                                 print(msg)
-                                utils.logline(self.log + '_lighthouse_progress_log.txt', msg)
-                                row_count_i -= 1
                                 break
                             else:
                                 jump = False
@@ -513,26 +519,25 @@ class CMDWriter:
                             jump = False
                             continue
                 try:
-
+                    row_count_i -= 1
                     # set number of threads
                     while threading.active_count() > thread_limit:
                         # print(threading.active_count().__str__() + ' THREADS RUNNING >> LIGHTHOUSE >> TAKE 10')
-                        time.sleep(10)
+                        time.sleep(5)
                     thread = Thread(target=CMDWriter.lighthouse,
                                     args=(self, row[0]))
                     thread.daemon = True
                     thread.start()
-                    thread_monitor = Thread(target=CMDWriter.thread_monitor,
-                                            args=(self, 'LIGHTHOUSE', thread,))
+                    thread_monitor = Thread(target=CMDWriter.thread_monitor, args=(self, 'LIGHTHOUSE', thread,))
                     thread_monitor.setDaemon(True)
                     thread_monitor.start()
 
-                    msg = (' >>> Remaining URLs for [Lighthouse]: ' + (row_count_i - 1).__str__() +
+                    msg = (' >>> Remaining URLs for [Lighthouse]: ' + row_count_i.__str__() +
                            ' out of ' + row_count.__str__() +
                            ' ' + (datetime.datetime.now().__str__()[:-7]))
                     print(msg)
                     utils.logline(self.log + '_lighthouse_progress_log.txt', msg)
-                    row_count_i -= 1
+
                 except Exception as e:
                     msg = e.__str__() + ' Lighthouse CONTROLLER:01'
                     print(msg)
@@ -548,28 +553,29 @@ class CMDWriter:
         if self.LighthouseMOBILE:
             try:
                 # os.chdir(destination_folder)
-                cmd = ('lighthouse --output=json --output=html  --chrome-flags=--headless --quiet ' +
-                       '--output-path=' + destination_folder + urllib.parse.quote_plus(lighthouse_url) +
-                       ' --emulated-form-factor=mobile ' + lighthouse_url)
+                cmd = ('lighthouse --output=json --output=html --chrome-flags=--headless --quiet ' +
+                       '--output-path=\"' + destination_folder + urllib.parse.quote_plus(lighthouse_url) +
+                       '\" --emulated-form-factor=mobile ' + lighthouse_url)
                 msg = cmd + ' LIGHTHOUSE:01 MOBILE STARTED: ' + lighthouse_url
                 # print(msg)
                 os.system('cmd /c ' + cmd)
-                msg = cmd + ' LIGHTHOUSE:01 MOBILE FINISHED'
+                msg = cmd + ' LIGHTHOUSE:01 :: MOBILE FINISHED :: '
                 # print(msg)
                 utils.logline(self.log + '_lighthouse_log.txt', msg)
             except Exception as e:
                 msg = e.__str__() + ' LIGHTHOUSE:01'
                 print(msg)
                 utils.logline(self.log + '_lighthouse_log.txt', msg)
+
         if self.LighthouseDESKTOP:
             try:
-                cmd = ('lighthouse --output=json --output=html  --chrome-flags=--headless --quiet ' +
-                       '--output-path=' + destination_folder + urllib.parse.quote_plus(lighthouse_url) +
-                       ' --emulated-form-factor=desktop ' + lighthouse_url)
+                cmd = ('lighthouse --output=json --output=html --chrome-flags=--headless --quiet ' +
+                       '--output-path=\"' + destination_folder + urllib.parse.quote_plus(lighthouse_url) +
+                       '\" --emulated-form-factor=desktop ' + lighthouse_url)
                 msg = cmd + ' LIGHTHOUSE:01 DESKTOP STARTED: ' + lighthouse_url
                 print(msg)
                 os.system('cmd /c ' + cmd)
-                msg = cmd + ' LIGHTHOUSE:01 DESKTOP FINISHED'
+                msg = ' LIGHTHOUSE:01 DESKTOP FINISHED' + cmd
                 print(msg)
                 utils.logline(self.log + '_lighthouse_log.txt', msg)
             except Exception as e:
@@ -579,8 +585,8 @@ class CMDWriter:
         try:
             # Look for JSON results
             list_json = []
-            os.chdir(destination_folder)
-            file_list = os.listdir('.')
+            # os.chdir(destination_folder)
+            file_list = os.listdir(destination_folder)
             pattern = "*.json"
             for entry in file_list:
                 if fnmatch.fnmatch(entry, pattern):
@@ -614,6 +620,16 @@ class CMDWriter:
             # print(msg)
             utils.logline(self.log + '_lighthouse_log.txt', msg)
             # print('COMPLETE - LIGHTHOUSE:02 ::: ')
+
+            try:
+                print('REMOVE')
+                os.remove(destination_folder + urllib.parse.quote_plus(lighthouse_url[:-5]) + '.report.html')
+                os.remove(destination_folder + urllib.parse.quote_plus(lighthouse_url[:-5]) + '.report.json')
+            except Exception as e:
+                msg = e.__str__() + ' LIGHTHOUSE:02'
+                print(msg)
+                utils.logline(self.log + '_lighthouse_log.txt', msg)
+
         except Exception as e:
             msg = e.__str__() + ' LIGHTHOUSE:02'
             print(msg)

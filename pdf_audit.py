@@ -28,17 +28,6 @@ from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.layout import LAParams  # , LTTextBox, LTTextLine
 from threading import Thread, Event
 
-'''
-import pdf2txt
-import tabula
-from pdfminer.pdfparser import PDFParser
-from pdfminer.pdfdocument import PDFDocument
-from pdfminer.pdfpage import PDFPage
-from pdfminer.pdfinterp import resolve1
-from PDFInterpreter import both PDFResourceManager and PDFPageInterpreter
-from pdfminer.pdfdevice import PDFDevice
-'''
-
 stop_event = Event()
 global document
 
@@ -49,7 +38,6 @@ class PDFAudit:
         self.document_folder = ''
         self.pdf_path = ''
         self.report_name = ''
-        # self.line_count = 0
         self.csv_header = []
         self.gbl_report_folder = Globals.gbl_report_folder + self.report_folder
         self.log = self.gbl_report_folder + 'logs\\'
@@ -65,15 +53,15 @@ class PDFAudit:
             report_path = self.report_folder + self.report_name
             print('LOADING: ' + i.__str__())
             time.sleep(1)
-            try:
-                self.document_t = PDFDocument(self.parser)
-            except Exception as e:
-                print('PDF OBJECT FAILED ::::::::::::::::::::::::: ' + e.__str__())
+            # try:
+            self.document_t = PDFDocument(self.parser)
+            # except Exception as e:
+                # print('PDFDocument(self.parser) FAILED ::::: ' + e.__str__())
 
             if stop_event.is_set():
-                if i >= 90:
+                if i >= 120:
                     # print(self.parser.fp.name + ' FAILED (SEC): ' + i.__str__())
-                    print('XXXXXXXXXXXXXXXXXXXXXXXX PDF LOAD STOP EVENT : 90')
+                    print(' >>> FAIL : PDF LOAD STOP EVENT : 120 SECONDS')
                     row = [self.line_count, 'PDFDocument FAILED TO LOAD - 90 SEC TIMEOUT REACHED FOR: ' + self.url,
                            '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                            '', ]
@@ -83,7 +71,6 @@ class PDFAudit:
                         writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
                         writer.dialect.lineterminator.replace('\n', '')
                         writer.writerow(row)
-                print('XXXXXXXXXXXXXXXXXXXXXXXX PDF LOAD STOP EVENT!!')
                 break
 
     def thread_monitor(self, process_name, thread):
@@ -93,10 +80,10 @@ class PDFAudit:
             i += 2
             print(process_name + ' WORKING FOR ' + i.__str__() + ' seconds for: ' + thread.getName())
             print('ACTIVE COUNT: ' + str(threading.active_count()))
-            if i == 120:
-                print(thread.getName() + ' XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX> KILLED')
+            if i == 180:
+                print(thread.getName() + ' KILLED AT 180 SECONDS')
                 report_path = self.report_folder + self.report_name
-                row = [self.line_count, 'PDF THREAD FAILED TO PROCESS - 120 SEC TIMEOUT REACHED FOR: ' + self.url,
+                row = [self.line_count, 'PDF THREAD FAILED TO PROCESS - 180 SEC TIMEOUT REACHED FOR: ' + self.url,
                        '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ]
                 # self.line_count += 1
                 # 120 SECOND TIMEOUT
@@ -107,18 +94,6 @@ class PDFAudit:
                 break
 
         print(process_name + ':[COMPLETED IN ' + i.__str__() + ' seconds for: ' + thread.getName() + ']')
-
-    '''def process_pdf(self, line_count, file):
-        i = 0
-        while True:
-            i += 1
-            print('PROCESSING: ' + i.__str__())
-            time.sleep(1)
-            PDFAudit.pdf_thread(self, line_count, file)
-            # Here we make the check if the other thread sent a signal to stop execution.
-            if i == 90:
-                print('XXXXXXXXXXXXXXXXXXXXXXXXX PDF THREAD TIMED OUT XXXXXXXXXXXXXXXXXXXXXX')
-                break'''
 
     def pdf_csv(self, csv_to_audit, source_folder, scope):
         # Define CSV
@@ -229,9 +204,9 @@ class PDFAudit:
                                     args=(pdf_url,))
                     thread.setDaemon(True)
                     while threading.active_count() > 35:
-                        print('                                >> TAKE 5')
+                        print(' !! TAKE 5 !!')
                         time.sleep(5)
-                    print('AWAY FOR ::::::::::::: ' + pdf_url + ' ' + thread.getName())
+                    print('RUN FOR ::::::::::::: ' + pdf_url + ' ' + thread.getName())
                     thread.start()
                     i = 0
                     thread_monitor = Thread(target=self.thread_monitor,
@@ -319,7 +294,7 @@ class PDFAudit:
             fp = open(my_file, 'rb')
             # self.pdf(fp, csv_row)
         except Exception as e:
-            print('     PDF LOAD FAILED !!! LINE 290ish ' + self.line_count.__str__() + ' :  ' + self.pdf_path)
+            print('     PDF LOAD FAILED !!! LINE 322 ' + self.line_count.__str__() + ' :  ' + self.pdf_path)
             csv_row.pop(3)
             csv_row.insert(3, [self.csv_header[3], 'PDF FAILED TO OPEN:' + self.pdf_path if self.pdf_path.__len__() > 0 else 'NULL'])
             # Write results
@@ -327,6 +302,11 @@ class PDFAudit:
             for i in range(csv_row.__len__()):
                 row.append(csv_row[i][1])
             report_path = self.report_folder + self.report_name
+            row_append = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+            index = 4
+            for ii in row_append:
+                row.insert(index, ii)
+                index += 1
             # OPEN FAILED
             with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
                 writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)

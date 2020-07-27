@@ -1,0 +1,101 @@
+2020-05-29 14:02:53 START RCMP_05-29-2020
+2020-05-29 14:02:53 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 14:02:55 END 
+
+2020-05-29 14:12:30 START RCMP_05-29-2020
+2020-05-29 14:12:30 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 14:12:33 END 
+
+2020-05-29 14:13:18 START RCMP_05-29-2020
+2020-05-29 14:13:18 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 14:13:20 END 
+
+2020-05-29 14:16:22 START RCMP_05-29-2020
+2020-05-29 14:16:22 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 14:16:24 END 
+
+2020-05-29 14:19:32 START RCMP_05-29-2020
+2020-05-29 14:19:32 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 14:19:34 END 
+
+2020-05-29 14:22:50 START RCMP_05-29-2020
+2020-05-29 14:22:50 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 14:22:53 END 
+
+2020-05-29 15:02:35 START RCMP_05-29-2020
+2020-05-29 15:02:35 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 15:02:38 END 
+
+2020-05-29 15:46:33 START RCMP_05-29-2020
+2020-05-29 15:46:33 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 15:46:35 END 
+
+2020-05-29 15:49:39 START RCMP_05-29-2020
+2020-05-29 15:49:39 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 15:49:41 END 
+
+2020-05-29 15:55:10 START RCMP_05-29-2020
+2020-05-29 15:55:10 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 15:55:13 END 
+
+2020-05-29 15:56:31 START RCMP_05-29-2020
+2020-05-29 15:56:31 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 15:56:33 END 
+
+2020-05-29 16:08:48 START RCMP_05-29-2020
+2020-05-29 16:08:48 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 16:08:50 END 
+
+2020-05-29 20:20:03 START RCMP_05-29-2020
+2020-05-29 20:20:04 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 20:20:06 END 
+
+2020-05-29 20:26:57 START RCMP_05-29-2020
+2020-05-29 20:26:57 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 20:27:00 END 
+
+2020-05-29 20:29:39 START RCMP_05-29-2020
+2020-05-29 20:29:39 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 20:29:42 END 
+
+2020-05-29 20:32:40 START RCMP_05-29-2020
+2020-05-29 20:32:40 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 20:32:43 END 
+
+2020-05-29 21:54:58 START RCMP_05-29-2020
+2020-05-29 21:54:58 Request: [['report_name', 'RCMP_05-29-2020'], ['email', 'soli@openconcept.ca'], ['url', 'https://www.rcmp-grc.gc.ca/'], ['SEOInternal', 'TRUE'], ['SEOExternal', 'TRUE'], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 21:55:01 END 
+
+2020-05-29 18:10:43 START RCMP_05-29-2020
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP_05-29-2020 to view your report. It may take several hours for your report to complete.
+2020-05-29 18:10:45 END 
+
+2020-06-09 12:54:26 START RCMP
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP to view your report. It may take several hours for your report to complete.
+2020-06-09 12:54:27 END 
+
+2020-06-15 13:06:12 START RCMP
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP to view your report. It may take several hours for your report to complete.
+2020-06-15 13:06:13 END 
+
+2020-06-16 20:29:02 START RCMP
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP to view your report. It may take several hours for your report to complete.
+2020-06-16 20:29:04 END 
+
