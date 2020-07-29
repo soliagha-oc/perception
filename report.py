@@ -68,8 +68,6 @@ class PDFItem(object):
                 elif csv_path.find('pdf_external'):
                     csv_path = os.path.split(csv_path)[0] + '\\PDF_REPORT_SUMMARY_EXTERNAL.csv'
 
-            '''if os.path.exists(csv_path):
-                # os.remove(csv_path)'''
             with open(csv_path, 'w', newline='', encoding="utf8") as output_file:
                 csv_writer = csv.writer(output_file, quoting=csv.QUOTE_ALL)
                 csv_writer.dialect.lineterminator.replace('\n', '')
@@ -351,9 +349,6 @@ class Item(object):
                         finally:
                             continue
 
-            '''if os.path.exists(csv_path):
-                os.remove(csv_path)'''
-
             row_header = ['Test', 'URL', 'Error Count', 'Error', 'Error Description']
             if report_type == 'axe_c_summary':
                 csv_path = csv_path.replace('AXEChrome_REPORT.csv', 'AXEChrome_REPORT_SUMMARY.csv')
@@ -380,14 +375,9 @@ class Item(object):
 
 class Table(Table):
     # Define table columns
-    # id = Col('id')
-    # test = Col('Test')
-    # url = Col('URL')
-    # url = LinkCol('url', 'flask_link', url_kwargs=dict(id='id'), allow_sort=False)
     error_count = Col('Error Count')
     error = Col('Error')
     error_description = Col('Error Description')
-    # report_type = Col('report_type')
     allow_sort = True
 
     # TODO: Column key sort
@@ -417,16 +407,6 @@ class DashItem(object):
         if request:
             report_name = request.args.get('id')
         csv_path = Globals.gbl_report_folder + report_name + '\\SPIDER\\crawl_overview.csv'
-        '''if report_type == 'lighthouse':
-            csv_path = csv_path + ('\\LIGHTHOUSE_' + report_name + '\\LIGHTHOUSE_REPORT.csv')
-            csv_path = Item.get_items_unique(csv_path, report_type)
-        if report_type == 'axe_u':
-            csv_path = csv_path + ('\\AXEChrome_' + report_name + '\\Chrome_AXE_REPORT.csv')
-            csv_path = Item.get_items_unique(csv_path, report_type)'''
-
-        '''elif report_type == 'axe':
-                    csv_path = csv_path + ('\\AXE_' + report_name + '\\AXE_REPORT.csv')
-                    csv_path = Item.get_items_unique(csv_path, report_type)'''
         gdrive_items = []
         items = []
         i = 0
@@ -515,9 +495,6 @@ class DashItem(object):
                         finally:
                             continue
 
-            '''if os.path.exists(csv_path):
-                os.remove(csv_path)'''
-
             row_header = ['Test', 'URL', 'Error Count', 'Error', 'Error Description']
             if report_type == 'axe' or 'axe_u':
                 csv_path = csv_path.replace('AXE_REPORT.csv', 'AXE_REPORT_SUMMARY.csv')
@@ -544,14 +521,9 @@ class DashItem(object):
 
 class DashTable(Table):
     # Define table columns
-    # id = Col('id')
-    # test = Col('Test')
-    # url = Col('URL')
-    # url = LinkCol('url', 'flask_link', url_kwargs=dict(id='id'), allow_sort=False)
     error_count = Col('Error Count')
     error = Col('Error')
     error_description = Col('Error Description')
-    # report_type = Col('report_type')
     allow_sort = True
 
     # TODO: Column key sort
@@ -561,32 +533,3 @@ class DashTable(Table):
         else:
             direction = 'asc'
         return url_for('index', sort=col_key, direction=direction)
-
-
-'''
-@app.route('/')
-# @app.route('/report/')
-def index():
-    sort = request.args.get('sort', 'id')
-    reverse = (request.args.get('direction', 'asc') == 'desc')
-    table = SortableTable(Item.get_sorted_by(sort, reverse),
-                          sort_by=sort,
-                          sort_reverse=reverse)
-
-    return render_template("report.html",
-                           table=table,
-                           title='<h1>Lighthouse Accessibility Results</h1><br>Lighthouse is a ... The following violations where ...')
-
-
-
-@app.route('/item/<id>')
-def flask_link(id):
-    element = Item.get_element_by_id(id)
-    return '<h1>{}</h1><p>{}</p><hr><small>id: {}</small>'.format(
-        element.name, element.description, element.id)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-'''

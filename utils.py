@@ -19,10 +19,9 @@ def logline_pre(filename, line):
 
 
 def send_email(address, subject, message):
-    gmail_user = 'soli@openconcept.ca'
-    gmail_password = 'Be8rTr8p!2021'
-    sent_from = 'soli@openconcept.ca'
-
+    gmail_user = 'openconcept.authorize@gmail.com'
+    gmail_password = 'zI0h3ZR8q7ed'
+    sent_from = 'openconcept.authorize@gmail.com'
     message = 'Subject: {}\n\n{}'.format(subject, message)
 
     try:

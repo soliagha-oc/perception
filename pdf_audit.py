@@ -154,7 +154,7 @@ class PDFAudit:
                 skip = False
                 if first_line:
                     first_line = False
-                    print(' ::::::::::::::::::::::::::::: START ALL PDF ::::::::')
+                    print(' ::: START ALL PDF :::')
                     continue
                 elif os.path.exists(destination_folder):
                     with open(destination_folder, encoding='utf8') as completed_urls:
@@ -179,25 +179,9 @@ class PDFAudit:
                                 break
                     # completed_urls.close()
                 try:
-                    '''thread = multiprocessing.Process(self.pdf_thread(line_count, row[0]))
-                    thread.daemon = False
-                    thread.start()
-                    thread.join()
-                    from concurrent.futures import ThreadPoolExecutor
-                    from time import sleep
-                    executor = ThreadPoolExecutor(50)
-                    future = executor.submit(PDFAudit.pdf_thread(self, line_count, row[0]))
-                    print(future.done().__str__())'''
                     if skip:
                         skip = False
                         continue
-                    '''from concurrent.futures import ThreadPoolExecutor
-                    from multiprocessing import Pool
-                    p = Pool(5)
-                    print('Pool row count ' + row_count_i.__str__())
-                    p.map(self.pdf_thread(line_count, row[0]))
-                    thread_pool = ThreadPoolExecutor(max_workers=10)
-                    xyz = thread_pool.submit(self.pdf_thread(line_count, row[0]))'''
                     self.line_count = csv_reader.line_num
                     self.url = pdf_url
                     thread = Thread(target=self.pdf_thread,
@@ -206,7 +190,7 @@ class PDFAudit:
                     while threading.active_count() > 35:
                         print(' !! TAKE 5 !!')
                         time.sleep(5)
-                    print('RUN FOR ::::::::::::: ' + pdf_url + ' ' + thread.getName())
+                    print('RUN AUDIT FOR :: ' + pdf_url + ' ' + thread.getName())
                     thread.start()
                     i = 0
                     thread_monitor = Thread(target=self.thread_monitor,
@@ -214,46 +198,16 @@ class PDFAudit:
                     thread_monitor.setDaemon(True)
                     thread_monitor.start()
                     time.sleep(5)
-                    # PDFAudit.twatch(self, thread, i)
-
-                    '''while thread.is_alive():
-                        time.sleep(1)
-                        i += 1
-                        print('WORKING: ' + i.__str__() + '  ' + thread.getName())'''
-
-                    # thread.join()
-
                     msg = (' >>> Remaining PDFs: ' + row_count_i.__str__() + ' out of ' +
                            row_count.__str__() + ' ' + (datetime.datetime.now().__str__()[:-7]))
                     row_count_i -= 1
                     utils.logline(self.log, msg)
                     print(msg)
-                    '''while thread.is_alive():
-                        time.sleep(1)
-                        i += 1
-                        print('WORKING: ' + i.__str__() + thread.getName())'''
-                    # stop_event.set()
-                    '''
-                    # PDFAudit.pdf_thread(self, line_count, row[0])
-                    msg = (' >>> Remaining PDFs: ' + row_count_i.__str__() + ' out of ' + row_count.__str__() + ' ' +
-                            (datetime.datetime.now().__str__()[:-7]))
-                    row_count_i -= 1
-                    print(msg)
-                    utils.logline(self.log, msg)
-                    while threading.active_count() >= thread_count:
-                        threads = threading.active_count()
-                        string = (' !! PDF !! Excessive threads in PDF, pausing 5 secs - ' +
-                                  str(threads) + ' active threads. \n')
-                        print(string)
-                        time.sleep(5)
-                        status = threading.Thread(target=PDFAudit.status_update(str(threads)))
-                        status.start()'''
+
                 except Exception as e:
                     msg = e.__str__() + ' PDF:01' + '\n'
                     print(msg)
                     utils.logline(self.log, msg)
-
-        # csv_file.close()
 
     def pdf_thread(self, url):
 
@@ -265,13 +219,9 @@ class PDFAudit:
             pdf_name = BytesIO(url.split("/")[-1].encode('UTF-8')).read().__str__()[2:-1]
             valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
             regex = re.compile(valid_chars)
-            # First parameter is the replacement, second parameter is your input string
-            # regex.sub('', pdf_name.__str__())
-            # pdf_name = ''.join(c for c in pdf_name if c in valid_chars)
             pdf_name = regex.sub('', pdf_name.__str__())
             self.pdf_path = self.document_folder + regex.sub('', pdf_name)
             r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
-            # if not os.path.exists(self.pdf_path):
             with open(self.pdf_path, 'wb') as code:
                 code.write(r.content)
             code.close()
@@ -294,7 +244,7 @@ class PDFAudit:
             fp = open(my_file, 'rb')
             # self.pdf(fp, csv_row)
         except Exception as e:
-            print('     PDF LOAD FAILED !!! LINE 322 ' + self.line_count.__str__() + ' :  ' + self.pdf_path)
+            print('     PDF LOAD FAILED !!! ' + self.line_count.__str__() + ' :  ' + self.pdf_path)
             csv_row.pop(3)
             csv_row.insert(3, [self.csv_header[3], 'PDF FAILED TO OPEN:' + self.pdf_path if self.pdf_path.__len__() > 0 else 'NULL'])
             # Write results
@@ -346,20 +296,14 @@ class PDFAudit:
                     writer.writerow(row)
 
             stop_event.set()
-            '''document = PDFDocument(parser)
-            if not parser.doc:
-                raise PDFTextExtractionNotAllowed
-            else:
-                document = PDFDocument(parser)'''
             document = PDFDocument
             document = self.document_t
             pf = PdfFileReader(BytesIO(open(self.pdf_path, 'rb').read()))
+
             # ENCRYPTION
             if self.parser.doc.encryption is not None:
                 csv_row.insert(4, [self.csv_header[4], 'ENCRYPTED'])
                 csv_row.insert(5, [self.csv_header[5], 'ENCRYPTED'])
-                # exit_call = e.__str__() + ' is encrypted!!'
-                # print exit_call
             else:
                 csv_row.insert(4, [self.csv_header[4], 'FALSE'])
                 csv_row.insert(5, [self.csv_header[5], 'NA'])
@@ -494,8 +438,6 @@ class PDFAudit:
         # TODO: IMAGES
         i = 16
         try:
-            '''pdf_path_image = self.document_folder + pdf_name[:-4] + '_images.txt'
-            self.pdf_path_imgfolder = self.document_folder + pdf_name[:-4] + '_img' '''
             pdfImages = Globals.base_folder + 'cli-tools\\pdfimages.exe'
 
             img_folder = self.document_folder + 'images\\'  # + pdf_name[:-4] + '\\'

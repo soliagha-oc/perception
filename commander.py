@@ -635,6 +635,8 @@ class CMDWriter:
             print(msg)
             utils.logline(self.log + '_lighthouse_log.txt', msg)
 
+
+
     @staticmethod
     def thread_monitor(self, process_name, thread):
         i = 0
