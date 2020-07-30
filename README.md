@@ -10,6 +10,9 @@ Sheet) See: https://github.com/GoogleChrome/lighthouse
 - Runs a PDF audit for all PDF URLs and produces both a detailed and summary report (including updating the associated Google
 Sheet) More on this later...
 
+NOTE: At the moment, no database is used due to an initial interest in CSV ONLY DATA. At this point, a database would 
+make more sense and adding a function to "Export to CSV", etc. 
+
 ## Workflow
 Simply provide a CSV with a list of URLs and select the tests to run. With a valid ScreamingFrog SEO licence, 
 that list can be generated using a crawler. 
@@ -76,4 +79,4 @@ sample template</a>:
 ## Cautions
 ### Spider, scanning, and viruses
 It is possible when crawling and scanning sites to encounter various security risks. Please be sure to have a virus 
-scanner enabled to protect against java script and other attacks or disable java script in the configuration.
+scanner enabled to protect against JavaScript and other attacks or disable JavaScript in the configuration.
