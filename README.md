@@ -17,7 +17,7 @@ make more sense and adding a function to "Export to CSV", etc.
 Simply provide a CSV with a list of URLs and select the tests to run. With a valid ScreamingFrog SEO licence, 
 that list can be generated using a crawler. 
 
-Once installed, run python requests.py
+Once installed, run python request.py
 
 ## Installation
 ### CLI-TOOLS
