@@ -4,8 +4,8 @@ import os
 
 class Globals:
     # Global
-    base_folder = os.getcwd() + '\\'
-    gbl_report_folder = base_folder + 'REPORTS\\'
+    base_folder = os.getcwd()
+    gbl_report_folder = os.path.join(base_folder, 'REPORTS')
     template_id = '1oPxGCc8gS1RhMhPqzDz-_SWSQANiPssoxFKgcRd5bsY'
     report_folder_id = '1_spCa2YbGEpYf3Ck2AfpfGVjFWy4HzTE'
 

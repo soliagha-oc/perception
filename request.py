@@ -110,7 +110,7 @@ def action_restart():
     report_name = request.args.get('id')
     report_type = request.args.get('report_type')
     if report_type == 'pdf_internal':
-        CMDWriter.pdf(Globals.gbl_report_folder + report_name + '\\' + 'SPIDER\\', scope='internal')
+        CMDWriter.pdf(os.path.join(Globals.gbl_report_folder + report_name + '\\' + 'SPIDER\\', scope='internal')
     if report_type == 'pdf_external':
         CMDWriter.pdf(Globals.gbl_report_folder + report_name + '\\' + 'SPIDER\\', scope='external')
     if report_type == 'spider':

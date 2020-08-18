@@ -30,10 +30,10 @@ class PDFItem(object):
             report_name = request.args.get('id')
         csv_path = Globals.gbl_report_folder + report_name
         if report_type == 'pdf_internal':
-            csv_path = csv_path + '\\PDF\\internal_pdf_a.csv'
+            csv_path = os.path.join(csv_path, 'PDF', 'internal_pdf_a.csv')
             # csv_path = Item.get_items_unique_pdf(csv_path)
         elif report_type == 'pdf_external':
-            csv_path = csv_path + '\\PDF\\external_pdf_a.csv'
+            csv_path = os.path.join(csv_path, 'PDF', 'external_pdf_a.csv')
             # csv_path = Item.get_items_unique_pdf(csv_path)
         # totalpdfs = collections.Counter()
         istagged = collections.Counter()
@@ -60,13 +60,13 @@ class PDFItem(object):
                         except Exception as e:
                             print(e.__str__())
                         finally:
-                            continue
+                            print ('continue')
             row_header = ['Errors', 'Title', 'Description', ]
             if csv_path.find('pdf'):
                 if csv_path.find('pdf_internal'):
-                    csv_path = os.path.split(csv_path)[0] + '\\PDF_REPORT_SUMMARY_INTERNAL.csv'
+                    csv_path = os.path.join(os.path.split(csv_path)[0], 'PDF_REPORT_SUMMARY_INTERNAL.csv')
                 elif csv_path.find('pdf_external'):
-                    csv_path = os.path.split(csv_path)[0] + '\\PDF_REPORT_SUMMARY_EXTERNAL.csv'
+                    csv_path = os.path.join(os.path.split(csv_path)[0], 'PDF_REPORT_SUMMARY_EXTERNAL.csv')
 
             with open(csv_path, 'w', newline='', encoding="utf8") as output_file:
                 csv_writer = csv.writer(output_file, quoting=csv.QUOTE_ALL)
@@ -182,9 +182,9 @@ class CommanderItem(object):
             lighthouse_complete = 'No progress data available.'
             pdf_internal_complete = 'No progress data available.'
             pdf_external_complete = 'No progress data available.'
-            logs = Globals.gbl_report_folder + row + '\\logs\\'
-
-            if os.path.exists(Globals.gbl_report_folder + row + '\\SPIDER_' + row + '\\crawl.seospider'):
+            logs = os.path.join(Globals.gbl_report_folder, row,  'logs')
+            spider_path = os.path.join(Globals.gbl_report_folder, row, 'SPIDER_', row , 'crawl.seospider')
+            if os.path.exists(spider_path):
                 seo_complete = '100%'
             elif os.path.exists(logs + '_spider_progress_log.txt'):
                 with open(logs + '_spider_progress_log.txt', 'r') as f:
@@ -276,13 +276,13 @@ class Item(object):
             report_name = request.args.get('id')
         csv_path = Globals.gbl_report_folder + report_name
         if report_type == 'lighthouse':
-            csv_path = csv_path + ('\\LIGHTHOUSE\\LIGHTHOUSE_REPORT.csv')
+            csv_path = os.path.join(csv_path, 'LIGHTHOUSE', 'LIGHTHOUSE_REPORT.csv')
             csv_path = Item.get_items_unique(csv_path, report_type)
         if report_type == 'axe_c_summary':
-            csv_path = csv_path + ('\\AXE\\Chrome\\AXEChrome_REPORT.csv')
+            csv_path = os.path.join(csv_path, 'AXE', 'Chrome', 'AXEChrome_REPORT.csv')
             csv_path = Item.get_items_unique(csv_path, report_type)
         if report_type == 'axe_c':
-            csv_path = csv_path + ('\\AXE\\Chrome\\AXEChrome_REPORT.csv')
+            csv_path =os.path.join(csv_path, 'AXE', 'Chrome', 'AXEChrome_REPORT.csv')
             # csv_path = Item.get_items(csv_path, report_type)
 
         gdrive_items = []
@@ -347,7 +347,7 @@ class Item(object):
                         except Exception as e:
                             print(e.__str__())
                         finally:
-                            continue
+                            print('continue')
 
             row_header = ['Test', 'URL', 'Error Count', 'Error', 'Error Description']
             if report_type == 'axe_c_summary':
@@ -406,7 +406,7 @@ class DashItem(object):
         report_name = ''
         if request:
             report_name = request.args.get('id')
-        csv_path = Globals.gbl_report_folder + report_name + '\\SPIDER\\crawl_overview.csv'
+        csv_path = os.path.join(Globals.gbl_report_folder, report_name, 'SPIDER', 'crawl_overview.csv')
         gdrive_items = []
         items = []
         i = 0
@@ -493,7 +493,7 @@ class DashItem(object):
                         except Exception as e:
                             print(e.__str__())
                         finally:
-                            continue
+                            print('continue')
 
             row_header = ['Test', 'URL', 'Error Count', 'Error', 'Error Description']
             if report_type == 'axe' or 'axe_u':
