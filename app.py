@@ -1,4 +1,5 @@
 import threading
+import os
 from flask import Flask, render_template, flash, request
 from wtforms import Form, TextField, validators, StringField
 from commander import CMDWriter
@@ -109,10 +110,11 @@ def action_restart():
     sort = request.args.get('sort', 'id')
     report_name = request.args.get('id')
     report_type = request.args.get('report_type')
+    csv_path = os.path.join(Globals.gbl_report_folder, report_name, 'SPIDER')
     if report_type == 'pdf_internal':
-        CMDWriter.pdf(os.path.join(Globals.gbl_report_folder + report_name + '\\' + 'SPIDER\\', scope='internal')
+        CMDWriter.pdf(csv_path, scope='internal')
     if report_type == 'pdf_external':
-        CMDWriter.pdf(Globals.gbl_report_folder + report_name + '\\' + 'SPIDER\\', scope='external')
+        CMDWriter.pdf(csv_path, scope='external')
     if report_type == 'spider':
         url = 'RESTART'
         email = False

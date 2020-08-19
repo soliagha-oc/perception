@@ -105,20 +105,20 @@ class PDFAudit:
         self.report_folder = os.path.split(source_folder)[0].replace('SPIDER', '')
 
         # Set logs
-        self.log = self.report_folder + 'logs\\'
+        self.log = os.path.join(self.report_folder, 'logs')
         if not os.path.exists(self.log):
             os.makedirs(self.log)
 
-        self.report_folder += 'PDF\\'
+        self.report_folder = os.path.join( self.report_folder, 'PDF')
         if not os.path.exists(self.report_folder):
             os.makedirs(self.report_folder)
 
         # os.chdir(self.report_folder)
         if csv_to_audit.find('internal') >= 0 or scope == 'internal':
-            self.log = self.log + '\\_pdf_internal_log.txt'
+            self.log = os.path.join(self.log, '_pdf_internal_log.txt')
             self.report_name = csv_to_audit[:-4] + '_a.csv'
         if csv_to_audit.find('external') >= 0 or scope == 'external':
-            self.log = self.log + '\\_pdf_external_log.txt'
+            self.log = os.path.join(self.log, '_pdf_external_log.txt')
             self.report_name = csv_to_audit[:-4] + '_a.csv'
         self.document_folder = self.report_folder
         if not os.path.exists(self.document_folder):
@@ -137,11 +137,12 @@ class PDFAudit:
         except Exception as e:
             print('PDF I/O error: ' + e.__str__())
 
-        row_count = sum(1 for row in csv.reader(open(source_folder + '\\' + csv_to_audit, 'r',
+        csv_source = os.path.join(source_folder, csv_to_audit)
+        row_count = sum(1 for row in csv.reader(open(csv_source, 'r',
                                                      encoding='utf8'), delimiter=','))
 
         row_count_i = row_count - 2
-        with open(source_folder + '\\' + csv_to_audit, encoding='utf8') as csv_file:
+        with open(csv_source, encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             # set number of threads
             thread_count = 1
@@ -437,7 +438,7 @@ class PDFAudit:
 
         # TODO: IMAGES
         i = 16
-        try:
+        '''try:
             pdfImages = Globals.base_folder + 'cli-tools\\pdfimages.exe'
 
             img_folder = self.document_folder + 'images\\'  # + pdf_name[:-4] + '\\'
@@ -465,7 +466,7 @@ class PDFAudit:
         except Exception as e:
             csv_row.insert(i, [self.csv_header[i], e.__str__() + ' image info failed!!'])
             exit_call = e.__str__() + ' image info failed!!'
-            print(exit_call)
+            print(exit_call)'''
         # TODO: IMAGES per page
         i = 17
         percent_img_per_page = float

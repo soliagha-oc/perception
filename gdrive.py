@@ -20,7 +20,7 @@ RANGE_NAME = 'Sheet1!A:A'
 class GDRIVE:
     def __init__(self, folder_name, report_type, data):
         self.name = 'PERCEPTION Evaluation: ' + folder_name.replace('_', ' ')
-        self.report_path = Globals.gbl_report_folder + folder_name + '\\'
+        self.report_path = os.path.join(Globals.gbl_report_folder, folder_name)
         self.report_type = report_type
         self.folder_name = folder_name
         self.data = data
@@ -33,8 +33,9 @@ class GDRIVE:
         drive = build('drive', 'v3', credentials=self.get_creds(SCOPES_DRIVE))
         gs = gspread.authorize(self.get_creds(SCOPES_SHEETS))
         sheet_id = None
-        if os.path.exists(self.report_path + 'logs\\_gdrive_log.txt'):
-            with open(self.report_path + 'logs\\_gdrive_log.txt') as file:
+        log_gdrive = os.path.join(self.report_path, 'logs', '_gdrive_log.txt')
+        if os.path.exists(log_gdrive):
+            with open(log_gdrive) as file:
                 sheet_id = file.readline()
         else:
             sheet_id = gs.copy(template_id, title=self.name, copy_permissions=True).id
@@ -52,7 +53,7 @@ class GDRIVE:
                                         removeParents=previous_parents,
                                         fields='id, parents').execute()
 
-            with open(self.report_path + 'logs\\_gdrive_log.txt', mode='a+', encoding='utf8') as file:
+            with open(log_gdrive, mode='a+', encoding='utf8') as file:
                 file.write(sheet_id)
 
         # CREATE FROM TEMPLATE
@@ -158,27 +159,27 @@ class GDRIVE:
             # Read CSV file contents
             print('{0} cells updated.'.format(result.get('updatedCells')))
             try:
-                filepath = self.report_path + 'AXE\\Chrome\\AXEChrome_REPORT.csv'
+                filepath = os.path.join(self.report_path, 'AXE', 'Chrome', 'AXEChrome_REPORT.csv')
                 self.paste_csv(filepath, sheet, 'AXE DATA (CHROME)!A1')
             except Exception as e:
                 print(e.__str__())
             try:
-                filepath = self.report_path + 'AXE\\Firefox\\AXEFirefox_REPORT.csv'
+                filepath = os.path.join(self.report_path, 'AXE', 'Firefox', 'AXEFirefox_REPORT.csv')
                 self.paste_csv(filepath, sheet, 'AXE DATA (FIREFOX)!A1')
             except Exception as e:
                 print(e.__str__())
             try:
-                filepath = self.report_path + 'LIGHTHOUSE\\LIGHTHOUSE_REPORT.csv'
+                filepath = os.path.join(self.report_path, 'LIGHTHOUSE', 'LIGHTHOUSE_REPORT.csv')
                 self.paste_csv(filepath, sheet, 'LIGHTHOUSE DATA!A1')
             except Exception as e:
                 print(e.__str__())
             try:
-                filepath = self.report_path + 'PDF\\internal_pdf_a.csv'
+                filepath = os.path.join(self.report_path, 'PDF', 'internal_pdf_a.csv')
                 self.paste_csv(filepath, sheet, 'PDF INTERNAL DATA!A1')
             except Exception as e:
                 print(e.__str__())
             try:
-                filepath = self.report_path + 'PDF\\external_pdf_a.csv'
+                filepath = os.path.join(self.report_path, 'PDF', 'external_pdf_a.csv')
                 self.paste_csv(filepath, sheet, 'PDF EXTERNAL DATA!A1')
             except Exception as e:
                 print(e.__str__())
@@ -212,7 +213,7 @@ class GDRIVE:
 
     def get_creds(self, SCOPE):
         creds = None
-        json = Globals.base_folder + 'credentials.json'
+        json = os.path.join(Globals.base_folder, 'credentials.json')
         path = 'token.pickle'
         if os.path.exists(path):
             with open(path, 'rb') as token:

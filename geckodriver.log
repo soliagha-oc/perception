@@ -1,0 +1,413 @@
+1597777715561	geckodriver	INFO	Listening on 127.0.0.1:43015
+1597777715642	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilepoX6ei"
+1597777715696	geckodriver	INFO	Listening on 127.0.0.1:36391
+*** You are running in headless mode.
+1597777715728	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileCYBuie"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1597777720741	geckodriver	INFO	Listening on 127.0.0.1:58351
+1597777720816	geckodriver	INFO	Listening on 127.0.0.1:58671
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1597777720843	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileYSBqSW"
+1597777720884	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile9zCjgL"
+*** You are running in headless mode.
+1597777720938	geckodriver	INFO	Listening on 127.0.0.1:50493
+*** You are running in headless mode.
+1597777721048	geckodriver	INFO	Listening on 127.0.0.1:43819
+1597777721158	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileOmG5Ky"
+1597777721169	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileDkmmrj"
+*** You are running in headless mode.
+*** You are running in headless mode.
+1597777721291	geckodriver	INFO	Listening on 127.0.0.1:48925
+1597777721370	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilejRSyd3"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597777726451	geckodriver	INFO	Listening on 127.0.0.1:53197
+1597777726480	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofiledx0diS"
+*** You are running in headless mode.
+1597777727276	Marionette	INFO	Listening on port 38113
+1597777727622	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597777727888	Marionette	INFO	Listening on port 41903
+1597777727961	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597777731605	geckodriver	INFO	Listening on 127.0.0.1:34439
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1597777731677	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile2DlO8G"
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597777736848	geckodriver	INFO	Listening on 127.0.0.1:37747
+1597777736912	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileJB9O6Z"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1597777743635	Marionette	INFO	Listening on port 45101
+1597777743855	Marionette	INFO	Listening on port 33503
+1597777743870	Marionette	INFO	Listening on port 42419
+1597777743906	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597777743938	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597777743941	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597777744790	Marionette	INFO	Listening on port 36931
+1597777744836	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597777745200	Marionette	INFO	Listening on port 33565
+1597777745258	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquerymobile/jquery.mobile.min.js, line 8: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquerymobile/jquery.mobile.min.js, line 8: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597777757547	Marionette	INFO	Listening on port 37475
+1597777757921	Marionette	WARN	TLS certificate errors will be ignored for this session
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1597777764303	Marionette	INFO	Listening on port 38615
+1597777764442	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquerymobile/jquery.mobile.min.js, line 8: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1597777768948	Marionette	INFO	Listening on port 35377
+1597777769001	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquerymobile/jquery.mobile.min.js, line 8: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1597777796549	Marionette	INFO	Stopped listening on port 38113
+1597777801833	Marionette	INFO	Stopped listening on port 36931
+1597777807863	geckodriver	INFO	Listening on 127.0.0.1:33393
+1597777808510	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileRo3yFg"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597777816689	Marionette	INFO	Stopped listening on port 45101
+1597777818425	Marionette	INFO	Listening on port 45147
+1597777818464	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597777819071	geckodriver	INFO	Listening on 127.0.0.1:58673
+1597777819360	Marionette	INFO	Stopped listening on port 33503
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1597777819808	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileUdIzcf"
+*** You are running in headless mode.
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquerymobile/jquery.mobile.min.js, line 8: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1597777820905	Marionette	INFO	Stopped listening on port 42419
+1597777822831	Marionette	INFO	Stopped listening on port 38615
+1597777824382	geckodriver	INFO	Listening on 127.0.0.1:39297
+1597777824586	Marionette	INFO	Stopped listening on port 33565
+1597777824725	Marionette	INFO	Stopped listening on port 35377
+1597777824768	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileRHpn6C"
+*** You are running in headless mode.
+1597777825544	Marionette	INFO	Stopped listening on port 37475
+1597777826194	Marionette	INFO	Stopped listening on port 41903
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597777829516	geckodriver	INFO	Listening on 127.0.0.1:50993
+1597777829756	geckodriver	INFO	Listening on 127.0.0.1:43223
+1597777829807	geckodriver	INFO	Listening on 127.0.0.1:42883
+1597777829920	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileYVn0kO"
+*** You are running in headless mode.
+1597777830083	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileNnPY1X"
+1597777830108	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileg9yMvV"
+*** You are running in headless mode.
+*** You are running in headless mode.
+1597777832499	Marionette	INFO	Listening on port 44257
+1597777832547	Marionette	WARN	TLS certificate errors will be ignored for this session
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquery.min.js, line 2: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+JavaScript warning: https://cfc-swc.gc.ca/build/js/jquerymobile/jquery.mobile.min.js, line 8: Using //@ to indicate sourceMappingURL pragmas is deprecated. Use //# instead
+1597777835306	geckodriver	INFO	Listening on 127.0.0.1:57225
+1597777835633	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileQN4qJs"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597777840331	geckodriver	INFO	Listening on 127.0.0.1:49529
+1597777840535	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilefpOBNn"
+*** You are running in headless mode.
+1597777841277	Marionette	INFO	Listening on port 36249
+1597777841355	Marionette	WARN	TLS certificate errors will be ignored for this session
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Sandbox: Unexpected EOF, op 0 flags 02000000 path /usr/lib/firefox/libwrap.so.0
+Exiting due to channel error.
+1597778035249	geckodriver	INFO	Listening on 127.0.0.1:55971
+1597778035271	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileEImxMO"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597778042804	Marionette	INFO	Listening on port 36071
+1597778042935	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597778046034	Marionette	INFO	Stopped listening on port 36071
+1597778146557	geckodriver	INFO	Listening on 127.0.0.1:42317
+1597778146569	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileMwZTgr"
+*** You are running in headless mode.
+
+###!!! [Child][MessageChannel] Error: (msgtype=0xFFF7,name=<unknown IPC msg name>) Channel error: cannot send/recv
+
+1597778430123	geckodriver	INFO	Listening on 127.0.0.1:59867
+1597778430137	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilePX5agd"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597778437867	Marionette	INFO	Listening on port 33005
+1597778437967	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597778458944	geckodriver	INFO	Listening on 127.0.0.1:57257
+1597778458967	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilendANBQ"
+*** You are running in headless mode.
+1597778460547	Marionette	INFO	Stopped listening on port 33005
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597778466654	Marionette	INFO	Listening on port 37179
+1597778466689	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597778470400	geckodriver	INFO	Listening on 127.0.0.1:41405
+1597778470422	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilesSpHoY"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1597778547336	geckodriver	INFO	Listening on 127.0.0.1:40521
+1597778547425	geckodriver	INFO	Listening on 127.0.0.1:49711
+1597778547444	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileEOtBYO"
+*** You are running in headless mode.
+1597778547566	geckodriver	INFO	Listening on 127.0.0.1:43537
+1597778547622	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilebsa8jf"
+1597778547640	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileElUL5R"
+*** You are running in headless mode.
+*** You are running in headless mode.
+1597778547765	geckodriver	INFO	Listening on 127.0.0.1:57463
+1597778547911	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileAcgDB3"
+*** You are running in headless mode.
+1597778548108	geckodriver	INFO	Listening on 127.0.0.1:49997
+1597778548248	geckodriver	INFO	Listening on 127.0.0.1:42635
+1597778548361	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile3kd3oB"
+1597778548410	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileUN9JiP"
+*** You are running in headless mode.
+*** You are running in headless mode.
+1597778553630	geckodriver	INFO	Listening on 127.0.0.1:43603
+1597778554646	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileV5FUZG"
+*** You are running in headless mode.
+1597778558958	geckodriver	INFO	Listening on 127.0.0.1:38065
+1597778559040	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileWKfRRz"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1597778564206	geckodriver	INFO	Listening on 127.0.0.1:55837
+1597778564416	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile3wmyyD"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597778574323	Marionette	INFO	Listening on port 39931
+1597778574420	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597778574494	Marionette	INFO	Listening on port 46723
+1597778574527	geckodriver	INFO	Listening on 127.0.0.1:58399
+1597778574575	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileuIICcu"
+1597778574622	Marionette	WARN	TLS certificate errors will be ignored for this session
+*** You are running in headless mode.
+1597778575348	Marionette	INFO	Listening on port 41133
+1597778575478	Marionette	INFO	Listening on port 45123
+1597778575566	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597778575587	Marionette	INFO	Listening on port 33103
+1597778575672	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597778575696	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597778575913	Marionette	INFO	Listening on port 46141
+1597778576032	Marionette	WARN	TLS certificate errors will be ignored for this session
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597778589083	Marionette	INFO	Listening on port 32779
+1597778589181	Marionette	WARN	TLS certificate errors will be ignored for this session
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1597778590836	Marionette	INFO	Listening on port 45705
+1597778590898	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597778593464	Marionette	INFO	Listening on port 41131
+1597778593512	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597778597411	Marionette	INFO	Listening on port 45879
+1597778597479	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597778617729	Marionette	INFO	Stopped listening on port 39931
+1597778620474	geckodriver	INFO	Listening on 127.0.0.1:41721
+1597778620824	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileZf0Omf"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597778629226	Marionette	INFO	Listening on port 36357
+1597778629326	Marionette	WARN	TLS certificate errors will be ignored for this session
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1597848831448	geckodriver	INFO	Listening on 127.0.0.1:43153
+1597848831497	geckodriver	INFO	Listening on 127.0.0.1:48809
+1597848831547	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileBQfmBD"
+1597848831591	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile2SQns6"
+1597848831691	geckodriver	INFO	Listening on 127.0.0.1:36549
+*** You are running in headless mode.
+*** You are running in headless mode.
+1597848831892	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilepfdoB6"
+*** You are running in headless mode.
+1597848832056	geckodriver	INFO	Listening on 127.0.0.1:58529
+1597848832119	geckodriver	INFO	Listening on 127.0.0.1:45487
+1597848832217	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileJkfIWW"
+1597848832255	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilelD1YWL"
+*** You are running in headless mode.
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597848850555	Marionette	INFO	Listening on port 43833
+1597848850631	Marionette	INFO	Listening on port 33787
+1597848850634	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597848850781	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597848851024	Marionette	INFO	Listening on port 46613
+1597848851281	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597848851407	Marionette	INFO	Listening on port 45545
+1597848851507	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597848851711	Marionette	INFO	Listening on port 39921
+1597848851818	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597848852467	geckodriver	INFO	Listening on 127.0.0.1:48355
+1597848852969	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileiWKV9i"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597848871084	Marionette	INFO	Listening on port 35913
+1597848871314	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597848878242	Marionette	INFO	Stopped listening on port 33787
+1597848918671	geckodriver	INFO	Listening on 127.0.0.1:39405
+1597848919180	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofiles5UKKn"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597848928312	Marionette	INFO	Listening on port 36745
+1597848928415	Marionette	WARN	TLS certificate errors will be ignored for this session
+1597848929367	geckodriver	INFO	Listening on 127.0.0.1:35713
+1597848930333	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile1pyMa5"
+*** You are running in headless mode.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+1597849110860	geckodriver	INFO	Listening on 127.0.0.1:50071
+1597849110874	geckodriver	INFO	Listening on 127.0.0.1:39327
+1597849111011	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileDO9roc"
+*** You are running in headless mode.
+1597849111092	geckodriver	INFO	Listening on 127.0.0.1:55267
+1597849111109	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofilesGlWiw"
+*** You are running in headless mode.
+1597849111360	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileFmzYyk"
+*** You are running in headless mode.
+1597849111507	geckodriver	INFO	Listening on 127.0.0.1:52699
+1597849111570	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile3aG92Y"
+*** You are running in headless mode.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1597849122026	geckodriver	INFO	Listening on 127.0.0.1:39189
+1597849122099	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "--marionette" "-headless" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofileqxpuqI"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+JavaScript error: resource://gre/modules/TelemetryUtils.jsm, line 159: TypeError: date is undefined
+1597849128252	Marionette	INFO	Listening on port 38843
+1597849128342	Marionette	INFO	Listening on port 38705
+1597849128360	Marionette	WARN	TLS certificate errors will be ignored for this session
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+[GFX1-]: Receive IPC close with reason=AbnormalShutdown
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.
+Exiting due to channel error.

@@ -184,35 +184,41 @@ class CommanderItem(object):
             pdf_external_complete = 'No progress data available.'
             logs = os.path.join(Globals.gbl_report_folder, row,  'logs')
             spider_path = os.path.join(Globals.gbl_report_folder, row, 'SPIDER_', row , 'crawl.seospider')
+
+            spider_log = os.path.join(logs, '_spider_progress_log.txt')
             if os.path.exists(spider_path):
                 seo_complete = '100%'
-            elif os.path.exists(logs + '_spider_progress_log.txt'):
-                with open(logs + '_spider_progress_log.txt', 'r') as f:
+            elif os.path.exists(spider_log):
+                with open(spider_log, 'r') as f:
                     lines = f.read().splitlines()
                     seo_complete = lines[-1]
-            if os.path.exists(logs + '_axe_chrome_log.txt'):
-                with open(logs + '_axe_chrome_log.txt', 'r') as f:
+            axe_log = os.path.join(logs, '_axe_chrome_log.txt')
+            if os.path.exists(axe_log):
+                with open(axe_log, 'r') as f:
                     lines = f.read().splitlines()
                     for line in reversed(lines):
                         if line.find('>>> Remaining URLs for [AXE]: ') > 0:
                             axe_complete = line[31:line.rfind('2020')]
                             break
-            if os.path.exists(logs + '_lighthouse_progress_log.txt'):
-                with open(logs + '_lighthouse_progress_log.txt', 'r') as f:
+            lighthouse_log = os.path.join(logs, '_lighthouse_progress_log.txt')
+            if os.path.exists(lighthouse_log):
+                with open(lighthouse_log, 'r') as f:
                     lines = f.read().splitlines()
                     for line in reversed(lines):
                         if line.find('>>> Remaining URLs for [Lighthouse]: ') > 0:
                             lighthouse_complete = line[38:line.rfind('2020')]
                             break
-            if os.path.exists(logs + '_pdf_internal_log.txt'):
-                with open(logs + '_pdf_internal_log.txt', 'r') as f:
+            pdf_i_log = os.path.join(logs, '_pdf_internal_log.txt')
+            if os.path.exists(pdf_i_log):
+                with open(pdf_i_log, 'r') as f:
                     lines = f.read().splitlines()
                     for line in reversed(lines):
                         if line.find('>>> Remaining PDFs:') > 0:
                             pdf_internal_complete = line[21:line.rfind('2020')]
                             break
-            if os.path.exists(logs + '_pdf_external_log.txt'):
-                with open(logs + '_pdf_external_log.txt', 'r') as f:
+            pdf_e_log = os.path.join(logs, '_pdf_external_log.txt')
+            if os.path.exists(pdf_e_log):
+                with open(pdf_e_log, 'r') as f:
                     lines = f.read().splitlines()
                     for line in reversed(lines):
                         if line.find('>>> Remaining PDFs:') > 0:
@@ -274,7 +280,7 @@ class Item(object):
         report_name = ''
         if request:
             report_name = request.args.get('id')
-        csv_path = Globals.gbl_report_folder + report_name
+        csv_path = os.path.join(Globals.gbl_report_folder, report_name)
         if report_type == 'lighthouse':
             csv_path = os.path.join(csv_path, 'LIGHTHOUSE', 'LIGHTHOUSE_REPORT.csv')
             csv_path = Item.get_items_unique(csv_path, report_type)

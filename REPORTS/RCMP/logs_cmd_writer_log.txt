@@ -1,0 +1,28 @@
+2020-08-18 12:15:44 START RCMP
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP to view your report. It may take several hours for your report to complete.
+2020-08-18 12:15:45 END 
+
+2020-08-18 12:23:59 START RCMP
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP to view your report. It may take several hours for your report to complete.
+2020-08-18 12:23:59 END 
+
+2020-08-18 12:39:40 START RCMP
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP to view your report. It may take several hours for your report to complete.
+2020-08-18 12:39:40 END 
+
+2020-08-18 12:40:45 START RCMP
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP to view your report. It may take several hours for your report to complete.
+2020-08-18 12:40:45 END 
+
+2020-08-18 12:41:39 START RCMP
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP to view your report. It may take several hours for your report to complete.
+2020-08-18 12:41:40 END 
+
+2020-08-18 12:43:52 START RCMP
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP to view your report. It may take several hours for your report to complete.
+2020-08-18 12:43:52 END 
+
+2020-08-18 13:27:54 START RCMP
+Please visit http://a11y-perception.ddns.net/report?report_name=RCMP to view your report. It may take several hours for your report to complete.
+2020-08-18 13:27:54 END 
+
