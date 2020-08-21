@@ -46,87 +46,98 @@ To get all tests running, the following is required:
 
 ### CLI-TOOLS
 Install the following CLI tools for your operating system:
-- chromedriver (add to $PATH)
 
-    Download and install the matching/required <code>chromedriver</code>
-    https://chromedriver.chromium.org/downloads
+#### chromedriver
 
-    1. Install unzip
-        
-        <code>sudo apt-get install unzip</code>
-        
-    2. Download latest version from official website and upzip it (here for instance, verson 2.29 to ~/Downloads)
-       
-        <code>wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip</code>
-        
-    3. Move to /usr/local/share (or any folder) and make it executable
+Download and install the matching/required <code>chromedriver</code>
 
-        <code>sudo mv -f ~/Downloads/chromedriver /usr/local/share/</code>
-        
-        <code>sudo chmod +x /usr/local/share/chromedriver</code>
-        
-    4. Create symbolic links
-
-        <code>sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
-        sudo ln -s /usr/local/share/chromedriver /usr/bin/chromedriver<code>
-
-        OR
-
-        <code>export PATH=$PATH:/path-to-extracted-file/</code>
+https://chromedriver.chromium.org/downloads
     
-        OR
-    
-        add to <code>.bashrc</code>
-    
-- geckodriver (add to $PATH)
-    1. Go to the geckodriver releases page. Find the latest version of the driver for your platform and download it. For example:
-        https://github.com/mozilla/geckodriver/releases
-        wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+Download latest version from official website and upzip it (here for instance, verson 2.29 to ~/Downloads)
+   
+<code>wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip </code>
   
-    2. Extract the file with:
+Move to /usr/local/share (or any folder) and make it executable
 
-        tar -xvzf geckodriver*
+<code>sudo mv -f ~/Downloads/chromedriver /usr/local/share/</code>
+    
+<code>sudo chmod +x /usr/local/share/chromedriver</code>
+  
+Create symbolic links
+
+<code>sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver</code>
+
+<code>sudo ln -s /usr/local/share/chromedriver /usr/bin/chromedriver</code>
+
+OR
+
+<code>export PATH=$PATH:/path-to-extracted-file/</code>
+
+OR
+
+add to <code>.bashrc</code>
+
+#### geckodriver
+
+1. Go to the geckodriver releases page. Find the latest version of the driver for your platform and download it. For example:
+    https://github.com/mozilla/geckodriver/releases
+    
+    <code>wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz </code>
+
+2. Extract the file with:
+
+    <code>tar -xvzf geckodriver*</code>
+    
+3. Make it executable:
+
+    <code>chmod +x geckodriver</code>
+ 
+4. Add the driver to your PATH so other tools can find it:
+
+    <code>export PATH=$PATH:/path-to-extracted-file/</code>
+    
+    OR
+    
+    add to <code>.bashrc</code>
         
-    3. Make it executable:
+#### lighthouse
 
-        chmod +x geckodriver
-     
-    4. Add the driver to your PATH so other tools can find it:
+Install node
 
-        <code>export PATH=$PATH:/path-to-extracted-file/</code>
-        OR
-        add to <code>.bashrc</code>
+<code>curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</code>
+
+<code>sudo apt-get install -y nodejs</code>
+
+Install npm
+
+<code>npm install npm@latest -g</code>
+
+<code>sudo npm install npm@latest -g</code>
+
+Install lighthouse
+
+<code>npm install -g lighthouse</code>
+
+<code>sudo npm install -g lighthouse</code>
+
+#### pdfimages
+
+https://www.xpdfreader.com/download.html
+
+To install this binary package:
+
+1. Copy the executables (pdfimages, xpdf, pdftotext, etc.) to to /usr/local/bin.
+
+2. Copy the man pages (*.1 and *.5) to /usr/local/man/man1 and
+   /usr/local/man/man5.
+
+3. Copy the sample-xpdfrc file to /usr/local/etc/xpdfrc.  You'll
+   probably want to edit its contents (as distributed, everything is
+   commented out) -- see xpdfrc(5) for details.
         
-- lighthouse
+#### nginx (optional)
 
-    <code>curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</code>
-    
-    <code>sudo apt-get install -y nodejs</code>
-    
-    <code>npm install npm@latest -g</code>
-    
-    <code>sudo npm install npm@latest -g</code>
-    
-    <code>npm install -g lighthouse</code>
-    
-    <code>sudo npm install -g lighthouse</code>
-
-- pdfimages
-    https://www.xpdfreader.com/download.html
-    
-    To install this binary package:
-
-    1. Copy the executables (pdfimages, xpdf, pdftotext, etc.) to to /usr/local/bin.
-    
-    2. Copy the man pages (*.1 and *.5) to /usr/local/man/man1 and
-       /usr/local/man/man5.
-    
-    3. Copy the sample-xpdfrc file to /usr/local/etc/xpdfrc.  You'll
-       probably want to edit its contents (as distributed, everything is
-       commented out) -- see xpdfrc(5) for details.
-        
-- nginx (optional)
-
+See: https://www.nginx.com/
 
 ### ScreamingFrog SEO
 See: https://www.screamingfrog.co.uk/seo-spider/user-guide/general/#commandlineoptions
@@ -154,13 +165,13 @@ Note: If a licence is not available, simply provide a CSV where at least one col
 See RCMP example.
 
 ### Deque AXE
-Installed via "pip install -r .\requirements.txt"
+
+Installed via <code>pip install -r .\requirements.txt</code>
 
 See: https://pypi.org/project/axe-selenium-python/ and https://github.com/dequelabs/axe-core
   
 
 ### Google Lighthouse
-Installed via "pip install -r .\requirements.txt" 
 
 See: https://github.com/GoogleChrome/lighthouse
 
