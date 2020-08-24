@@ -1,5 +1,6 @@
 # PERCEPTION
-This tool combines various open source tools to give insight into accessibility and performance metrics for a list of URLs. There are several parts that can be understood as such:
+This tool combines various open source tools to give insight into accessibility and performance metrics for a list of 
+URLs. There are several parts that can be understood as such:
 
 - This application requires a least one CSV wth a one column header labeled "Address" and one URL per line (ignores 
 other comma delimited data).  
@@ -10,7 +11,17 @@ Sheet) See: https://pypi.org/project/axe-selenium-python/
 - Runs Lighthouse CLI for all URLs and produces both a detailed and summary report (including updating the associated 
 Google Sheet) See: https://github.com/GoogleChrome/lighthouse
 - Runs a PDF audit for all PDF URLs and produces both a detailed and summary report (including updating the associated 
-Google Sheet) - more on this later...
+Google Sheet)
+
+Get get started, follow the installation instructions below. Once complete:
+
+1. Start the virtual environment.
+2. Run <code>start app.py</code> or <code>python app.py</code>.
+3. Navigate to http://127.0.0.1:5000/reports/ or http://localhost/reports/ where the sample "DRUPAL" report will be 
+visible.
+4. View the report by clicking on the report address or providing the link as such http://localhost/reports/?id=DRUPAL
+5. Here is a link to the sample data Google Sheet report: 
+<a href="https://docs.google.com/spreadsheets/d/1x_Chi2fzIpEDn9d2qsQrKZQ_lpwNPYhaujYgrEkRGlg">DRUPAL Google Sheet</a>
 
 NOTE: At the moment, no database is used due to an initial interest in CSV DATA ONLY. The system creates one
  folder for each as follows (under /REPORTS/your_report_name): 
@@ -30,7 +41,7 @@ As mentioned, simply provide a CSV with a list of URLs (column header = "Address
 Once installed, run <code>python app.py</code>
 
 ## Installation
-To get all tests running, the following is required: 
+To get all tests running, the following steps are required: 
 
 ### Clone and install
 <code>sudo apt update</code>
@@ -51,13 +62,13 @@ To get all tests running, the following is required:
 
 <code>git clone https://github.com/soliagha-oc/perception.git </code>
 
-<code>sudo python3 -m venv venv</code>
+<code>sudo python -m venv venv</code>
 
 <code>source venv/bin/activate</code>
 
 <code>pip install -r requirements.txt</code>
 
-<code>python3 app.py</code>
+<code>python app.py</code>
 
 ### CLI-TOOLS
 Install the following CLI tools for your operating system:
