@@ -31,6 +31,7 @@ from threading import Thread, Event
 stop_event = Event()
 global document
 
+
 class PDFAudit:
 
     def __init__(self):
@@ -39,61 +40,12 @@ class PDFAudit:
         self.pdf_path = ''
         self.report_name = ''
         self.csv_header = []
-        self.gbl_report_folder = Globals.gbl_report_folder + self.report_folder
-        self.log = self.gbl_report_folder + 'logs\\'
+        self.gbl_report_folder = os.path.join(Globals.gbl_report_folder, self.report_folder)
+        self.log = os.path.join(self.gbl_report_folder, 'logs')
         self.document_t = PDFDocument
         self.parser = PDFParser
         self.url = ''
         self.line_count = 1
-
-    def load_pdf(self, PDFDocument, password):
-        i = 0
-        while threading.currentThread().is_alive():
-            i += 1
-            report_path = self.report_folder + self.report_name
-            print('LOADING: ' + i.__str__())
-            time.sleep(1)
-            # try:
-            self.document_t = PDFDocument(self.parser)
-            # except Exception as e:
-                # print('PDFDocument(self.parser) FAILED ::::: ' + e.__str__())
-
-            if stop_event.is_set():
-                if i >= 120:
-                    # print(self.parser.fp.name + ' FAILED (SEC): ' + i.__str__())
-                    print(' >>> FAIL : PDF LOAD STOP EVENT : 120 SECONDS')
-                    row = [self.line_count, 'PDFDocument FAILED TO LOAD - 90 SEC TIMEOUT REACHED FOR: ' + self.url,
-                           '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
-                           '', ]
-                    # self.line_count += 1
-                    # 90 SECOND TIMEOUT or FAILED TO PARSER
-                    with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
-                        writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
-                        writer.dialect.lineterminator.replace('\n', '')
-                        writer.writerow(row)
-                break
-
-    def thread_monitor(self, process_name, thread):
-        i = 0
-        while thread.is_alive():
-            time.sleep(2)
-            i += 2
-            print(process_name + ' WORKING FOR ' + i.__str__() + ' seconds for: ' + thread.getName())
-            print('ACTIVE COUNT: ' + str(threading.active_count()))
-            if i == 180:
-                print(thread.getName() + ' KILLED AT 180 SECONDS')
-                report_path = self.report_folder + self.report_name
-                row = [self.line_count, 'PDF THREAD FAILED TO PROCESS - 180 SEC TIMEOUT REACHED FOR: ' + self.url,
-                       '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ]
-                # self.line_count += 1
-                # 120 SECOND TIMEOUT
-                with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
-                    writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
-                    writer.dialect.lineterminator.replace('\n', '')
-                    writer.writerow(row)
-                break
-
-        print(process_name + ':[COMPLETED IN ' + i.__str__() + ' seconds for: ' + thread.getName() + ']')
 
     def pdf_csv(self, csv_to_audit, source_folder, scope):
         # Define CSV
@@ -125,7 +77,7 @@ class PDFAudit:
             os.makedirs(self.document_folder)
         try:
             write_header = False
-            report_path = self.report_folder + self.report_name
+            report_path = os.path.join(self.report_folder, self.report_name)
             if not os.path.exists(report_path):
                 write_header = True
             os.chdir(self.report_folder)
@@ -157,8 +109,8 @@ class PDFAudit:
                     first_line = False
                     print(' ::: START ALL PDF :::')
                     continue
-                elif os.path.exists(destination_folder):
-                    with open(destination_folder, encoding='utf8') as completed_urls:
+                elif os.path.exists(os.path.join(self.document_folder, self.report_name)):
+                    with open(os.path.join(self.document_folder, self.report_name), encoding='utf8') as completed_urls:
                         completed_urls_reader = csv.reader(completed_urls, delimiter=',')
                         jump = True
                         fl = True
@@ -211,7 +163,6 @@ class PDFAudit:
                     utils.logline(self.log, msg)
 
     def pdf_thread(self, url):
-
         pdf_name = ''
         exit_call = ''
         csv_row = []
@@ -221,7 +172,7 @@ class PDFAudit:
             valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
             regex = re.compile(valid_chars)
             pdf_name = regex.sub('', pdf_name.__str__())
-            self.pdf_path = self.document_folder + regex.sub('', pdf_name)
+            self.pdf_path = os.path.join(self.document_folder, regex.sub('', pdf_name))
             r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
             with open(self.pdf_path, 'wb') as code:
                 code.write(r.content)
@@ -242,7 +193,7 @@ class PDFAudit:
 
         my_file = os.path.join(self.document_folder + pdf_name)
         try:
-            fp = open(my_file, 'rb')
+            fp = open(self.pdf_path, 'rb')
             # self.pdf(fp, csv_row)
         except Exception as e:
             print('     PDF LOAD FAILED !!! ' + self.line_count.__str__() + ' :  ' + self.pdf_path)
@@ -252,7 +203,7 @@ class PDFAudit:
             row = []
             for i in range(csv_row.__len__()):
                 row.append(csv_row[i][1])
-            report_path = self.report_folder + self.report_name
+            report_path = os.path.join(self.report_folder, self.report_name)
             row_append = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
             index = 4
             for ii in row_append:
@@ -278,6 +229,7 @@ class PDFAudit:
         # isEncrypted
         try:
             i = 0
+            report_path = os.path.join(self.report_folder, self.report_name)
             try:
                 thread = Thread(target=self.load_pdf,
                                 args=(PDFDocument, password))
@@ -289,7 +241,6 @@ class PDFAudit:
                        self.url, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                        '', ]
                 # self.line_count += 1
-                report_path = self.report_folder + self.report_name
                 # 90 SECONDS or LOAD FAIL
                 with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
                     writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
@@ -438,35 +389,36 @@ class PDFAudit:
 
         # TODO: IMAGES
         i = 16
-        '''try:
+        try:
             pdfImages = Globals.base_folder + 'cli-tools\\pdfimages.exe'
-
-            img_folder = self.document_folder + 'images\\'  # + pdf_name[:-4] + '\\'
+            img_folder = os.path.join(self.document_folder, 'images')  # + pdf_name[:-4] + '\\'
             if not os.path.exists(img_folder):
                 os.makedirs(img_folder)
             # cmd = pdfImages + ' -list ' + '\"' + pdf_path + '\"'
             # output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0].split(b'\n')
             # save images to disk
-            cmd = pdfImages + ' -list \"' + self.pdf_path + '\" \"' + ' ' + '\"'
+            # cmd = pdfImages + ' -list \"' + self.pdf_path + '\" \"' + ' ' + '\"'
+            cmd = 'pdfimages -list \"' + self.pdf_path + '\" \"' + img_folder + '/\"'
             # subprocess.Popen(cmd, stdout=subprocess.PIPE)
-            os.chdir(img_folder)
-            image_list = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0].split(b'\r\n')
+            # os.chdir(img_folder)
+            image_list = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0].split(b'\r\n')
+            # image_list = subprocess.Popen(cmd, shell=True)
             # os.remove(img_folder)
             # image_count = output.count('\n')
             image_count = image_list.__len__()
-            if image_count > 2:
+            # if image_count > 2:
                 # target = open(pdf_path_image, 'w')
                 # target.write(image_list)
                 # target.close()
-                csv_row.insert(i, [self.csv_header[i], (image_count - 2).__str__()])
-            elif image_count == 0:
+            csv_row.insert(i, [self.csv_header[i], image_count.__str__()])
+            '''elif image_count == 0:
                 csv_row.insert(i, [self.csv_header[i], 0])
             else:
-                csv_row.insert(i, [self.csv_header[i], 0])
+                csv_row.insert(i, [self.csv_header[i], 0])'''
         except Exception as e:
             csv_row.insert(i, [self.csv_header[i], e.__str__() + ' image info failed!!'])
             exit_call = e.__str__() + ' image info failed!!'
-            print(exit_call)'''
+            print(exit_call)
         # TODO: IMAGES per page
         i = 17
         percent_img_per_page = float
@@ -568,7 +520,6 @@ class PDFAudit:
         row = []
         for i in range(csv_row.__len__()):
             row.append(csv_row[i][1])
-        report_path = self.report_folder + self.report_name
         # COPLETE WRITE
         with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
             writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
@@ -583,3 +534,52 @@ class PDFAudit:
                (datetime.datetime.now().__str__()[:-7]))
         print(msg)
         utils.logline(self.log, msg)
+
+    def load_pdf(self, PDFDocument, password):
+        i = 0
+        while threading.currentThread().is_alive():
+            i += 1
+            report_path = os.path.join(self.report_folder, self.report_name)
+            print('LOADING: ' + i.__str__())
+            time.sleep(1)
+            # try:
+            self.document_t = PDFDocument(self.parser)
+            # except Exception as e:
+            # print('PDFDocument(self.parser) FAILED ::::: ' + e.__str__())
+
+            if stop_event.is_set():
+                if i >= 120:
+                    # print(self.parser.fp.name + ' FAILED (SEC): ' + i.__str__())
+                    print(' >>> FAIL : PDF LOAD STOP EVENT : 120 SECONDS')
+                    row = [self.line_count, 'PDFDocument FAILED TO LOAD - 90 SEC TIMEOUT REACHED FOR: ' + self.url,
+                           '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+                           '', ]
+                    # self.line_count += 1
+                    # 90 SECOND TIMEOUT or FAILED TO PARSER
+                    with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
+                        writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
+                        writer.dialect.lineterminator.replace('\n', '')
+                        writer.writerow(row)
+                break
+
+    def thread_monitor(self, process_name, thread):
+        i = 0
+        while thread.is_alive():
+            time.sleep(2)
+            i += 2
+            print(process_name + ' WORKING FOR ' + i.__str__() + ' seconds for: ' + thread.getName())
+            print('ACTIVE COUNT: ' + str(threading.active_count()))
+            if i == 180:
+                print(thread.getName() + ' KILLED AT 180 SECONDS')
+                report_path = os.path.join(self.report_folder, self.report_name)
+                row = [self.line_count, 'PDF THREAD FAILED TO PROCESS - 180 SEC TIMEOUT REACHED FOR: ' + self.url,
+                       '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ]
+                # self.line_count += 1
+                # 120 SECOND TIMEOUT
+                with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
+                    writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
+                    writer.dialect.lineterminator.replace('\n', '')
+                    writer.writerow(row)
+                break
+
+        print(process_name + ':[COMPLETED IN ' + i.__str__() + ' seconds for: ' + thread.getName() + ']')
