@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) OpenConcept Consutling Inc.
+Copyright 2020 OpenConcept Consutling Inc.
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
