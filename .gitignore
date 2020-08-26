@@ -6,4 +6,5 @@ CLI-TOOLS/seo/*
 /venv/*
 credentials.json
 token.pickle
+geckodriver.log
 REPORTS/*
