@@ -2,7 +2,8 @@
 /.idea/
 /__pycache__/
 /logs/*
-/CLI-TOOLS/seo/*
+CLI-TOOLS/seo/*
 /venv/*
-/credentials.json
-/token.pickle
+credentials.json
+token.pickle
+REPORTS/*

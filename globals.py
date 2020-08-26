@@ -10,6 +10,8 @@ class Globals:
     report_folder_id = '1_spCa2YbGEpYf3Ck2AfpfGVjFWy4HzTE'
 
     # logs
-    process_log = os.getcwd() + "\\logs\\process_log.txt"
+    process_log = os.path.join(base_folder, 'logs', 'process_log.txt')
     dt = datatime.datetime
     bod = dt.combine(dt.now().date(), dt.now().time())
+
+    spider = True

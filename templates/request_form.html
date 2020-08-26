@@ -98,6 +98,7 @@
                     <input type="text" class="form-control" id="email" name="email"
                            placeholder="This email will be used to update you.">
                 </div>
+                {% if spider %}
                 <div>
                     <label for="url">URL:</label>
                     Copy and paste URL here. Be sure to provide the exact URL as it appears in the browser.
@@ -106,12 +107,14 @@
                            placeholder="Enter scan URL as it appears in the browser.">
                     <hr>
                 </div>
+                {% endif %}
             </div>
             <div class="header">
                 <h2>Spider SEO Reports</h2>
                 These spider crawls are run using Screaming Frog SEO Spider. Crawls can run internally and externally.
             </div>
             <div class="div-grn">
+                {% if spider %}
                 <div>
                     This spider will scrape all internal or external links for a given URL. This is not an accessibility
                     audit but an asset audit.
@@ -127,6 +130,12 @@
                         <input type="checkbox" id="SEOExternal" name="SEOExternal" value="TRUE">
                         External URL spider crawl</label> - To learn more about the number of assets a client owns and
                     links to by reference, use the "External" scan.
+                </div>
+                {% endif %}
+                <div>
+                    <label for="UploadCSV">
+                        Upload CSV file (<a href="/example_urls.csv">sample CSV</a>): </label>
+                    <input type="file" id="UploadCSV" name="UploadCSV" value="TRUE" style="width: 500px;height: 30px;">
                 </div>
                 <!-- div>
                     To scan for PDFs only, use the "Crawl for PDFs only" selection.

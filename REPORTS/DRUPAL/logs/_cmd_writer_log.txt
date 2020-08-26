@@ -1,5 +1,0 @@
-2020-08-24 12:03:14 START DRUPAL
-2020-08-24 12:03:14 Request: [['report_name', 'DRUPAL'], ['email', 'soli@openconcept.com'], ['url', 'http://www.drupal.com'], ['SEOInternal', 'TRUE'], ['SEOExternal', False], ['PDFAudit', 'TRUE'], ['AXEChrome', 'TRUE'], ['AXEFirefox', 'TRUE'], ['AXEEdge', False], ['LighthouseMOBILE', 'TRUE'], ['LighthouseDESKTOP']]
-Please visit http://a11y-perception.ddns.net/report?report_name=DRUPAL to view your report. It may take several hours for your report to complete.
-2020-08-24 12:03:15 END 
-

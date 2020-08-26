@@ -1,16 +1,20 @@
 import threading
 import os
-from flask import Flask, render_template, flash, request
+from flask import Flask, render_template, flash, request, redirect, url_for
 from wtforms import Form, TextField, validators, StringField
 from commander import CMDWriter
 from report import Table, Item, PDFItem, PDFTable, CommanderTable, CommanderItem, DashTable, DashItem
 from globals import Globals
+from werkzeug.utils import secure_filename
 
 # App config
 DEBUG = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
+UPLOAD_FOLDER = Globals.gbl_report_folder
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {'csv'}
 
 
 class ReusableForm(Form):
@@ -20,19 +24,39 @@ class ReusableForm(Form):
     url = StringField('URL:', validators=[validators.DataRequired(), validators.Length(min=3, max=350)])
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 @app.route('/', methods=['GET', 'POST'])
 def audit_request():
     form = ReusableForm(request.form)
-
+    # If spider installed and configured, set to TRUE
     print(form.errors)
     if request.method == 'POST':
         # Get form
         form_response = request.form
 
         # Parse form response
-        report_name = form_response['report_name'].replace(' ', '_')
-        url = form_response['url']
-        email = form_response['email']
+        report_name = ''
+        email = ''
+        url = ''
+        try:
+            report_name = form_response['report_name'].replace(' ', '_')
+        except Exception as e:
+            SEOInternal = False
+            print(e)
+        try:
+            email = form_response['email']
+        except Exception as e:
+            SEOInternal = False
+            print(e)
+        try:
+            url = form_response['url']
+        except Exception as e:
+            SEOInternal = False
+            print(e)
 
         if form.validate():
             try:
@@ -42,6 +66,27 @@ def audit_request():
                 print(e)
             try:
                 SEOExternal = form_response['SEOExternal']
+            except Exception as e:
+                SEOExternal = False
+                print(e)
+            try:
+                # check if the post request has the file part
+                if 'UploadCSV' not in request.files:
+                    print('No file part')
+                    # return redirect(request.url)
+                file = request.files['UploadCSV']
+                # if user does not select file, browser also
+                # submit an empty part without filename
+                if file.filename == '':
+                    print('No selected file')
+                    # return redirect(request.url)
+                if file and allowed_file(file.filename):
+                    app.config['UPLOAD_FOLDER'] = os.path.join(app.config['UPLOAD_FOLDER'], report_name, 'SPIDER')
+                    if not os.path.exists(app.config['UPLOAD_FOLDER'] ):
+                        os.makedirs(app.config['UPLOAD_FOLDER'] )
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'internal_html.csv'))
+                    # return redirect(url_for('uploaded_file',
+                    #                         filename=filename))
             except Exception as e:
                 SEOExternal = False
                 print(e)
@@ -99,10 +144,11 @@ def audit_request():
                 msg += ' [Report Name] '
             if not email:
                 msg += ' [Email] '
-            if not url:
-                msg += ' [URL] '
+            if Globals.spider:
+                if not url:
+                    msg += ' [URL] '
             flash(msg)
-    return render_template('request_form.html', form=form)
+    return render_template('request_form.html', form=form, spider=Globals.spider)
 
 
 @app.route('/action_restart/', methods=['GET', 'POST'])

@@ -130,6 +130,8 @@ Install the following CLI tools for your operating system:
 
 1. Install node
 
+    https://nodejs.org/en/download/
+
     <code>curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -</code>
     
     <code>sudo apt-get install -y nodejs</code>

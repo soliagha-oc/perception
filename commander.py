@@ -13,6 +13,7 @@ from multiprocessing import Pool, TimeoutError
 import time
 import logging
 from io import BytesIO
+import urllib.parse
 
 from pdf_audit import PDFAudit as PDFA
 from selenium import webdriver
@@ -44,6 +45,8 @@ class CMDWriter:
         if not os.path.exists(self.log):
             os.makedirs(self.log)
         # Set variable scope
+
+
         self.report_name = report_name
         self.url = url
         self.destination_folder = ''
@@ -83,20 +86,26 @@ class CMDWriter:
         msg = ('Please visit http://a11y-perception.ddns.net/report?report_name=' +
                self.report_name + ' to view your report. It may take several hours for your report to complete.')
         print(msg)
-        # Send confirmation email
-        utils.send_email(email, 'Audit for ' + self.report_name + ' is has started.', msg)
-        utils.logline(self.cmd_log, msg)
-        # Log request
-        msg = datetime.datetime.now().__str__()[:-7] + ' END \n'
-        print(msg)
-        utils.logline(self.cmd_log, msg)
+
+        try:
+            # Send confirmation email
+            utils.send_email(email, 'Audit for ' + self.report_name + ' is has started.', msg)
+            utils.logline(self.cmd_log, msg)
+            # Log request
+            msg = datetime.datetime.now().__str__()[:-7] + ' END \n'
+            print(msg)
+            utils.logline(self.cmd_log, msg)
+        except Exception as e:
+            msg = e.__str__() + ' EMAIL' + '\n'
+            print(msg)
+            utils.logline(os.path.join(self.log, '_email_log.txt'), msg)
 
     def master_controller(self):
         # Create spider folder
         self.destination_folder = os.path.join(self.report_folder, 'SPIDER')
         # Check for restart and archive existing crawl
         # TODO: Archive all report data
-        crawl_path = os.path.join(self.destination_folder, 'crawl.seospider')
+        crawl_path = os.path.join(self.destination_folder)  # , 'crawl.seospider')
         if self.url == 'RESTART':
             if self.SEOInternal or self.SEOExternal:
                 if os.path.exists(crawl_path):
@@ -122,7 +131,7 @@ class CMDWriter:
             utils.logline(os.path.join(self.log, '_spider_log.txt'), msg)
             # Write base cmd
             app_path = os.path.join(self.base_folder, 'cli-tools', 'seo', 'screamingfrogseospider.jar')
-            cmd = ('screamingfrogseospider --crawl ' + self.url +
+            cmd = ('screamingfrogseospidercli --crawl ' + self.url +
                    ' --headless --save-crawl --output-folder \"' + self.destination_folder + '\" --overwrite ')
             # Write in/external
             if self.SEOInternal and self.SEOExternal:

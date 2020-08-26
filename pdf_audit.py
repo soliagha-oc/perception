@@ -390,7 +390,7 @@ class PDFAudit:
         # TODO: IMAGES
         i = 16
         try:
-            pdfImages = Globals.base_folder + 'cli-tools\\pdfimages.exe'
+            pdfImages = os.path.join(Globals.base_folder, 'cli-tools', 'pdfimages.exe')
             img_folder = os.path.join(self.document_folder, 'images')  # + pdf_name[:-4] + '\\'
             if not os.path.exists(img_folder):
                 os.makedirs(img_folder)
