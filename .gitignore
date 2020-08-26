@@ -8,4 +8,4 @@ credentials.json
 token.pickle
 geckodriver.log
 REPORTS/*
-!REPORTS/DRUPAL/*
+!REPORTS/DRUPAL/
