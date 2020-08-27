@@ -1,7 +1,7 @@
 import threading
 import os
 from flask import Flask, render_template, flash, request, redirect, url_for
-from wtforms import Form, TextField, validators, StringField
+from wtforms import Form, validators, StringField
 from commander import CMDWriter
 from report import Table, Item, PDFItem, PDFTable, CommanderTable, CommanderItem, DashTable, DashItem
 from globals import Globals
@@ -12,22 +12,16 @@ DEBUG = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
-UPLOAD_FOLDER = Globals.gbl_report_folder
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = Globals.gbl_report_folder
 ALLOWED_EXTENSIONS = {'csv'}
 
 
 class ReusableForm(Form):
-    print(">>> REPORT STARTED!")
-    report_name = StringField('report_name:', validators=[validators.DataRequired()])
-    email = StringField('Email:', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
-    url = StringField('URL:', validators=[validators.DataRequired(), validators.Length(min=3, max=350)])
-
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
+    # print(">>> REPORT STARTED!")
+    # report_name = StringField('report_name', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
+    # email = StringField('email', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
+    # url = StringField('url', validators=[validators.Length(min=-1, max=35)])
+    pass
 
 @app.route('/', methods=['GET', 'POST'])
 def audit_request():
@@ -35,30 +29,28 @@ def audit_request():
     # If spider installed and configured, set to TRUE
     print(form.errors)
     if request.method == 'POST':
+
         # Get form
         form_response = request.form
 
-        # Parse form response
-        report_name = ''
-        email = ''
-        url = ''
+        # Report name
         try:
             report_name = form_response['report_name'].replace(' ', '_')
         except Exception as e:
-            SEOInternal = False
             print(e)
+        # Email
         try:
             email = form_response['email']
         except Exception as e:
-            SEOInternal = False
             print(e)
+        # URL
         try:
             url = form_response['url']
         except Exception as e:
-            SEOInternal = False
             print(e)
 
         if form.validate():
+            # SEO
             try:
                 SEOInternal = form_response['SEOInternal']
             except Exception as e:
@@ -69,6 +61,9 @@ def audit_request():
             except Exception as e:
                 SEOExternal = False
                 print(e)
+
+            # CSV Upload
+            CSVUpload = False
             try:
                 # check if the post request has the file part
                 if 'UploadCSV' not in request.files:
@@ -81,14 +76,15 @@ def audit_request():
                     print('No selected file')
                     # return redirect(request.url)
                 if file and allowed_file(file.filename):
-                    app.config['UPLOAD_FOLDER'] = os.path.join(app.config['UPLOAD_FOLDER'], report_name, 'SPIDER')
+                    app.config['UPLOAD_FOLDER'] = os.path.join(app.config['UPLOAD_FOLDER'], report_name, 'CSV')
                     if not os.path.exists(app.config['UPLOAD_FOLDER'] ):
-                        os.makedirs(app.config['UPLOAD_FOLDER'] )
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'internal_html.csv'))
+                        os.makedirs(app.config['UPLOAD_FOLDER'])
+                    os.chdir(Globals.gbl_report_folder)
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+                    CSVUpload = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
                     # return redirect(url_for('uploaded_file',
                     #                         filename=filename))
             except Exception as e:
-                SEOExternal = False
                 print(e)
             try:
                 PDFAudit = form_response['PDFAudit']
@@ -131,7 +127,7 @@ def audit_request():
             flash(msg)
 
             threads = list()
-            t = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal,
+            t = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal, CSVUpload,
                                                          PDFAudit, LighthouseMOBILE, LighthouseDESKTOP,
                                                          AXEChrome, AXEFirefox, AXEEdge))
             print('REQUEST:before STARTING thread: ' + t.name + '\n')
@@ -150,6 +146,9 @@ def audit_request():
             flash(msg)
     return render_template('request_form.html', form=form, spider=Globals.spider)
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/action_restart/', methods=['GET', 'POST'])
 def action_restart():
@@ -166,13 +165,14 @@ def action_restart():
         email = False
         SEOInternal = True
         SEOExternal = True
+        CSVUpload = False
         PDFAudit = False
         LighthouseMOBILE = False
         LighthouseDESKTOP = False
         AXEChrome = False
         AXEFirefox = False
         AXEEdge = False
-        thread = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal,
+        thread = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal, CSVUpload,
                                                           PDFAudit, LighthouseMOBILE, LighthouseDESKTOP,
                                                           AXEChrome, AXEFirefox, AXEEdge))
         thread.daemon = True
@@ -183,13 +183,14 @@ def action_restart():
         email = False
         SEOInternal = False
         SEOExternal = False
+        CSVUpload = False
         PDFAudit = False
         LighthouseMOBILE = False
         LighthouseDESKTOP = False
         AXEChrome = True
         AXEFirefox = True
         AXEEdge = False
-        thread = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal,
+        thread = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal, CSVUpload,
                                                           PDFAudit, LighthouseMOBILE, LighthouseDESKTOP,
                                                           AXEChrome, AXEFirefox, AXEEdge))
         thread.daemon = True
@@ -200,13 +201,14 @@ def action_restart():
         email = False
         SEOInternal = False
         SEOExternal = False
+        CSVUpload = False
         PDFAudit = False
         LighthouseMOBILE = True
         LighthouseDESKTOP = True
         AXEChrome = False
         AXEFirefox = False
         AXEEdge = False
-        thread = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal,
+        thread = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal, CSVUpload,
                                                           PDFAudit, LighthouseMOBILE, LighthouseDESKTOP,
                                                           AXEChrome, AXEFirefox, AXEEdge))
         thread.daemon = True

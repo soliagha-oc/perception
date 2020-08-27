@@ -159,12 +159,12 @@ class GDRIVE:
             # Read CSV file contents
             print('{0} cells updated.'.format(result.get('updatedCells')))
             try:
-                filepath = os.path.join(self.report_path, 'AXE', 'Chrome', 'AXEChrome_REPORT.csv')
+                filepath = os.path.join(self.report_path, 'AXE', 'CHROME', 'AXE_CHROME_SUMMARY.csv')
                 self.paste_csv(filepath, sheet, 'AXE DATA (CHROME)!A1')
             except Exception as e:
                 print(e.__str__())
             try:
-                filepath = os.path.join(self.report_path, 'AXE', 'Firefox', 'AXEFirefox_REPORT.csv')
+                filepath = os.path.join(self.report_path, 'AXE', 'FIREFOX', 'AXE_FIREFOX_SUMMARY.csv')
                 self.paste_csv(filepath, sheet, 'AXE DATA (FIREFOX)!A1')
             except Exception as e:
                 print(e.__str__())

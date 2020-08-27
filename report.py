@@ -284,12 +284,13 @@ class Item(object):
         if report_type == 'lighthouse':
             csv_path = os.path.join(csv_path, 'LIGHTHOUSE', 'LIGHTHOUSE_REPORT.csv')
             csv_path = Item.get_items_unique(csv_path, report_type)
-        if report_type == 'axe_c_summary':
-            csv_path = os.path.join(csv_path, 'AXE', 'Chrome', 'AXEChrome_REPORT.csv')
-            csv_path = Item.get_items_unique(csv_path, report_type)
         if report_type == 'axe_c':
-            csv_path =os.path.join(csv_path, 'AXE', 'Chrome', 'AXEChrome_REPORT.csv')
+            csv_path = os.path.join(csv_path, 'AXE', 'Chrome', 'AXE_CHROME_DETAILS.csv')
             # csv_path = Item.get_items(csv_path, report_type)
+        if report_type == 'axe_c_summary':
+            csv_path = os.path.join(csv_path, 'AXE', 'Chrome', 'AXE_CHROME_DETAILS.csv')
+            csv_path = Item.get_items_unique(csv_path, report_type)
+
 
         gdrive_items = []
         items = []
@@ -357,7 +358,7 @@ class Item(object):
 
             row_header = ['Test', 'URL', 'Error Count', 'Error', 'Error Description']
             if report_type == 'axe_c_summary':
-                csv_path = csv_path.replace('AXEChrome_REPORT.csv', 'AXEChrome_REPORT_SUMMARY.csv')
+                csv_path = csv_path.replace('AXE_CHROME_DETAILS.csv', 'AXE_CHROME_SUMMARY.csv')
             if report_type == 'lighthouse':
                 csv_path = csv_path.replace('LIGHTHOUSE_REPORT.csv', 'LIGHTHOUSE_REPORT_SUMMARY.csv')
             if os.path.exists(csv_path):
@@ -499,7 +500,7 @@ class DashItem(object):
                         except Exception as e:
                             print(e.__str__())
                         finally:
-                            print('continue')
+                            pass
 
             row_header = ['Test', 'URL', 'Error Count', 'Error', 'Error Description']
             if report_type == 'axe' or 'axe_u':

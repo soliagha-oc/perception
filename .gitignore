@@ -9,3 +9,6 @@ token.pickle
 geckodriver.log
 REPORTS/*
 !REPORTS/DRUPAL/
+CLI-TOOLS/chromedriver.exe
+CLI-TOOLS/geckodriver.exe
+CLI-TOOLS/pdfimages.exe

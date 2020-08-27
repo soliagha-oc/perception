@@ -29,27 +29,29 @@ stop_event = Event()
 
 class CMDWriter:
     def __init__(self, report_name, url, email,
-                 SEOInternal, SEOExternal, PDFAudit, LighthouseMOBILE, LighthouseDESKTOP,
+                 SEOInternal, SEOExternal, CSVUpload, PDFAudit, LighthouseMOBILE, LighthouseDESKTOP,
                  AXEChrome, AXEFirefox, AXEEdge):
-        self.thread_sleep = 8
+        self.spider_file = None
         self.base_folder = Globals.base_folder
         self.report_folder = os.path.join(Globals.gbl_report_folder, report_name)
-        global thread_limit
-        thread_limit = 11
+        self.thread_limit = 25
+        self.thread_sleep = 8
+
         # Create report folder
         # self.report_folder = self.base_folder + 'reports\\' + report_name + '\\'
         if not os.path.exists(self.report_folder):
             os.makedirs(self.report_folder)
         # Create report log folder
-        self.log = os.path.join(self.report_folder, 'logs')
-        if not os.path.exists(self.log):
-            os.makedirs(self.log)
+        self.logs = os.path.join(self.report_folder, 'logs')
+        if not os.path.exists(self.logs):
+            os.makedirs(self.logs)
         # Set variable scope
-
 
         self.report_name = report_name
         self.url = url
         self.destination_folder = ''
+        self.spider_folder = ''
+        self.CSVFile = CSVUpload
         self.SEOInternal = SEOInternal
         self.SEOExternal = SEOExternal
         self.PDFAudit = PDFAudit
@@ -59,59 +61,65 @@ class CMDWriter:
         self.LighthouseMOBILE = LighthouseMOBILE
         self.LighthouseDESKTOP = LighthouseDESKTOP
         # Log
-        msg = datetime.datetime.now().__str__()[:-7] + ' START ' + report_name
-        print(msg)
-        self.cmd_log = os.path.join(self.log, '_cmd_writer_log.txt')
-        utils.logline(self.cmd_log, msg)
-        # Request variables
+        # msg = datetime.datetime.now().__str__()[:-7] + ' START ' + report_name
+        # print(msg)
+        self.request_log = os.path.join(self.logs, '_request_log.csv')
+        # utils.logline(self.request_log, msg)
 
-        msg = (datetime.datetime.now().__str__()[:-7] +
+        # Request variables
+        csv_header = ('date, report_name, email, url, SEOInternal, SEOExternal, CSVUpload, PDFAudit, '
+                      'AXEChrome, AXEFirefox, AXEEdge, LighthouseMOBILE, LighthouseDESKTOP')
+        csv_row = (datetime.datetime.now().__str__()[:-7] + ', ' + report_name + ', ' + email + ', ' + url + ', ' +
+                   str(SEOInternal) + ', ' + str(SEOExternal) + ', ' + str(CSVUpload)+ ', ' + str(PDFAudit) + ', ' +
+                   str(AXEChrome) + ', ' + str(AXEFirefox) + ', ' + str(AXEEdge) + ', ' + str(LighthouseMOBILE) + ', ' +
+                   str(LighthouseDESKTOP))
+
+        if not url == 'RESTART':
+            utils.logline(self.request_log, csv_header)
+            utils.logline(self.request_log, csv_row)
+            
+        '''msg = (datetime.datetime.now().__str__()[:-7] +
                ' Request: ' + [['report_name', report_name], ['email', email], ['url', url],
                                ['SEOInternal', SEOInternal], ['SEOExternal', SEOExternal],
-                               ['PDFAudit', PDFAudit],
+                               ['CSVUpload', CSVUpload], ['PDFAudit', PDFAudit],
                                ['AXEChrome', AXEChrome], ['AXEFirefox', AXEFirefox], ['AXEEdge', AXEEdge],
-                               ['LighthouseMOBILE', LighthouseMOBILE], ['LighthouseDESKTOP']].__str__())
+                               ['LighthouseMOBILE', LighthouseMOBILE], ['LighthouseDESKTOP']].__str__())'''
         # Log
-        print(msg)
-        if not url == 'RESTART':
-            utils.logline(self.cmd_log, msg)
+        # print(msg)
+        
         # Start master_controller
-
         thread = Thread(target=self.master_controller)
         print('MAIN:before STARTING Spider thread: ' + thread.name + '\n')
         thread.daemon = True
         thread.start()
 
         # Create success email message
-        msg = ('Please visit http://a11y-perception.ddns.net/report?report_name=' +
-               self.report_name + ' to view your report. It may take several hours for your report to complete.')
+        msg = ('Email was sent to ' + email + '. Please visit http://a11y-perception.ddns.net/reports?report_name=' +
+               self.report_name + ' to view your report. It may take several hours for your report to complete.' + '\n')
         print(msg)
 
+        # Send confirmation email
         try:
-            # Send confirmation email
             utils.send_email(email, 'Audit for ' + self.report_name + ' is has started.', msg)
-            utils.logline(self.cmd_log, msg)
-            # Log request
-            msg = datetime.datetime.now().__str__()[:-7] + ' END \n'
-            print(msg)
-            utils.logline(self.cmd_log, msg)
+            utils.logline(os.path.join(self.logs, '_email_log.txt'), msg)
         except Exception as e:
-            msg = e.__str__() + ' EMAIL' + '\n'
-            print(msg)
-            utils.logline(os.path.join(self.log, '_email_log.txt'), msg)
+            msg = str(e) + ' EMAIL' + '\n'
+            print('PERCEPTION ' + msg)
+            utils.logline(os.path.join(self.logs, '_email_log.txt'), msg)
 
     def master_controller(self):
         # Create spider folder
-        self.destination_folder = os.path.join(self.report_folder, 'SPIDER')
+        self.spider_folder = os.path.join(self.report_folder, 'SPIDER')
+
         # Check for restart and archive existing crawl
         # TODO: Archive all report data
-        crawl_path = os.path.join(self.destination_folder)  # , 'crawl.seospider')
+        spider_file = os.path.join(self.spider_folder, 'crawl.seospider')
         if self.url == 'RESTART':
             if self.SEOInternal or self.SEOExternal:
-                if os.path.exists(crawl_path):
-                    os.rename(crawl_path,
-                              crawl_path + '_' +
-                              time.ctime(os.path.getctime(crawl_path))
+                if os.path.exists(spider_file):
+                    os.rename(spider_file,
+                              spider_file + '_' +
+                              time.ctime(os.path.getctime(spider_file))
                               .replace(' ', '_').replace(':', '_'))
                 if os.path.exists(self.cmd_log):
                     with open(self.cmd_log, 'r') as f:
@@ -120,73 +128,87 @@ class CMDWriter:
                             if line.find('Request: ') > 0:
                                 self.url = line[line.find('url') + 7:line.find('SEOInternal') - 6]
 
-        if not os.path.exists(crawl_path):
-            if not os.path.exists(self.destination_folder):
-                os.makedirs(self.destination_folder)
+        if not os.path.exists(spider_file) and not self.url == '':
+            if self.SEOInternal or self.SEOExternal:
+                CMDWriter.spider_controller(self)
+
+        for root, dirs, files in os.walk(os.path.join(self.report_folder, 'CSV')):
+            for file in files:
+                # Wait for crawl to end before running the following
+                # Start AXE CONTROLLER
+                # TODO: Add file
+                # TODO: Read config for all selections
+                self.CSVFile = os.path.join(self.report_folder, 'CSV', file)
+                if self.AXEChrome or self.AXEFirefox or self.AXEEdge:
+                    # threads = list()
+                    t = Thread(target=CMDWriter.axe_controller, args=(self,))
+                    t.daemon = True
+                    t.start()
+                # Start Lighthouse CONTROLLER
+                if self.LighthouseMOBILE or self.LighthouseDESKTOP:
+                    # threads = list()
+                    t = Thread(target=self.lighthouse_controller)
+                    t.daemon = True
+                    t.start()
+                # Start PDF CONTROLLER
+
+                if self.PDFAudit:
+                    for root, dirs, files in os.walk(os.path.join(self.report_folder, 'PDF')):
+                        for file in files:
+                            self.CSVFile = os.path.join(self.report_folder, 'PDF', file)
+                            thread = Thread(target=CMDWriter.pdf, args=(self.destination_folder,))
+                            thread.daemon = True
+                            thread.start()
+
+    def spider_controller(self):
+        # TODO: Move the check
+        if not os.path.exists(self.spider_folder):
+            os.makedirs(self.spider_folder)
+
+        if self.SEOInternal or self.SEOExternal and not os.path.exists(os.path.join(
+                self.spider_folder, 'crawl.seospider')):  # Default crawl
 
             # RUN SPIDER!!
             msg = (datetime.datetime.now().__str__()[:-7] +
-                   'New client folder created in COMPLETE: ' + self.destination_folder)
+                   'New client folder created in COMPLETE: ' + self.spider_folder)
             # Create spider log
-            utils.logline(os.path.join(self.log, '_spider_log.txt'), msg)
+            utils.logline(os.path.join(self.logs, '_spider_log.txt'), msg)
+
+            # TODO: Check for upload
             # Write base cmd
-            app_path = os.path.join(self.base_folder, 'cli-tools', 'seo', 'screamingfrogseospider.jar')
             cmd = ('screamingfrogseospidercli --crawl ' + self.url +
-                   ' --headless --save-crawl --output-folder \"' + self.destination_folder + '\" --overwrite ')
+                   ' --headless --save-crawl --output-folder \"' + self.spider_folder + '\" --overwrite ')
             # Write in/external
             if self.SEOInternal and self.SEOExternal:
                 cmd += ('--config \"' + os.path.join(Globals.base_folder, 'conf', 'SEOConfig.seospiderconfig') + '\" '
-                                                              '--export-tabs '
-                                                              '\"Internal:All,Internal:HTML,Internal:PDF,Internal:Flash,Internal:Other,Internal:Unknown,'
-                                                              'External:All,External:HTML,External:PDF,Images:Missing ALT Text,Page Titles:All,'
-                                                              'Page Titles:Missing,Page Titles:Duplicate,H1:All\" '
-                                                              '--save-report ' + '\"Crawl Overview\"')
+                        '--export-tabs \"Internal:All,Internal:HTML,Internal:PDF,Internal:Flash,Internal:Other,Internal:Unknown,'
+                        'External:All,External:HTML,External:PDF,Images:Missing ALT Text,Page Titles:All,Page Titles:Missing,'
+                        'Page Titles:Duplicate,H1:All\" --save-report \"Crawl Overview\"')
             # Write internal
             if self.SEOInternal and not self.SEOExternal:
-                cmd += ('--config \"' + os.path.join(Globals.base_folder, 'conf', 'SEOConfig_Internal.seospiderconfig') + '\" '
-                                                              ' --export-tabs '
-                                                              '\"Internal:All,Internal:HTML,Internal:PDF,Internal:Flash,Internal:Other,Internal:Unknown,'
-                                                              'Images:Missing ALT Text,Page Titles:All,Page Titles:Missing,Page Titles:Duplicate,H1:All\" '
-                                                              '--save-report ' + '\"Crawl Overview\"')
+                cmd += ('--config \"' + os.path.join(Globals.base_folder, 'conf', 'SEOConfig_Internal.seospiderconfig') + '\" ' 
+                        '--export-tabs \"Internal:All,Internal:HTML,Internal:PDF,Internal:Flash,Internal:Other,'
+                        'Internal:Unknown,Images:Missing ALT Text,Page Titles:All,Page Titles:Missing,'
+                        'Page Titles:Duplicate,H1:All\" --save-report \"Crawl Overview\"')
             # Write external
             if self.SEOExternal and not self.SEOInternal:
-                cmd = ('--config \"' + os.path.join(Globals.base_folder, 'conf', 'SEOConfig_External.seospiderconfig') + '\" '
-                                                             '--export-tabs '
-                                                             '\"External:All,External:HTML,External:PDF,Page Titles:All, '
-                                                             'Page Titles:Missing,Page Titles:Duplicate,H1:All\" '
-                                                             '--save-report ' + '\"Crawl Overview\"')
+                cmd = ('--config \"' +
+                       os.path.join(Globals.base_folder, 'conf', 'SEOConfig_External.seospiderconfig') + '\" ' 
+                       '--export-tabs \"External:All,External:HTML,External:PDF,Page Titles:All,'
+                       'Page Titles:Missing,Page Titles:Duplicate,H1:All\" --save-report \"Crawl Overview\"')
             # Call spider thread engine
             if self.SEOInternal or self.SEOExternal:
                 CMDWriter.spider_thread(self, cmd)  # Not threaded and we need a wait
-            # Wait for crawl to end before running the following
-        # Start AXE CONTROLLER
-        # TODO: Read config for all selections
-        if self.AXEChrome or self.AXEFirefox or self.AXEEdge:
-            threads = list()
-            t = Thread(target=CMDWriter.axe_controller, args=(self,))
-            t.daemon = True
-            t.start()
-        # Start Lighthouse CONTROLLER
-        if self.LighthouseMOBILE or self.LighthouseDESKTOP:
-            threads = list()
-            t = Thread(target=self.lighthouse_controller)
-            t.daemon = True
-            t.start()
-        # Start PDF CONTROLLER
-        path = os.path.join(self.destination_folder, 'SPIDER')
-        if self.PDFAudit:
-            thread = Thread(target=CMDWriter.pdf, args=(self.destination_folder,))
-            thread.daemon = True
-            thread.start()
 
     def spider_thread(self, cmd):
         try:
             # Log start
             msg = datetime.datetime.now().__str__()[:-7] + ' Crawl started: ' + cmd
-            # utils.logline(os.path.join(self.log, '_spider_log.txt'), msg)
+            # utils.logline(os.path.join(self.logs, '_spider_log.txt'), msg)
             # RUN THE SPIDER AND WAIT
-            # p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-            p = subprocess.run(cmd, stdout=subprocess.PIPE)
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+            # on exit
+            # p = subprocess.run(cmd, stdout=subprocess.PIPE)
             # Log spider progress
             while True:
                 line = p.stdout.readline()
@@ -194,38 +216,39 @@ class CMDWriter:
                     print(line)
                     start = str(line).rfind('mCompleted=')
                     percentage = str(line)[start + 11: start + 17].replace(']\\', '').replace(']', '')
-                    utils.logline(os.path.join(self.log, '_spider_progress_log.txt'), percentage)
+                    utils.logline(os.path.join(self.logs, '_spider_progress_log.txt'), percentage)
                     pass
                 if not line:
                     break
             # Log spider completion
             msg = datetime.datetime.now().__str__()[:-7] + ' Crawl completed: ' + cmd
-            utils.logline(os.path.join(self.log, '_spider_log.txt'), msg)
+            utils.logline(os.path.join(self.logs, '_spider_log.txt'), msg)
         except Exception as e:
             msg = e.__str__() + ' SPIDER THREAD:01' + '\n'
             print(msg)
-            utils.logline(os.path.join(self.log, '_spider_log.txt'), msg)
+            utils.logline(os.path.join(self.logs, '_spider_log.txt'), msg)
 
     def axe_controller(self):
         # AXE count total links
         # TODO: Add switch for "external"
         first_line = True
-        internal_csv_path = os.path.join(self.destination_folder, 'internal_html.csv')
-        row_count = sum(1 for row in csv.reader(open(internal_csv_path, 'r',
+        # csv_path = os.path.join(self.destination_folder, 'internal_html.csv')
+        csv_path = self.CSVFile
+        row_count = sum(1 for row in csv.reader(open(csv_path, 'r',
                                                      encoding='utf8'), delimiter=','))
         row_count_i = row_count - 1
         # Open HTML CSV list
-        with open(internal_csv_path, 'r', encoding='utf8') as csv_file:
+        with open(csv_path, 'r', encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
-            destination_folder = os.path.join(self.report_folder, 'AXE', 'CHROME', 'AXEChrome_REPORT.csv')
+            dest_file = os.path.join(self.report_folder, 'AXE', 'CHROME', 'AXE_CHROME_DETAILS.csv')
             # Check for completed URLs
             for row in csv_reader:
                 if first_line:
                     first_line = False
                     continue
                 # Compare AXE_REPORT to SPIDER_CSV
-                elif os.path.exists(destination_folder):
-                    with open(destination_folder, encoding='utf8') as completed_urls:
+                elif os.path.exists(dest_file):
+                    with open(dest_file, encoding='utf8') as completed_urls:
                         completed_urls_reader = csv.reader(completed_urls, delimiter=',')
                         jump = True
                         fl = True
@@ -243,7 +266,7 @@ class CMDWriter:
                                        ' out of ' + row_count.__str__() +
                                        ' ' + (datetime.datetime.now().__str__()[:-7]))
                                 if row_count_i >= 0:
-                                    utils.logline(os.path.join(self.log, '_axe_chrome_log.txt'), msg)
+                                    utils.logline(os.path.join(self.logs, '_axe_chrome_log.txt'), msg)
                                 print(msg)
                                 break
                             else:
@@ -255,13 +278,14 @@ class CMDWriter:
                 try:
                     # Start AXE
                     # Set number of threads
-                    while threading.active_count() > thread_limit:
+                    while threading.active_count() > self.thread_limit:
                         # print(threading.active_count().__str__() + ' THREADS RUNNING >> LIGHTHOUSE >> TAKE 10')
                         time.sleep(5)
 
                     row_count_i -= 1
                     # CHROME THREAD
                     if self.AXEChrome:
+                        # TODO: Add if .pdf call pdf_audit
                         thread = Thread(target=CMDWriter.axeChrome, args=(self, row[0]))
                         thread.daemon = True
                         thread.start()
@@ -274,7 +298,7 @@ class CMDWriter:
                                ' out of ' + row_count.__str__() +
                                ' ' + (datetime.datetime.now().__str__()[:-7]))
                         print(msg)
-                        # utils.logline(self.log + '_axe_chrome_log.txt', msg)
+                        utils.logline(os.path.join(self.logs, '_axe_chrome_log.txt'), msg)
 
                     # FIREFOX THREAD
                     if self.AXEFirefox:
@@ -290,7 +314,7 @@ class CMDWriter:
                                ' out of ' + row_count.__str__() +
                                ' ' + (datetime.datetime.now().__str__()[:-7]))
                         print(msg)
-                        utils.logline(os.path.join(self.log, '_axe_firefox_log.txt'), msg)
+                        utils.logline(os.path.join(self.logs, '_axe_firefox_log.txt'), msg)
 
                     # EDGE THREAD
                     if self.AXEEdge:
@@ -306,23 +330,23 @@ class CMDWriter:
                            ' out of ' + row_count.__str__() +
                            ' ' + (datetime.datetime.now().__str__()[:-7]))
                     print(msg)
-                    utils.logline(os.path.join(self.log, '_axe_edge_log.txt'), msg)
+                    utils.logline(os.path.join(self.logs, '_axe_edge_log.txt'), msg)
 
                 except Exception as e:
                     msg = e.__str__() + ' AXE CONTROLLER:01' + '\n'
                     # print(msg)
-                    utils.logline(os.path.join(self.log, '_axe_edge_log.txt'), msg)
+                    utils.logline(os.path.join(self.logs, '_axe_edge_log.txt'), msg)
 
     def axeChrome(self, axe_url):
         try:
             # Create and log new folder, log
             # destination_folder = self.report_folder + 'AXEChrome_' + self.report_name + '\\'
-            destination_folder = os.path.join(self.report_folder, 'AXE', 'Chrome')
+            destination_folder = os.path.join(self.report_folder, 'AXE', 'CHROME')
             if not os.path.exists(destination_folder):
                 os.makedirs(destination_folder)
                 msg = (datetime.datetime.now().__str__()[:-7] + ' ' +
                        'New folder created in COMPLETE: ' + destination_folder)
-                utils.logline(os.path.join(self.log, '_axe_chrome_log.txt'), msg)
+                utils.logline(os.path.join(self.logs, '_axe_chrome_log.txt'), msg)
 
             # Load driver CHROME
             chrome_options = webdriver.ChromeOptions()
@@ -332,7 +356,7 @@ class CMDWriter:
             # Start thread
             threads = list()
             thread = Thread(target=CMDWriter.axe_runner,
-                            args=(self, driver, axe_url, destination_folder, 'Chrome'))
+                            args=(self, driver, axe_url, destination_folder, 'CHROME'))
             thread.daemon = True
             thread.start()
             i = 0
@@ -346,18 +370,18 @@ class CMDWriter:
         except Exception as e:
             msg = e.__str__() + ' AXE/CHROME'
             print(msg)
-            utils.logline(os.path.join(self.log, '_axe_chrome_log.txt'), msg)
+            utils.logline(os.path.join(self.logs, '_axe_chrome_log.txt'), msg)
 
     def axeFirefox(self, axe_url):
         try:
             # Create and log new folder, log
             # destination_folder = self.report_folder + 'AXEFirefox_' + self.report_name + '\\'
-            destination_folder = os.path.join(self.report_folder, 'AXE', 'Firefox')
+            destination_folder = os.path.join(self.report_folder, 'AXE', 'FIREFOX')
             if not os.path.exists(destination_folder):
                 os.makedirs(destination_folder)
                 msg = (datetime.datetime.now().__str__()[:-7] + ' ' +
                        'New folder created in COMPLETE: ' + destination_folder)
-                utils.logline(os.path.join(self.log, '_axe_firefox_log.txt'), msg)
+                utils.logline(os.path.join(self.logs, '_axe_firefox_log.txt'), msg)
             # Load driver FIREFOX
             options = webdriver.FirefoxOptions()
             options.set_headless(True)
@@ -365,7 +389,7 @@ class CMDWriter:
             driver.get(axe_url)
             # Start thread
             thread = Thread(target=CMDWriter.axe_runner,
-                            args=(self, driver, axe_url, destination_folder, 'Firefox'))
+                            args=(self, driver, axe_url, destination_folder, 'FIREFOX'))
             thread.daemon = True
             thread.start()
             thread_monitor = Thread(target=CMDWriter.thread_monitor,
@@ -378,18 +402,18 @@ class CMDWriter:
         except Exception as e:
             msg = e.__str__() + ' AXE/FIREFOX'
             print(msg)
-            utils.logline(os.path.join(self.log, '_axe_firefox_log.txt'), msg)
+            utils.logline(os.path.join(self.logs, '_axe_firefox_log.txt'), msg)
 
     def axeEdge(self, axe_url):
         try:
             # Create and log new folder, log
             # destination_folder = self.report_folder + '\\AXEEdge_' + self.report_name + '\\'
-            destination_folder = os.path.join(self.report_folder, 'AXE', 'Edge')
+            destination_folder = os.path.join(self.report_folder, 'AXE', 'EDGE')
             if not os.path.exists(destination_folder):
                 os.makedirs(destination_folder)
                 msg = (datetime.datetime.now().__str__()[:-7] + ' ' +
                        'New folder created in COMPLETE: ' + destination_folder)
-                utils.logline(os.path.join(self.log, '_axeEdge_log.txt'), msg)
+                utils.logline(os.path.join(self.logs, '_axeEdge_log.txt'), msg)
 
             # Load driver EDGE
             options = webdriver.edge.options.DesiredCapabilities
@@ -399,7 +423,7 @@ class CMDWriter:
             # Start thread
             threads = list()
             thread = Thread(target=CMDWriter.axe_runner,
-                            args=(self, driver, axe_url, destination_folder, 'Edge'))
+                            args=(self, driver, axe_url, destination_folder, 'EDGE'))
             thread.daemon = True
             thread.start()
             i = 0
@@ -413,7 +437,7 @@ class CMDWriter:
         except Exception as e:
             msg = e.__str__() + ' AXE/EDGE'
             print(msg)
-            utils.logline(os.path.join(self.log, '_axe_Edge_log.txt'), msg)
+            utils.logline(os.path.join(self.logs, '_axe_Edge_log.txt'), msg)
 
     def axe_runner(self, driver, axe_url, destination_folder, browser):
         # Load AXE driver
@@ -430,7 +454,7 @@ class CMDWriter:
             except Exception as e:
                 msg = e.__str__() + ' AXE RUNNER:01'
                 print(msg)
-                utils.logline(os.path.join(self.log, browser, '_axe_log.txt'), msg)
+                utils.logline(os.path.join(self.logs, browser, '_axe_log.txt'), msg)
             finally:
                 pass
             driver.close()
@@ -446,7 +470,7 @@ class CMDWriter:
                 csv_row.insert(csv_row.__len__() + 1, dict_json)
             # Write violations report CSV; create report folder/file; check for exists
             write_header = False
-            report_path = os.path.join(destination_folder, (browser + '_REPORT.csv'))
+            report_path = os.path.join(destination_folder, ('AXE_' + browser + '_DETAILS.csv'))
             if not os.path.exists(report_path):
                 write_header = True
             else:
@@ -466,21 +490,21 @@ class CMDWriter:
                         writer.writerow(csv_row[i])
                         msg = datetime.datetime.now().__str__()[:-7] + ' ' + csv_row[i].__str__()
                         print(msg)
-                        utils.logline(os.path.join(self.log, '_axe_log.txt'), msg)
+                        utils.logline(os.path.join(self.logs, '_axe_log.txt'), msg)
             os.remove(results_path)
         except Exception as e:
             msg = e.__str__() + ' AXE RUNNER:02'
-            utils.logline(os.path.join(self.log, browser, '_axe_log.txt'), msg)
+            utils.logline(os.path.join(self.logs, browser, '_axe_log.txt'), msg)
             print(msg)
 
-    @staticmethod
-    def pdf(cvs_path, scope=False):
+    def pdf(self, cvs_path, scope=False):
         '''os.chdir(cvs_path)
         file_list = os.listdir('.')
         pattern = "*pdf*"'''
 
         # Default to internal
-        file = 'internal_pdf.csv'
+        # file = 'internal_pdf.csv'
+        file = self.CSVFile
         if scope == 'external':
             file = 'external_pdf.csv'
         PDFA().pdf_csv(file, cvs_path, scope)
@@ -491,12 +515,12 @@ class CMDWriter:
 
     def lighthouse_controller(self):
         first_line = True
-        csv_internal = os.path.join(self.destination_folder,'internal_html.csv')
-        row_count = sum(1 for row in csv.reader(open(csv_internal, 'r',
+        csv_file = self.CSVFile
+        row_count = sum(1 for row in csv.reader(open(csv_file, 'r',
                                                      encoding='utf8'), delimiter=','))
         row_count_i = row_count - 1
         # Open HTML list
-        with open(csv_internal, 'r', encoding='utf8') as csv_file:
+        with open(csv_file, 'r', encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             destination_folder = os.path.join(self.report_folder, 'LIGHTHOUSE', 'LIGHTHOUSE_REPORT.csv')
             destination_file = os.path.join(destination_folder, 'LIGHTHOUSE_REPORT.csv')
@@ -526,7 +550,7 @@ class CMDWriter:
                                        ' out of ' + row_count.__str__() +
                                        ' ' + (datetime.datetime.now().__str__()[:-7]))
                                 if row_count_i >= 0:
-                                    utils.logline(os.path.join(self.log, '_lighthouse_chrome_log.txt'), msg)
+                                    utils.logline(os.path.join(self.logs, '_lighthouse_chrome_log.txt'), msg)
                                 print(msg)
                                 break
                             else:
@@ -539,7 +563,7 @@ class CMDWriter:
                 try:
                     row_count_i -= 1
                     # set number of threads
-                    while threading.active_count() > thread_limit:
+                    while threading.active_count() > self.thread_limit:
                         # print(threading.active_count().__str__() + ' THREADS RUNNING >> LIGHTHOUSE >> TAKE 10')
                         time.sleep(5)
                     thread = Thread(target=CMDWriter.lighthouse,
@@ -554,19 +578,20 @@ class CMDWriter:
                            ' out of ' + row_count.__str__() +
                            ' ' + (datetime.datetime.now().__str__()[:-7]))
                     print(msg)
-                    utils.logline(os.path.join(self.log, '_lighthouse_progress_log.txt'), msg)
+                    utils.logline(os.path.join(self.logs, '_lighthouse_progress_log.txt'), msg)
 
                 except Exception as e:
                     msg = e.__str__() + ' Lighthouse CONTROLLER:01'
                     print(msg)
-                    utils.logline(os.path.join(self.log, '_lighthouse_log.txt'), msg)
+                    utils.logline(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
 
     def lighthouse(self, lighthouse_url):
         destination_folder = os.path.join(self.report_folder, 'LIGHTHOUSE')
         # Create \complete\client\report_folder
         if not os.path.exists(destination_folder):
             os.makedirs(destination_folder)
-            utils.logline(os.path.join(self.log, '_lighthouse_log.txt'), 'New client REPORTS folder created in COMPLETE: ' +
+            utils.logline(os.path.join(self.logs, '_lighthouse_log.txt'),
+                          'New client REPORTS folder created in COMPLETE: ' +
                           self.report_folder)
 
         output_path = os.path.join(destination_folder, urllib.parse.quote_plus(lighthouse_url))
@@ -582,11 +607,11 @@ class CMDWriter:
                 os.popen(cmd)
                 msg = cmd + ' LIGHTHOUSE:01 :: MOBILE FINISHED :: '
                 # print(msg)
-                utils.logline(os.path.join(self.log, '_lighthouse_log.txt'), msg)
+                utils.logline(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
             except Exception as e:
-                msg = e.__str__() + ' LIGHTHOUSE:01'
+                msg = e.__str__() + ' LIGHTHOUSE:01.1'
                 print(msg)
-                utils.logline(os.path.join(self.log, '_lighthouse_log.txt'), msg)
+                utils.logline(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
 
         if self.LighthouseDESKTOP:
             try:
@@ -599,11 +624,11 @@ class CMDWriter:
                 os.popen(cmd)
                 msg = ' LIGHTHOUSE:01 DESKTOP FINISHED' + cmd
                 print(msg)
-                utils.logline(os.path.join(self.log, '_lighthouse_log.txt'), msg)
+                utils.logline(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
             except Exception as e:
-                msg = e.__str__() + ' LIGHTHOUSE:01'
+                msg = e.__str__() + ' LIGHTHOUSE:01.2'
                 print(msg)
-                utils.logline(os.path.join(self.log, '_lighthouse_log.txt'), msg)
+                utils.logline(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
 
         try:
             # Look for JSON results
@@ -638,32 +663,35 @@ class CMDWriter:
                     writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
                     writer.dialect.lineterminator.replace('\n', '')
                     writer.writerow(csv_row[i])
-            msg = csv_row.__str__() + ' LIGHTHOUSE:02'
+            msg = csv_row.__str__() + ' LIGHTHOUSE:02.0'
             # print(msg)
-            utils.logline(os.path.join(self.log, '_lighthouse_log.txt'), msg)
+            utils.logline(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
             # print('COMPLETE - LIGHTHOUSE:02 ::: ')
 
         except Exception as e:
-            msg = e.__str__() + ' LIGHTHOUSE:02'
+            msg = e.__str__() + ' LIGHTHOUSE:02.1'
             print(msg)
-            utils.logline(os.path.join(self.log, '_lighthouse_log.txt'), msg)
+            utils.logline(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
+
+        time.sleep(30)
+        try:
+            if os.path.exists(output_path[:-5] + '.report.html'):
+                os.remove(output_path[:-5] + '.report.html')
+                print('REMOVE LH HTML')
+        except Exception as e:
+            msg = e.__str__() + ' LIGHTHOUSE:02.2'
+            print(msg)
+            utils.logline(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
 
         try:
-            if os.path.exists(output_path + '.report.html'):
-                os.remove(output_path + '.report.html')
-            print('REMOVE LH HTML')
+            if os.path.exists(output_path[:-5] + '.report.json'):
+                os.remove(output_path[:-5] + '.report.json')
+                print('REMOVE LH JSON')
         except Exception as e:
-            msg = e.__str__() + ' LIGHTHOUSE:02'
+            msg = e.__str__() + ' LIGHTHOUSE:02.3'
             print(msg)
-            utils.logline(os.path.join(self.log, '_lighthouse_log.txt'), msg)
+            utils.logline(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
 
-        try:
-            os.remove(output_path + '.report.json')
-            print('REMOVE LH JSON')
-        except Exception as e:
-            msg = e.__str__() + ' LIGHTHOUSE:02'
-            print(msg)
-            utils.logline(os.path.join(self.log, '_lighthouse_log.txt'), msg)
     @staticmethod
     def thread_monitor(self, process_name, thread):
         i = 0
