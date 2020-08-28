@@ -8,13 +8,8 @@ from globals import Globals
 from werkzeug.utils import secure_filename
 
 # App config
-DEBUG = True
 app = Flask(__name__)
-app.config.from_object(__name__)
-app.config['SECRET_KEY'] = '7d441f27d441f27567d441f2b6176a'
-app.config['UPLOAD_FOLDER'] = Globals.gbl_report_folder
-ALLOWED_EXTENSIONS = {'csv'}
-
+app.config.from_object('config.Config')
 
 class ReusableForm(Form):
     # print(">>> REPORT STARTED!")
@@ -265,5 +260,5 @@ def index(id):
 
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0', port=80)
-    app.run(host='127.0.0.1', port=5000)
+    app.run(host=app.config['HOST'],
+            port=app.config['PORT'])
