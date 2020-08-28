@@ -41,7 +41,6 @@ As mentioned, simply provide a CSV with a list of URLs (column header = "Address
 The application is configured through environment variables.  On startup, the application
 will also read environment variables from a <code>.env</code> file.
 
-- DEBUG (defaults to True)
 - HOST (defaults to 127.0.0.1)
 - PORT (defaults to 5000)
 - SECRET_KEY (no default, used to sign the Flask session cookie.  Use a cryptographically

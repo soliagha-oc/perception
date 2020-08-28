@@ -12,8 +12,8 @@ class Config:
     """Default configuration"""
 
     DEBUG = True
+    UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", Globals.gbl_report_folder)
     HOST = os.environ.get("HOST", "127.0.0.1")
     PORT = int(os.environ.get("PORT", "5000"))
     SECRET_KEY = os.environ.get("SECRET_KEY")
-    UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER", Globals.gbl_report_folder)
     ALLOWED_EXTENSIONS = set(os.environ.get("ALLOWED_EXTENSIONS", "csv").split(","))
