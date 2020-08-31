@@ -38,7 +38,14 @@ database would make more sense and adding a function to "Export to CSV", etc.
 ## Workflow
 As mentioned, simply provide a CSV with a list of URLs (column header = "Address") and select the tests to run through the web form.
 
-Once installed, run <code>python app.py</code>
+The application is configured through environment variables.  On startup, the application
+will also read environment variables from a <code>.env</code> file.
+
+- HOST (defaults to 127.0.0.1)
+- PORT (defaults to 5000)
+- SECRET_KEY (no default, used to sign the Flask session cookie.  Use a cryptographically
+  strong sequence of characters, like you might use for a good password.)
+- ALLOWED_EXTENSIONS (defaults to "csv", comma separated list)
 
 ## Installation
 To get all tests running, the following steps are required: 
