@@ -220,12 +220,12 @@
         <div><br><br></div>
         {% endif %}
 
-        {% if pdf_internal %}
+        {% if pdf %}
         <div class="div-red">
             <div class="header">
-                <h2>{{ pdf_internal_title }} </h2>
-                <div>{{ pdf_internal_desc }}</div>
-                <div>{{ pdf_internal }}</div>
+                <h2>{{ pdf_title }} </h2>
+                <div>{{ pdf_desc }}</div>
+                <div>{{ pdf }}</div>
                 <br><br>
                 <hr>
             </div>
@@ -234,7 +234,7 @@
         {% endif %}
 
         {% if pdf_external %}
-        <div class="div-red">
+        <!-- div class="div-red">
             <div class="header">
                 <h2>{{ pdf_external_title }} </h2>
                 <div>{{ pdf_external_desc }}</div>
@@ -242,7 +242,7 @@
                 <br><br>
                 <hr>
             </div>
-        </div>
+        </div-->
         {% endif %}
 
         {% if lighthouse %}

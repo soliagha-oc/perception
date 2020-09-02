@@ -30,11 +30,11 @@ class PDFItem(object):
         if request:
             report_name = request.args.get('id')
         csv_path = os.path.join(REPORTS_FOLDER, report_name)
-        if report_type == 'pdf_internal':
-            csv_path = os.path.join(csv_path, 'PDF', 'internal_pdf_a.csv')
+        if report_type == 'pdf':
+            csv_path = os.path.join(csv_path, 'PDF', 'pdf_a.csv')
             # csv_path = Item.get_items_unique_pdf(csv_path)
-        elif report_type == 'pdf_external':
-            csv_path = os.path.join(csv_path, 'PDF', 'external_pdf_a.csv')
+        # elif report_type == 'pdf_external':
+        #     csv_path = os.path.join(csv_path, 'PDF', 'external_pdf_a.csv')
             # csv_path = Item.get_items_unique_pdf(csv_path)
         # totalpdfs = collections.Counter()
         is_tagged = collections.Counter()
@@ -62,10 +62,10 @@ class PDFItem(object):
                             print(str(e))
             row_header = ['Errors', 'Title', 'Description', ]
             if csv_path.find('pdf'):
-                if csv_path.find('pdf_internal'):
+                if csv_path.find('pdf'):
                     csv_path = os.path.join(os.path.split(csv_path)[0], 'PDF_REPORT_SUMMARY_INTERNAL.csv')
-                elif csv_path.find('pdf_external'):
-                    csv_path = os.path.join(os.path.split(csv_path)[0], 'PDF_REPORT_SUMMARY_EXTERNAL.csv')
+                '''elif csv_path.find('pdf_external'):
+                    csv_path = os.path.join(os.path.split(csv_path)[0], 'PDF_REPORT_SUMMARY_EXTERNAL.csv')'''
 
             with open(csv_path, 'w', newline='', encoding="utf8") as output_file:
                 csv_writer = csv.writer(output_file, quoting=csv.QUOTE_ALL)
@@ -154,15 +154,15 @@ class PDFTable(Table):
 
 
 class CommanderItem(object):
-    def __init__(self, id, report, address, spider, axe, lighthouse, pdf_internal, pdf_external):
-        self.id = id
+    def __init__(self, ID, report, address, spider, axe, lighthouse, pdf):
+        self.id = ID
         self.report = report
         self.address = address
         self.spider = spider
         self.axe = axe
         self.lighthouse = lighthouse
-        self.pdf_internal = pdf_internal
-        self.pdf_external = pdf_external
+        self.pdf = pdf
+        # self.pdf_external = pdf_external
 
     @classmethod
     def get_sorted_by(cls, id, sort, report_type=False, reverse=False):
@@ -179,8 +179,8 @@ class CommanderItem(object):
             seo_complete = 'No progress data available.'
             axe_complete = 'No progress data available.'
             lighthouse_complete = 'No progress data available.'
-            pdf_internal_complete = 'No progress data available.'
-            pdf_external_complete = 'No progress data available.'
+            pdf_complete = 'No progress data available.'
+            # pdf_external_complete = 'No progress data available.'
             logs = os.path.join(REPORTS_FOLDER, row,  'logs')
             spider_path = os.path.join(REPORTS_FOLDER, row, 'SPIDER_', row , 'crawl.seospider')
 
@@ -207,13 +207,13 @@ class CommanderItem(object):
                         if line.find('>>> Remaining URLs for [Lighthouse]: ') > 0:
                             lighthouse_complete = line[38:line.rfind('2020')]
                             break
-            pdf_i_log = os.path.join(logs, '_pdf_internal_log.txt')
+            pdf_i_log = os.path.join(logs, '_pdf_log.txt')
             if os.path.exists(pdf_i_log):
                 with open(pdf_i_log, 'r') as f:
                     lines = f.read().splitlines()
                     for line in reversed(lines):
                         if line.find('>>> Remaining PDFs:') > 0:
-                            pdf_internal_complete = line[21:line.rfind('2020')]
+                            pdf_complete = line[21:line.rfind('2020')]
                             break
             pdf_e_log = os.path.join(logs, '_pdf_external_log.txt')
             if os.path.exists(pdf_e_log):
@@ -225,7 +225,7 @@ class CommanderItem(object):
                             break
             items.append(CommanderItem(i, row, 'http://a11y-perception.ddns.net/report?report_name=' + row,
                                        seo_complete, axe_complete, lighthouse_complete,
-                                       pdf_internal_complete, pdf_external_complete))
+                                       pdf_complete))  #, pdf_external_complete))
             i += 1
         return items
 
@@ -245,12 +245,12 @@ class CommanderTable(Table):
     lighthouse = Col('Lighthouse Progress (remaining)')
     lighthouse_rs = LinkCol('RESTART Lighthouse', 'action_restart',
                             url_kwargs=dict(id='report'), url_kwargs_extra=dict(report_type='lighthouse'))
-    pdf_internal = Col('PDF Internal Progress (remaining)')
-    pdf_internal_rs = LinkCol('RESTART INTERNAL PDF', 'action_restart',
-                              url_kwargs=dict(id='report'), url_kwargs_extra=dict(report_type='pdf_internal'))
-    pdf_external = Col('PDF External Progress (remaining)')
+    pdf = Col('PDF Progress (remaining)')
+    pdf = LinkCol('RESTART PDF', 'action_restart',
+                              url_kwargs=dict(id='report'), url_kwargs_extra=dict(report_type='pdf'))
+    '''pdf_external = Col('PDF External Progress (remaining)')
     pdf_external_rs = LinkCol('RESTART EXTERNAL PDF', 'action_restart',
-                              url_kwargs=dict(id='report'), url_kwargs_extra=dict(report_type='pdf_external'))
+                              url_kwargs=dict(id='report'), url_kwargs_extra=dict(report_type='pdf_external'))'''
     allow_sort = True
 
     # Column key sort

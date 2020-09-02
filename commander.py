@@ -48,6 +48,7 @@ class CMDWriter:
         self.destination_folder = ''
         self.spider_folder = ''
         self.CSVFile = CSVUpload
+        self.csv_file_path = ''
         self.SEOInternal = SEOInternal
         self.SEOExternal = SEOExternal
         self.PDFAudit = PDFAudit
@@ -76,10 +77,10 @@ class CMDWriter:
             utils.log_line(self.request_log, request_tuple)
 
         # Start master_controller
-        thread = Thread(target=self.master_controller)
-        print('MAIN:before STARTING Spider thread: ' + thread.name + '\n')
-        thread.daemon = True
-        thread.start()
+        t = Thread(target=self.master_controller)
+        print('MAIN:before STARTING Spider thread: ' + t.name + '\n')
+        t.daemon = True
+        t.start()
 
         # Create success email message
         msg = ('Email was sent to ' + str(email) + '. Please visit http://a11y-perception.ddns.net/reports?report_name=' +
@@ -115,19 +116,22 @@ class CMDWriter:
                         csv_reader = csv.reader(csv_file, delimiter=',')
                         for row in csv_reader:
                             if row == 'url':
+                                # TODO:
                                 continue
 
+        # Check for crawl.seospider
         if not os.path.exists(spider_file) and not self.url == '':
             if self.SEOInternal or self.SEOExternal:
                 CMDWriter.spider_controller(self)
 
+        # For each file in CSV folder
         for root, dirs, files in os.walk(os.path.join(self.report_folder, 'CSV')):
             for file in files:
                 # Wait for crawl to end before running the following
                 # Start AXE CONTROLLER
                 # TODO: Add file
                 # TODO: Read config for all selections
-                self.CSVFile = os.path.join(self.report_folder, 'CSV', file)
+                self.csv_file_path = os.path.join(self.report_folder, 'CSV', file)
                 if self.AXEChrome or self.AXEFirefox or self.AXEEdge:
                     t = Thread(target=CMDWriter.axe_controller, args=(self,))
                     t.daemon = True
@@ -137,10 +141,9 @@ class CMDWriter:
                     t = Thread(target=self.lighthouse_controller)
                     t.daemon = True
                     t.start()
-                # Start PDF CONTROLLER
-                if self.PDFAudit or self.CSVFile.find('__pdf__'):
-                    self.CSVFile = os.path.join(self.report_folder, 'PDF', file)
-                    t = Thread(target=self.pdf, args=self.destination_folder)
+                # Start PDF CONTROLLER for __pdf__ files
+                if self.PDFAudit or self.csv_file_path.find('__pdf__'):
+                    t = Thread(target=self.pdf)
                     t.daemon = True
                     t.start()
 
@@ -493,9 +496,9 @@ class CMDWriter:
             utils.log_line(os.path.join(self.logs, browser, '_axe_log.txt'), msg)
             print(msg)
 
-    @staticmethod
-    def pdf(csv_path):
-        PDFA().pdf_csv(csv_path, False, False)
+    def pdf(self):
+        so = self
+        PDFA().pdf_csv(so, self.csv_file_path)
 
     def lighthouse_controller(self):
         first_line = True

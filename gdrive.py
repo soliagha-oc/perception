@@ -107,19 +107,19 @@ class GDRIVE:
             my_sheet.update_index(ws_index)
             worksheet = sheet.get_worksheet(ws_index)
             sheet_range = 'LIGHTHOUSE!A10:Z1000'
-        if self.report_type == 'pdf_internal':
+        if self.report_type == 'pdf':
             ws_index = 4
             for ws in worksheets:
-                if ws.title == 'PDF INTERNAL':
+                if ws.title == 'PDF':
                     sheet.del_worksheet(ws)
             gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
             worksheets = sheet.worksheets()
             my_sheet = worksheets.__getitem__(worksheets.__len__() - 1)
-            my_sheet.update_title('PDF INTERNAL')
+            my_sheet.update_title('PDF')
             my_sheet.update_index(ws_index)
             worksheet = sheet.get_worksheet(ws_index)
             sheet_range = worksheet.title
-        if self.report_type == 'pdf_external':
+        '''if self.report_type == 'pdf_external':
             ws_index = 5
             for ws in worksheets:
                 if ws.title == 'PDF EXTERNAL':
@@ -129,7 +129,7 @@ class GDRIVE:
             my_sheet.update_title('PDF EXTERNAL')
             my_sheet.update_index(ws_index)
             worksheet = sheet.get_worksheet(ws_index)
-            sheet_range = worksheet.title
+            sheet_range = worksheet.title'''
 
         if worksheet:
             value_input_option = 'USER_ENTERED'

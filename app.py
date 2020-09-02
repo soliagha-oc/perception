@@ -144,8 +144,8 @@ def allowed_file(filename):
 def action_restart():
     # Set vars
     # sort = request.args.get('sort', 'id')
-    report_url = ''
-    report_email = ''
+    url = ''
+    email = ''
     report_name = request.args.get('id')
     report_folder = os.path.join(REPORTS_FOLDER, report_name)
     request_log = os.path.join(report_folder, 'logs', '_request_log.tuple')
@@ -217,20 +217,20 @@ def index(id):
     lighthouse = Table(Item.get_sorted_by(sort, 'lighthouse', reverse), sort_by=sort, sort_reverse=reverse)
     axe_c = Table(Item.get_sorted_by(sort, 'axe_c', reverse), sort_by=sort, sort_reverse=reverse)
     axe_c_summary = Table(Item.get_sorted_by(sort, 'axe_c_summary', reverse), sort_by=sort, sort_reverse=reverse)
-    pdf_internal = PDFTable(PDFItem.get_sorted_by(sort, 'pdf_internal', reverse), sort_by=sort, sort_reverse=reverse)
-    pdf_external = PDFTable(PDFItem.get_sorted_by(sort, 'pdf_external', reverse), sort_by=sort, sort_reverse=reverse)
+    pdf = PDFTable(PDFItem.get_sorted_by(sort, 'pdf', reverse), sort_by=sort, sort_reverse=reverse)
+    # pdf_external = PDFTable(PDFItem.get_sorted_by(sort, 'pdf_external', reverse), sort_by=sort, sort_reverse=reverse)
 
     return render_template("report.html",
                            report_name=report_name,
                            axe_u=axe_c_summary,
                            axe_u_title='Summary AXE errors:',
                            axe_u_desc='A summary AXE errors...',
-                           pdf_internal=pdf_internal,
-                           pdf_internal_title='Summary PDF errors (INTERNAL):',
-                           pdf_internal_desc='A summary of PDF errors which are internally hosted.',
-                           pdf_external=pdf_external,
-                           pdf_external_title='Summary PDF errors (EXTERNAL):',
-                           pdf_external_desc='A summary pf PDF errors for documents externally hosted.',
+                           pdf=pdf,
+                           pdf_title='Summary PDF errors (INTERNAL):',
+                           pdf_desc='A summary of PDF errors which are internally hosted.',
+                           # pdf_external=pdf_external,
+                           # pdf_external_title='Summary PDF errors (EXTERNAL):',
+                           # pdf_external_desc='A summary pf PDF errors for documents externally hosted.',
                            axe=axe_c,
                            axe_title='Full AXE Accessibility Results',
                            axe_desc='Full, unfiltered AXE results',

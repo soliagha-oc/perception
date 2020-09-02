@@ -18,7 +18,7 @@ from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from threading import Thread, Event
 
 stop_event = Event()
-global document
+
 
 # App config
 app = Flask(__name__)
@@ -32,66 +32,66 @@ SENT_FROM = app.config.get('SENT_FROM')
 
 class PDFAudit:
     def __init__(self):
-        self.report_folder = ''
+        self.pdf_folder = ''
         self.document_folder = ''
         self.pdf_path = ''
-        self.report_name = ''
+        self.pdf_report = ''
         self.csv_header = []
-        self.gbl_report_folder = REPORTS_FOLDER
-        self.log = os.path.join(self.gbl_report_folder, 'logs')
+        self.log = ''  # os.path.join(REPORTS_FOLDER, 'logs')
         self.document_t = PDFDocument
         self.parser = PDFParser
         self.url = ''
         self.line_count = 1
 
-    def pdf_csv(self, csv_to_audit, source_folder, scope):
+    def pdf_csv(self, so, csv_file_path):
+        # Get the URL from the log file
+        if os.path.exists(so.request_log):
+            with open(so.request_log, 'r') as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=',')
+                for row in csv_reader:
+                    if row == 'url':
+                        # TODO:
+                        continue
+
         # Define CSV
         self.csv_header = (['csvline', 'url', 'filename', 'local_path',
                             'encrypted', 'decrypt_pass', 'istagged', 'pages', 'toc', 'form', 'fields', 'tables',
                             'word_count', 'char_count', 'words_per_page', 'chars_per_word', 'image_count',
                             '%_img_per_page', 'ocr_risk', 'author', 'creator', 'producer', 'subject', 'title', 'text'])
         # root_path = os.path.split(source_folder)[0]
-        self.report_folder = os.path.split(source_folder)[0].replace('SPIDER', '')
+        # self.report_folder = os.path.split(source_folder)[0].replace('SPIDER', '')
 
         # Set logs
-        self.log = os.path.join(self.report_folder, 'logs')
-        if not os.path.exists(self.log):
-            os.makedirs(self.log)
-
-        self.report_folder = os.path.join( self.report_folder, 'PDF')
-        if not os.path.exists(self.report_folder):
-            os.makedirs(self.report_folder)
-
-        # os.chdir(self.report_folder)
-        if csv_to_audit.find('internal') >= 0 or scope == 'internal':
-            self.log = os.path.join(self.log, '_pdf_internal_log.txt')
-            self.report_name = csv_to_audit[:-4] + '_a.csv'
-        if csv_to_audit.find('external') >= 0 or scope == 'external':
-            self.log = os.path.join(self.log, '_pdf_external_log.txt')
-            self.report_name = csv_to_audit[:-4] + '_a.csv'
-        self.document_folder = self.report_folder
+        if not os.path.exists(so.logs):
+            os.makedirs(so.logs)
+        self.log = os.path.join(so.logs, '_pdf_log.txt')
+        self.pdf_folder = os.path.join(so.report_folder, 'PDF')
+        if not os.path.exists(self.pdf_folder):
+            os.makedirs(self.pdf_folder)
+        self.pdf_report = os.path.join(self.pdf_folder, 'PDF_REPORT.csv')
+        self.document_folder = os.path.join(self.pdf_folder, 'PDFs')
         if not os.path.exists(self.document_folder):
             os.makedirs(self.document_folder)
+
         try:
             write_header = False
-            report_path = os.path.join(self.report_folder, self.report_name)
-            if not os.path.exists(report_path):
+            # report_path = os.path.join(self.report_folder, self.report_name)
+            if not os.path.exists(self.pdf_report):
                 write_header = True
-            os.chdir(self.report_folder)
-            with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
+            os.chdir(self.pdf_folder)
+            with open(self.pdf_report, 'a', encoding='utf8', newline='') as csv_file:
                 writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
                 if write_header:
                     writer.writerow(self.csv_header)
-
         except Exception as e:
-            print('PDF I/O error: ' + e.__str__())
+            print('PDF I/O error: ' + str(e))
 
-        csv_source = os.path.join(source_folder, csv_to_audit)
-        row_count = sum(1 for row in csv.reader(open(csv_source, 'r',
+        # csv_source = os.path.join(source_folder, csv_to_audit)
+        row_count = sum(1 for row in csv.reader(open(csv_file_path, 'r',
                                                      encoding='utf8'), delimiter=','))
 
         row_count_i = row_count - 2
-        with open(csv_source, encoding='utf8') as csv_file:
+        with open(csv_file_path, encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             # set number of threads
             # Get URL for PDF from row[1]
@@ -104,8 +104,8 @@ class PDFAudit:
                     first_line = False
                     print(' ::: START ALL PDF :::')
                     continue
-                elif os.path.exists(os.path.join(self.document_folder, self.report_name)):
-                    with open(os.path.join(self.document_folder, self.report_name), encoding='utf8') as completed_urls:
+                elif os.path.exists(self.pdf_report):
+                    with open(self.pdf_report, encoding='utf8') as completed_urls:
                         completed_urls_reader = csv.reader(completed_urls, delimiter=',')
                         fl = True
                         skip = False
@@ -114,11 +114,11 @@ class PDFAudit:
                                 fl = False
                                 continue
                             if pdf_url in completed_url[1]:
-                                msg = (' >>> Remaining PDFs: ' + row_count_i.__str__() + ' out of ' +
-                                       row_count.__str__() + ' ' + (datetime.datetime.now().__str__()[:-7]))
+                                msg = (' >>> Remaining PDFs: ', str(row_count_i), ' out of ',
+                                       str(row_count), (str(datetime.datetime.now())[:-7]))
                                 row_count_i -= 1
-                                utils.log_line(self.log, msg)
-                                print(msg)
+                                utils.log_line(self.log, ''.join(msg))
+                                print(''.join(msg))
                                 fl = False
                                 skip = True
                                 break
@@ -141,64 +141,62 @@ class PDFAudit:
                     thread_monitor.setDaemon(True)
                     thread_monitor.start()
                     time.sleep(5)
-                    msg = (' >>> Remaining PDFs: ' + row_count_i.__str__() + ' out of ' +
-                           row_count.__str__() + ' ' + (datetime.datetime.now().__str__()[:-7]))
+                    msg = (' >>> Remaining PDFs:', str(row_count_i), ' out of ',
+                           str(row_count), str(datetime.datetime.now())[:-7])
                     row_count_i -= 1
-                    utils.log_line(self.log, msg)
-                    print(msg)
+                    utils.log_line(self.log, ''.join(msg))
+                    print(''.join(msg))
 
                 except Exception as e:
-                    msg = e.__str__() + ' PDF:01' + '\n'
-                    print(msg)
-                    utils.log_line(self.log, msg)
+                    msg = (str(e), ' PDF:01',  '\n')
+                    print(''.join(msg))
+                    utils.log_line(self.log, ''.join(msg))
 
     def pdf_thread(self, url):
         pdf_name = ''
         csv_row = []
         # save PDF to disk
         try:
-            pdf_name = BytesIO(url.split("/")[-1].encode('UTF-8')).read().__str__()[2:-1]
+            pdf_name = str(BytesIO(url.split("/")[-1].encode('UTF-8')).read())[2:-1]
             valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
             regex = re.compile(valid_chars)
-            pdf_name = regex.sub('', pdf_name.__str__())
-            self.pdf_path = os.path.join(self.document_folder, regex.sub('', pdf_name))
+            pdf_name = regex.sub('', str(pdf_name))
+            self.pdf_path = os.path.join(self.document_folder, regex.sub('', str(pdf_name)))
             r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
             with open(self.pdf_path, 'wb') as code:
                 code.write(r.content)
             code.close()
-            csv_row.insert(0, [self.csv_header[0], self.line_count.__str__()])
+            csv_row.insert(0, [self.csv_header[0], str(self.line_count)])
             csv_row.insert(1, [self.csv_header[1], url if url.__len__() > 0 else 'NULL'])
             csv_row.insert(2, [self.csv_header[2], pdf_name if pdf_name.__len__() > 0 else 'NULL'])
             csv_row.insert(3, [self.csv_header[3], self.pdf_path if self.pdf_path.__len__() > 0 else 'NULL'])
-            print(' >>>> PDF START:[' + url + '] ' + self.line_count.__str__() + ' ' + (
-                datetime.datetime.now().__str__()[:-7]))
+            print(' >>>> PDF START:[',  url,  '] ', str(self.line_count), str(datetime.datetime.now())[:-7])
         except Exception as e:
-            csv_row.insert(0, [self.csv_header[0], self.line_count.__str__()])
+            csv_row.insert(0, [self.csv_header[0], str(self.line_count)])
             csv_row.insert(1, [self.csv_header[1], url if url.__len__() > 0 else 'NULL'])
-            csv_row.insert(2, [self.csv_header[2], e.__str__()])
+            csv_row.insert(2, [self.csv_header[2], str(e)])
             csv_row.insert(3, [self.csv_header[3], self.pdf_path if self.pdf_path.__len__() > 0 else 'NULL'])
-            print(e)
+            print(str(e))
             pass
 
         try:
             fp = open(self.pdf_path, 'rb')
             # self.pdf(fp, csv_row)
         except Exception:
-            print('     PDF LOAD FAILED !!! ' + self.line_count.__str__() + ' :  ' + self.pdf_path)
+            print('     PDF LOAD FAILED !!! ' + str(self.line_count) + ' :  ' + self.pdf_path)
             csv_row.pop(3)
             csv_row.insert(3, [self.csv_header[3], 'PDF FAILED TO OPEN:' + self.pdf_path if self.pdf_path.__len__() > 0 else 'NULL'])
             # Write results
             row = []
             for i in range(csv_row.__len__()):
                 row.append(csv_row[i][1])
-            report_path = os.path.join(self.report_folder, self.report_name)
             row_append = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
             index = 4
             for ii in row_append:
                 row.insert(index, ii)
                 index += 1
             # OPEN FAILED
-            with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
+            with open(self.pdf_report, 'a', encoding='utf8', newline='') as csv_file:
                 writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
                 writer.dialect.lineterminator.replace('\n', '')
                 writer.writerow(row)
@@ -215,26 +213,24 @@ class PDFAudit:
         pf = PdfFileReader
         # isEncrypted
         try:
-            report_path = os.path.join(self.report_folder, self.report_name)
             try:
-                t = Thread(target=self.load_pdf,
-                                args=(PDFDocument, password))
+                t = Thread(target=self.load_pdf, args=(PDFDocument, password))
                 t.start()
                 # 90 SECONDS or LOAD FAIL
                 t.join(timeout=90)
             except Exception as e:
-                print('PDF I/O error: ' + e.__str__())
-                row = [self.line_count, 'PDF DOCUMENT OBJECT FAILED TO LOAD - ' + e.__str__() + ': ' +
+                print('PDF I/O error: ' + str(e))
+                row = [self.line_count, 'PDF DOCUMENT OBJECT FAILED TO LOAD - ' + str(e) + ': ' +
                        self.url, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                        '', ]
-                with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
+                with open(self.pdf_report, 'a', encoding='utf8', newline='') as csv_file:
                     writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
                     writer.dialect.lineterminator.replace('\n', '')
                     writer.writerow(row)
 
             stop_event.set()
-            document = PDFDocument
-            document = self.document_t
+            # document = PDFDocument
+            pdf_document = self.document_t
             pf = PdfFileReader(BytesIO(open(self.pdf_path, 'rb').read()))
 
             # ENCRYPTION
@@ -245,32 +241,32 @@ class PDFAudit:
                 csv_row.insert(4, [self.csv_header[4], 'FALSE'])
                 csv_row.insert(5, [self.csv_header[5], 'NA'])
         except Exception as e:
-            csv_row.insert(4, [self.csv_header[4], 'FAILED: ' + e.__str__()])
+            csv_row.insert(4, [self.csv_header[4], 'FAILED: ' + str(e)])
             csv_row.insert(5, [self.csv_header[5], 'NA'])
-            exit_call = e.__str__() + ' document failed!!'
+            exit_call = str(e) + ' document failed!!'
             print(exit_call)
             pass
 
         page_count = 0
         # istagged
         try:
-            if not document.is_extractable:
+            if not pdf_document.is_extractable:
                 raise PDFTextExtractionNotAllowed
             istagged = 'FALSE'
             try:
                 # document.catalog
-                if document.catalog['MarkInfo']:
+                if pdf_document.catalog['MarkInfo']:
                     istagged = 'TRUE'
             except Exception as e:
-                exit_call = e.__str__() + ' tagged info failed!!'
+                exit_call = str(e) + ' tagged info failed!!'
                 print(exit_call)
-            page_count = resolve1(document.catalog['Pages'])['Count']
+            page_count = resolve1(pdf_document.catalog['Pages'])['Count']
             csv_row.insert(6, [self.csv_header[6], istagged])
             csv_row.insert(7, [self.csv_header[7], page_count])
         except Exception as e:
-            csv_row.insert(6, [self.csv_header[6], 'IsTagged: ' + e.__str__()])
-            csv_row.insert(7, [self.csv_header[7], 'Page Count: ' + e.__str__()])
-            exit_call = e.__str__() + ' tagged info failed!!'
+            csv_row.insert(6, [self.csv_header[6], 'IsTagged: ' + str(e)])
+            csv_row.insert(7, [self.csv_header[7], 'Page Count: ' + str(e)])
+            exit_call = str(e) + ' tagged info failed!!'
             print(exit_call)
         # TOC
         try:
@@ -285,8 +281,8 @@ class PDFAudit:
             else:
                 csv_row.insert(8, [self.csv_header[8], 'FALSE'])
         except Exception as e:
-            csv_row.insert(8, [self.csv_header[8], 'TOC FAILED: ' + e.__str__()])
-            exit_call = e.__str__() + ' toc info failed!!'
+            csv_row.insert(8, [self.csv_header[8], 'TOC FAILED: ' + str(e)])
+            exit_call = str(e) + ' toc info failed!!'
             print(exit_call)
         # isForm, fields,
         try:
@@ -297,9 +293,9 @@ class PDFAudit:
                 csv_row.insert(9, [self.csv_header[9], 'FALSE'])
                 csv_row.insert(10, [self.csv_header[10], 0])
         except Exception as e:
-            csv_row.insert(9, [self.csv_header[9], 'FORMS: ' + e.__str__()])
-            csv_row.insert(10, [self.csv_header[10], 'FIELDS: ' + e.__str__()])
-            exit_call = e.__str__() + ' forms failed!!'
+            csv_row.insert(9, [self.csv_header[9], 'FORMS: ' + str(e)])
+            csv_row.insert(10, [self.csv_header[10], 'FIELDS: ' + str(e)])
+            exit_call = str(e) + ' forms failed!!'
             print(exit_call)
         # tables
         csv_row.insert(11, [self.csv_header[11], 'NOT RUN'])
@@ -315,18 +311,18 @@ class PDFAudit:
                 for page in range(pf.getNumPages()):
                     p = pf.getPage(page)
                     text_clip = p.extractText().encode('UTF-8')
-                    text_clip = BytesIO(text_clip).read().__str__()[2:]
+                    text_clip = str(BytesIO(text_clip).read())[2:]
                     count_clip = re.findall(r"[^\W_]+", text_clip, re.MULTILINE)
                     word_count += len(count_clip)
                     char_count += len(text_clip)
                     if page <= 3:
-                        write_clip += '[ PAGE ' + (page + 1).__str__() + ' START ] '
+                        write_clip += '[ PAGE ' + str((page + 1)) + ' START ] '
                         write_clip += text_clip.replace('\n', '').replace(',', ' ').replace('"', '')
-                        write_clip += '[ PAGE ' + (page + 1).__str__() + ' END ]'
+                        write_clip += '[ PAGE ' + str((page + 1)) + ' END ]'
             else:
                 write_clip = 'OVER 50 PAGES - SAMPLE SKIPPED'
         except Exception as e:
-            exit_call = e.__str__() + ' :: TEXT sample failed!!'
+            exit_call = str(e) + ' :: TEXT sample failed!!'
             write_clip = exit_call
             word_count = exit_call
             char_count = exit_call
@@ -342,31 +338,31 @@ class PDFAudit:
             else:
                 words_per_page = 0
         except Exception as e:
-            exit_call = e.__str__() + ' :: WORD METRICS failed!!'
+            exit_call = str(e) + ' :: WORD METRICS failed!!'
             chars_per_word = exit_call
             words_per_page = exit_call
             print(exit_call)
         # TODO: Add to row
         i = 12
         try:
-            csv_row.insert(i, [self.csv_header[i], word_count.__str__()])
+            csv_row.insert(i, [self.csv_header[i], str(word_count)])
         except Exception as e:
-            csv_row.insert(i, [self.csv_header[i], 'WORD_COUNT: ' + e.__str__()])
+            csv_row.insert(i, [self.csv_header[i], 'WORD_COUNT: ' + str(e)])
         i = 13
         try:
-            csv_row.insert(i, [self.csv_header[i], char_count.__str__()])
+            csv_row.insert(i, [self.csv_header[i], str(char_count)])
         except Exception as e:
-            csv_row.insert(i, [self.csv_header[i], 'CHAR_COUNT: ' + e.__str__()])
+            csv_row.insert(i, [self.csv_header[i], 'CHAR_COUNT: ' + str(e)])
         i = 14
         try:
-            csv_row.insert(i, [self.csv_header[i], words_per_page.__str__()])
+            csv_row.insert(i, [self.csv_header[i], str(words_per_page)])
         except Exception as e:
-            csv_row.insert(i, [self.csv_header[i], 'WPP: ' + e.__str__()])
+            csv_row.insert(i, [self.csv_header[i], 'WPP: ' + str(e)])
         i = 15
         try:
-            csv_row.insert(i, [self.csv_header[i], chars_per_word.__str__()])
+            csv_row.insert(i, [self.csv_header[i], str(chars_per_word)])
         except Exception as e:
-            csv_row.insert(i, [self.csv_header[i], 'CPP: ' + e.__str__()])
+            csv_row.insert(i, [self.csv_header[i], 'CPP: ' + str(e)])
 
         # TODO: IMAGES
         i = 16
@@ -391,14 +387,14 @@ class PDFAudit:
                 # target = open(pdf_path_image, 'w')
                 # target.write(image_list)
                 # target.close()
-            csv_row.insert(i, [self.csv_header[i], image_count.__str__()])
+            csv_row.insert(i, [self.csv_header[i], str(image_count)])
             '''elif image_count == 0:
                 csv_row.insert(i, [self.csv_header[i], 0])
             else:
                 csv_row.insert(i, [self.csv_header[i], 0])'''
         except Exception as e:
-            csv_row.insert(i, [self.csv_header[i], e.__str__() + ' image info failed!!'])
-            exit_call = e.__str__() + ' image info failed!!'
+            csv_row.insert(i, [self.csv_header[i], str(e) + ' image info failed!!'])
+            exit_call = str(e) + ' image info failed!!'
             print(exit_call)
         # TODO: IMAGES per page
         i = 17
@@ -410,7 +406,7 @@ class PDFAudit:
                 percent_img_per_page = 0
             csv_row.insert(i, [self.csv_header[i], percent_img_per_page])
         except Exception as e:
-            csv_row.insert(i, [self.csv_header[i], 'IMG: ' + e.__str__()])
+            csv_row.insert(i, [self.csv_header[i], 'IMG: ' + str(e)])
         # TODO: OCR risk
         i = 18
         try:
@@ -428,13 +424,13 @@ class PDFAudit:
                 ocr_risk = 0
             csv_row.insert(i, [self.csv_header[i], ocr_risk])
         except Exception as e:
-            csv_row.insert(i, [self.csv_header[i], 'OCR: ' + e.__str__()])
+            csv_row.insert(i, [self.csv_header[i], 'OCR: ' + str(e)])
         # author, creator, producer, subject, title,
         di = pf
         try:
             di = pf.documentInfo
         except Exception as e:
-            exit_call = e.__str__() + ' :: DOCUMENT INFO LOAD failed!!'
+            exit_call = str(e) + ' :: DOCUMENT INFO LOAD failed!!'
             print(exit_call)
 
         # Document info
@@ -447,8 +443,8 @@ class PDFAudit:
                 else:
                     csv_row.insert(i, [self.csv_header[i], 'NULL'])
             except Exception as e:
-                csv_row.insert(i, [self.csv_header[i], 'AUTHOR: ' + e.__str__()])
-                exit_call = e.__str__() + ' doc info failed!!'
+                csv_row.insert(i, [self.csv_header[i], 'AUTHOR: ' + str(e)])
+                exit_call = str(e) + ' doc info failed!!'
                 print(exit_call)
             # Creator
             try:
@@ -458,7 +454,7 @@ class PDFAudit:
                 else:
                     csv_row.insert(i, [self.csv_header[i], 'NULL'])
             except Exception as e:
-                csv_row.insert(i, [self.csv_header[i], 'CREATOR: ' + e.__str__()])
+                csv_row.insert(i, [self.csv_header[i], 'CREATOR: ' + str(e)])
                 print(exit_call)
                 print('#5.1')
             # Producer
@@ -469,7 +465,7 @@ class PDFAudit:
                 else:
                     csv_row.insert(i, [self.csv_header[i], 'NULL'])
             except Exception as e:
-                csv_row.insert(i, [self.csv_header[i], 'PRODUCER: ' + e.__str__()])
+                csv_row.insert(i, [self.csv_header[i], 'PRODUCER: ' + str(e)])
                 print(exit_call)
             # Subject
             try:
@@ -479,7 +475,7 @@ class PDFAudit:
                 else:
                     csv_row.insert(i, [self.csv_header[i], 'NULL'])
             except Exception as e:
-                csv_row.insert(i, [self.csv_header[i], 'SUBJECT: ' + e.__str__()])
+                csv_row.insert(i, [self.csv_header[i], 'SUBJECT: ' + str(e)])
                 print(exit_call)
             # Title
             try:
@@ -489,20 +485,20 @@ class PDFAudit:
                 else:
                     csv_row.insert(i, [self.csv_header[i], 'NULL'])
             except Exception as e:
-                csv_row.insert(i, [self.csv_header[i], 'TITLE: ' + e.__str__()])
+                csv_row.insert(i, [self.csv_header[i], 'TITLE: ' + str(e)])
                 print(exit_call)
         # Document clip
         i = 24
         try:
             csv_row.insert(i, [self.csv_header[i], write_clip])
         except Exception as e:
-            csv_row.insert(i, [self.csv_header[i], e.__str__()])
+            csv_row.insert(i, [self.csv_header[i], str(e)])
         # Write results
         row = []
         for i in range(csv_row.__len__()):
             row.append(csv_row[i][1])
         # COPLETE WRITE
-        with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
+        with open(self.pdf_report, 'a', encoding='utf8', newline='') as csv_file:
             writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
             writer.dialect.lineterminator.replace('\n', '')
             writer.writerow(row)
@@ -511,8 +507,8 @@ class PDFAudit:
         os.remove(self.pdf_path)
 
         # Log close
-        msg = (' >>>> PDF complete:[' + self.url + '] ' + self.line_count.__str__() + ' ' +
-               (datetime.datetime.now().__str__()[:-7]))
+        msg = (' >>>> PDF complete:[' + self.url + '] ' + str(self.line_count) + ' ' +
+               (str(datetime.datetime.now())[:-7]))
         print(msg)
         utils.log_line(self.log, msg)
 
@@ -520,24 +516,23 @@ class PDFAudit:
         i = 0
         while threading.currentThread().is_alive():
             i += 1
-            report_path = os.path.join(self.report_folder, self.report_name)
-            print('LOADING: ' + i.__str__())
+            print('LOADING: ' + str(i))
             time.sleep(1)
             # try:
             self.document_t = PDFDocument(self.parser)
             # except Exception as e:
-            # print('PDFDocument(self.parser) FAILED ::::: ' + e.__str__())
+            # print('PDFDocument(self.parser) FAILED ::::: ' + str(e))
 
             if stop_event.is_set():
                 if i >= 120:
-                    # print(self.parser.fp.name + ' FAILED (SEC): ' + i.__str__())
+                    # print(self.parser.fp.name + ' FAILED (SEC): ' + str(i))
                     print(' >>> FAIL : PDF LOAD STOP EVENT : 120 SECONDS')
                     row = [self.line_count, 'PDFDocument FAILED TO LOAD - 90 SEC TIMEOUT REACHED FOR: ' + self.url,
                            '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                            '', ]
                     # self.line_count += 1
                     # 90 SECOND TIMEOUT or FAILED TO PARSER
-                    with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
+                    with open(self.pdf_report, 'a', encoding='utf8', newline='') as csv_file:
                         writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
                         writer.dialect.lineterminator.replace('\n', '')
                         writer.writerow(row)
@@ -548,19 +543,18 @@ class PDFAudit:
         while thread.is_alive():
             time.sleep(2)
             i += 2
-            print(process_name + ' WORKING FOR ' + i.__str__() + ' seconds for: ' + thread.getName())
+            print(process_name + ' WORKING FOR ' + str(i) + ' seconds for: ' + thread.getName())
             print('ACTIVE COUNT: ' + str(threading.active_count()))
             if i == 180:
                 print(thread.getName() + ' KILLED AT 180 SECONDS')
-                report_path = os.path.join(self.report_folder, self.report_name)
                 row = [self.line_count, 'PDF THREAD FAILED TO PROCESS - 180 SEC TIMEOUT REACHED FOR: ' + self.url,
                        '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ]
                 # self.line_count += 1
                 # 120 SECOND TIMEOUT
-                with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
+                with open(self.pdf_report, 'a', encoding='utf8', newline='') as csv_file:
                     writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
                     writer.dialect.lineterminator.replace('\n', '')
                     writer.writerow(row)
                 break
 
-        print(process_name + ':[COMPLETED IN ' + i.__str__() + ' seconds for: ' + thread.getName() + ']')
+        print(process_name + ':[COMPLETED IN ' + str(i) + ' seconds for: ' + thread.getName() + ']')
