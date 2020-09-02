@@ -17,7 +17,7 @@ Get get started, follow the installation instructions below. Once complete:
 
 1. Start the virtual environment.
 2. Run <code>start app.py</code> or <code>python app.py</code>.
-3. Navigate to http://127.0.0.1:5000/reports/ or http://localhost/reports/ where the sample "DRUPAL" report will be 
+3. Navigate to http://127.0.0.1:8888/reports/ or http://localhost/reports/ where the sample "DRUPAL" report will be 
 visible.
 4. View the report by clicking on the report address or providing the link as such http://localhost/reports/?id=DRUPAL
 5. Here is a link to the sample data Google Sheet report: 
@@ -27,13 +27,12 @@ NOTE: At the moment, no database is used due to an initial interest in CSV DATA 
  folder for each as follows (under /REPORTS/your_report_name): 
  
  - /AXE (used to store AXE data)
+ - /CSV (CSVs to analyse; PDF CSV requests are appended with with a PDF qualifier)
  - /LIGHTHOUSE (used to store Lighthouse data)
  - /logs (tracks progress and requests)
- - /PDF (used to store and process PDF files)
  - /SPIDER (used to store crawl data)
  
- At this point, a 
-database would make more sense and adding a function to "Export to CSV", etc.
+ At this point, a database would make more sense and adding a function to "Export to CSV", etc.
 
 ## Workflow
 As mentioned, simply provide a CSV with a list of URLs (column header = "Address") and select the tests to run through the web form.
@@ -42,7 +41,7 @@ The application is configured through environment variables.  On startup, the ap
 will also read environment variables from a <code>.env</code> file.
 
 - HOST (defaults to 127.0.0.1)
-- PORT (defaults to 5000)
+- PORT (defaults to 8888)
 - SECRET_KEY (no default, used to sign the Flask session cookie.  Use a cryptographically
   strong sequence of characters, like you might use for a good password.)
 - ALLOWED_EXTENSIONS (defaults to "csv", comma separated list)
@@ -243,8 +242,18 @@ report ID auto generated and found in /REPORTS/your_report_name/logs/_gdrive_log
 
 ## Running with sample data
 
-If you have a Screaming Frog SEO Spider licence be sure to add it to "CLI-TOOLS/seo". Even if Screaming Frog SEO Spider 
-is not installed, a CSV can be provided to guide the report tools. Once installed, try to run the sample CSV. To do this:
+If you have a Screaming Frog SEO Spider licence be sure to add it to your PATH. Even if Screaming Frog SEO Spider 
+is not installed, a CSV can be provided to guide the report tools. Once installed, try to run the sample CSV. To do 
+this:
+
+- Visit http://127.0.0.1:8888/
+- Enter a report name and email. Leave URL blank.
+- Click on "Choose File" under "Spider SEO Reports" to upload a file with a list of URLs, column header = 'address'.
+- Select the tests you wish to run.
+
+NOTE: This would exclude PDFs which require a list of exclusively PDF URLs.
+
+- As these tst can take a while to run, please check back at the http://127.0.0.1:8888/reports/ page for progress.
 
 Running a sample can be accomplished two ways, using the samples provided in the "/REPORTS/DRUPAL/" folder or by 
 downloading and installing Screaming Frog SEO Spider and running a free crawl (500 URL limit and no configuration/CLI 

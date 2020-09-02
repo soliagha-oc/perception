@@ -2,12 +2,15 @@
 /.idea/
 /__pycache__/
 /logs/*
+.env
+.pylint
 CLI-TOOLS/seo/*
 /venv/*
 credentials.json
 token.pickle
 geckodriver.log
 REPORTS/*
+!REPORTS/example_urls.zip
 !REPORTS/DRUPAL/
 CLI-TOOLS/chromedriver.exe
 CLI-TOOLS/geckodriver.exe

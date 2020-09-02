@@ -1,33 +1,32 @@
-import threading
+from flask import Flask, render_template, flash, request
 import os
-from flask import Flask, render_template, flash, request, redirect, url_for
-from wtforms import Form, validators, StringField
+import threading
+from wtforms import Form
 from commander import CMDWriter
-from report import Table, Item, PDFItem, PDFTable, CommanderTable, CommanderItem, DashTable, DashItem
-from globals import Globals
-from werkzeug.utils import secure_filename
+from report import Table, Item, PDFItem, PDFTable, CommanderTable, CommanderItem
 
 # App config
 app = Flask(__name__)
 app.config.from_object('config.Config')
+BASE_FOLDER = app.config['BASE_FOLDER']
+REPORTS_FOLDER = app.config['REPORTS_FOLDER']
+SPIDER = app.config['SPIDER']
+
 
 class ReusableForm(Form):
-    # print(">>> REPORT STARTED!")
+    print(">>> REPORT STARTED!")
     # report_name = StringField('report_name', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
     # email = StringField('email', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
     # url = StringField('url', validators=[validators.Length(min=-1, max=35)])
-    pass
 
 @app.route('/', methods=['GET', 'POST'])
 def audit_request():
+    global report_name, email, url
     form = ReusableForm(request.form)
-    # If spider installed and configured, set to TRUE
     print(form.errors)
     if request.method == 'POST':
-
         # Get form
         form_response = request.form
-
         # Report name
         try:
             report_name = form_response['report_name'].replace(' ', '_')
@@ -44,6 +43,7 @@ def audit_request():
         except Exception as e:
             print(e)
 
+        # Handle form variables
         if form.validate():
             # SEO
             try:
@@ -72,9 +72,9 @@ def audit_request():
                     # return redirect(request.url)
                 if file and allowed_file(file.filename):
                     app.config['UPLOAD_FOLDER'] = os.path.join(app.config['UPLOAD_FOLDER'], report_name, 'CSV')
-                    if not os.path.exists(app.config['UPLOAD_FOLDER'] ):
+                    if not os.path.exists(app.config['UPLOAD_FOLDER']):
                         os.makedirs(app.config['UPLOAD_FOLDER'])
-                    os.chdir(Globals.gbl_report_folder)
+                    os.chdir(REPORTS_FOLDER)
                     file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
                     CSVUpload = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
                     # return redirect(url_for('uploaded_file',
@@ -95,11 +95,6 @@ def audit_request():
                 LighthouseDESKTOP = form_response['lighthouse-desktop']
             except Exception as e:
                 LighthouseDESKTOP = False
-                print(e)
-            try:
-                AXE = form_response['AXE']
-            except Exception as e:
-                AXE = False
                 print(e)
             try:
                 AXEChrome = form_response['AXEChrome']
@@ -135,11 +130,11 @@ def audit_request():
                 msg += ' [Report Name] '
             if not email:
                 msg += ' [Email] '
-            if Globals.spider:
+            if SPIDER:
                 if not url:
                     msg += ' [URL] '
             flash(msg)
-    return render_template('request_form.html', form=form, spider=Globals.spider)
+    return render_template('request_form.html', form=form, spider=SPIDER)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -147,67 +142,53 @@ def allowed_file(filename):
 
 @app.route('/action_restart/', methods=['GET', 'POST'])
 def action_restart():
-    sort = request.args.get('sort', 'id')
+    # Set vars
+    # sort = request.args.get('sort', 'id')
+    report_url = ''
+    report_email = ''
     report_name = request.args.get('id')
+    report_folder = os.path.join(REPORTS_FOLDER, report_name)
+    request_log = os.path.join(report_folder, 'logs', '_request_log.tuple')
     report_type = request.args.get('report_type')
-    csv_path = os.path.join(Globals.gbl_report_folder, report_name, 'SPIDER')
-    if report_type == 'pdf_internal':
-        CMDWriter.pdf(csv_path, scope='internal')
-    if report_type == 'pdf_external':
-        CMDWriter.pdf(csv_path, scope='external')
+
+    # Check for request_log to get:
+    if os.path.exists(request_log):
+        with open(request_log, 'r') as file:
+            reader = file.read()
+            request_tuple = eval(reader)
+            for tup in request_tuple:
+                # get email
+                if tup[0] == 'email':
+                    report_email = tup[1]
+                # get url
+                if tup[0] == 'url':
+                    report_url = tup[1]
+
+    # csv_path = os.path.join(REPORTS_FOLDER, report_name, 'CSV')
+
     if report_type == 'spider':
-        url = 'RESTART'
-        email = False
-        SEOInternal = True
-        SEOExternal = True
-        CSVUpload = False
-        PDFAudit = False
-        LighthouseMOBILE = False
-        LighthouseDESKTOP = False
-        AXEChrome = False
-        AXEFirefox = False
-        AXEEdge = False
-        thread = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal, CSVUpload,
-                                                          PDFAudit, LighthouseMOBILE, LighthouseDESKTOP,
-                                                          AXEChrome, AXEFirefox, AXEEdge))
-        thread.daemon = True
-        thread.start()
+        t = threading.Thread(target=CMDWriter, args=(report_name, url, email, True, True, False, False, False, False,
+                                                     False, False, False))
+        t.daemon = True
+        t.start()
 
     if report_type == 'axe':
-        url = 'RESTART'
-        email = False
-        SEOInternal = False
-        SEOExternal = False
-        CSVUpload = False
-        PDFAudit = False
-        LighthouseMOBILE = False
-        LighthouseDESKTOP = False
-        AXEChrome = True
-        AXEFirefox = True
-        AXEEdge = False
-        thread = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal, CSVUpload,
-                                                          PDFAudit, LighthouseMOBILE, LighthouseDESKTOP,
-                                                          AXEChrome, AXEFirefox, AXEEdge))
-        thread.daemon = True
-        thread.start()
+        t = threading.Thread(target=CMDWriter, args=(report_name, url, email, False, False, False, False, False, False,
+                                                     True, True, False))
+        t.daemon = True
+        t.start()
 
     if report_type == 'lighthouse':
-        url = 'RESTART'
-        email = False
-        SEOInternal = False
-        SEOExternal = False
-        CSVUpload = False
-        PDFAudit = False
-        LighthouseMOBILE = True
-        LighthouseDESKTOP = True
-        AXEChrome = False
-        AXEFirefox = False
-        AXEEdge = False
-        thread = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal, CSVUpload,
-                                                          PDFAudit, LighthouseMOBILE, LighthouseDESKTOP,
-                                                          AXEChrome, AXEFirefox, AXEEdge))
-        thread.daemon = True
-        thread.start()
+        t = threading.Thread(target=CMDWriter, args=(report_name, url, email, False, False, False, False, True, True,
+                                                     False, False, False))
+        t.daemon = True
+        t.start()
+    if report_type == 'pdf':
+        t = threading.Thread(target=CMDWriter, args=(report_name, url, email, False, False, False, True, False, False,
+                                                     False, False, False))
+        t.daemon = True
+        t.start()
+
     return reports()
 
 
@@ -216,7 +197,7 @@ def reports():
     sort = request.args.get('sort', 'id')
     id = request.args.get('id')
     reverse = (request.args.get('direction', 'asc') == 'desc')
-    report_name = request.args.get('report_name')
+    # report_name = request.args.get('report_name')
     if id:
         return index(id)
     else:
@@ -232,7 +213,7 @@ def index(id):
     reverse = (request.args.get('direction', 'asc') == 'desc')
     report_name = request.args.get('id')
 
-    dash = DashTable(DashItem.get_sorted_by(sort, 'dash', reverse), sort_by=sort, sort_reverse=reverse)
+    # dash = DashTable(DashItem.get_sorted_by(sort, 'dash', reverse), sort_by=sort, sort_reverse=reverse)
     lighthouse = Table(Item.get_sorted_by(sort, 'lighthouse', reverse), sort_by=sort, sort_reverse=reverse)
     axe_c = Table(Item.get_sorted_by(sort, 'axe_c', reverse), sort_by=sort, sort_reverse=reverse)
     axe_c_summary = Table(Item.get_sorted_by(sort, 'axe_c_summary', reverse), sort_by=sort, sort_reverse=reverse)

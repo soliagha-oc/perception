@@ -1,42 +1,38 @@
 import smtplib
-from globals import Globals
+import sys
+from flask import Flask
 
-# logs
-process_log = Globals.process_log
+# App config
+app = Flask(__name__)
+app.config.from_object('config.Config')
+PROCESS_LOG = app.config.get('PROCESS_LOG')
+BASE_FOLDER = app.config.get('BASE_FOLDER')
+GMAIL_USER = app.config.get('GMAIL_USER')
+GMAIL_PASSWORD = app.config.get('GMAIL_PASSWORD')
+SENT_FROM = app.config.get('SENT_FROM')
 
-
-def logline(filename, line):
-    with open(filename, 'a+') as f:
-        f.write(line + '\n')
-        f.close()
-
-
-def logline_pre(filename, line):
-    with open(filename, 'r+') as f:
-        content = f.read()
-        f.seek(0, 0)
-        f.write(line.rstrip('\r\n') + '\n')
-
+def log_line(filename, line):
+    try:
+        with open(filename, 'a+') as file:
+            file.write(str(line) + '\n')
+            file.close()
+    except Exception:
+        print(sys.exc_info()[0], line)
+        print("Unexpected error:", sys.exc_info()[0], line)
 
 def send_email(address, subject, message):
-    gmail_user = 'openconcept.authorize@gmail.com'
-    gmail_password = 'zI0h3ZR8q7ed'
-    sent_from = 'openconcept.authorize@gmail.com'
     message = 'Subject: {}\n\n{}'.format(subject, message)
-
     try:
         # only works on 'authed' machine?
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         server.ehlo()
-        server.login(gmail_user, gmail_password)
-
-        # send
-        server.sendmail(sent_from, address, message)
+        server.login(GMAIL_USER, GMAIL_PASSWORD)
+        server.sendmail(SENT_FROM, address, message)
         server.close()
-
         print('EMAIL SUCCESS FOR: ' + message)
-        logline(process_log, 'EMAIL SUCCESS FOR: ' + message)
-
-    except Exception as e:
-        print('EMAIL FAILED FOR: ' + message + ' ' + e.__str__())
-        logline(process_log, 'EMAIL FAILED FOR: ' + message + ' ' + e.__str__())
+        log_line(PROCESS_LOG, 'EMAIL SUCCESS FOR: ' + message)
+    except Exception:
+        # handle all other exceptions
+        message = 'EMAIL FAILED FOR: ', message, sys.exc_info()[0]
+        print(message)
+        log_line(PROCESS_LOG, message)

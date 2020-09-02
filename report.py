@@ -1,19 +1,20 @@
 from flask_table import Table, Col, LinkCol
-from flask import Flask, Markup, request, url_for, render_template
+from flask import Flask, request, url_for
 import csv
-from globals import Globals
 import os
 import gdrive
-import csv
 import collections
-import utils as utils
-import subprocess
 
+# App config
 app = Flask(__name__)
+app.config.from_object('config.Config')
+PROCESS_LOG = app.config.get('PROCESS_LOG')
+BASE_FOLDER = app.config.get('BASE_FOLDER')
+REPORTS_FOLDER = app.config.get('REPORTS_FOLDER')
+
 if request:  # Check for a request
     pass
     # report_name = request.args.get('report_name')
-
 
 class PDFItem(object):
     def __init__(self, id, errors, title, description):
@@ -28,7 +29,7 @@ class PDFItem(object):
         report_name = ''
         if request:
             report_name = request.args.get('id')
-        csv_path = Globals.gbl_report_folder + report_name
+        csv_path = os.path.join(REPORTS_FOLDER, report_name)
         if report_type == 'pdf_internal':
             csv_path = os.path.join(csv_path, 'PDF', 'internal_pdf_a.csv')
             # csv_path = Item.get_items_unique_pdf(csv_path)
@@ -36,31 +37,29 @@ class PDFItem(object):
             csv_path = os.path.join(csv_path, 'PDF', 'external_pdf_a.csv')
             # csv_path = Item.get_items_unique_pdf(csv_path)
         # totalpdfs = collections.Counter()
-        istagged = collections.Counter()
-        isform = collections.Counter()
-        isencrypted = collections.Counter()
+        is_tagged = collections.Counter()
+        is_form = collections.Counter()
+        is_encrypted = collections.Counter()
         word_count = collections.Counter()
-        totalpdfs = 0
+        total_pdfs = 0
         first_row = True
         items = []
         if os.path.exists(csv_path):
             with open(csv_path, 'r', encoding="utf8") as input_file:
                 for row in csv.reader(input_file, delimiter=','):
-                    totalpdfs += 1
+                    total_pdfs += 1
                     if first_row:
                         first_row = False
                     else:
                         try:
                             # If istagged or row[6] = False
                             # totalpdfs[row[0]] += 1
-                            istagged[row[6]] += 1
-                            isform[row[9]] += 1
-                            isencrypted[row[4]] += 1
+                            is_tagged[row[6]] += 1
+                            is_form[row[9]] += 1
+                            is_encrypted[row[4]] += 1
                             word_count[row[12]] += 1
                         except Exception as e:
-                            print(e.__str__())
-                        finally:
-                            print ('continue')
+                            print(str(e))
             row_header = ['Errors', 'Title', 'Description', ]
             if csv_path.find('pdf'):
                 if csv_path.find('pdf_internal'):
@@ -73,9 +72,9 @@ class PDFItem(object):
                 csv_writer.dialect.lineterminator.replace('\n', '')
                 csv_writer.writerow(row_header)
                 # for i in range(istagged.most_common().__len__()):
-                if istagged.most_common().__len__() > 0:
+                if is_tagged.most_common().__len__() > 0:
                     error_count = 0
-                    for fail in istagged.most_common():
+                    for fail in is_tagged.most_common():
                         if fail[0] == 'FALSE':
                             error_count += fail[1]
                         if fail[0].find(
@@ -84,18 +83,18 @@ class PDFItem(object):
 
                     csv_writer.writerow([error_count, 'Untagged PDFs', 'Untagged PDFs ...'])
                 # for i in range(isform.most_common().__len__()):
-                if isform.most_common().__len__() > 0:
+                if is_form.most_common().__len__() > 0:
                     error_count = 0
-                    for fail in isform.most_common():
+                    for fail in is_form.most_common():
                         if fail[0] != 'FALSE':
                             if not fail[0].find('FORMS: getFields() missing') >= 0:
                                 if not fail[0].find('FORMS: file has not been decrypted') >= 0:
                                     error_count += fail[1]
                     csv_writer.writerow([error_count, 'Form elements found.', 'Forms in PDFs ...'])
                 # for i in range(isencrypted.most_common().__len__()):
-                if isencrypted.most_common().__len__() > 0:
+                if is_encrypted.most_common().__len__() > 0:
                     error_count = 0
-                    for fail in isencrypted.most_common():
+                    for fail in is_encrypted.most_common():
                         if fail[0] != 'FALSE':
                             error_count += fail[1]
                     csv_writer.writerow([error_count, 'Failed or Encrypted PDFs', 'Encrypted PDFs are ...'])
@@ -113,15 +112,15 @@ class PDFItem(object):
                             else:
                                 print(row)
                                 # if not row[2] in items[i].description:
-                                items.append(PDFItem(i, row[0] + ' out of ' + totalpdfs.__str__() +
+                                items.append(PDFItem(i, row[0] + ' out of ' + str(total_pdfs) +
                                                      ' scanned.', row[1], row[2]))
                                 gdrive_items.append(PDFItem(i, row[0], row[1], row[2]))
                                 i += 1
                     f.close()
                 except Exception as e:
-                    msg = e.__str__() + ' get_items:01'
+                    msg = str(e) + ' get_items:01'
                     print(msg)
-                    # utils.logline(self.log + '_axe_log.txt', msg)
+                    # utils.log_line(self.log + '_axe_log.txt', msg)
                 output_file.close()
                 gdrive.GDRIVE(report_name, report_type, gdrive_items)
         else:
@@ -176,14 +175,14 @@ class CommanderItem(object):
     def get_reports_list(cls):
         items = []
         i = 1
-        for row in os.listdir(Globals.gbl_report_folder):
+        for row in os.listdir(REPORTS_FOLDER):
             seo_complete = 'No progress data available.'
             axe_complete = 'No progress data available.'
             lighthouse_complete = 'No progress data available.'
             pdf_internal_complete = 'No progress data available.'
             pdf_external_complete = 'No progress data available.'
-            logs = os.path.join(Globals.gbl_report_folder, row,  'logs')
-            spider_path = os.path.join(Globals.gbl_report_folder, row, 'SPIDER_', row , 'crawl.seospider')
+            logs = os.path.join(REPORTS_FOLDER, row,  'logs')
+            spider_path = os.path.join(REPORTS_FOLDER, row, 'SPIDER_', row , 'crawl.seospider')
 
             spider_log = os.path.join(logs, '_spider_progress_log.txt')
             if os.path.exists(spider_path):
@@ -280,7 +279,7 @@ class Item(object):
         report_name = ''
         if request:
             report_name = request.args.get('id')
-        csv_path = os.path.join(Globals.gbl_report_folder, report_name)
+        csv_path = os.path.join(REPORTS_FOLDER, report_name)
         if report_type == 'lighthouse':
             csv_path = os.path.join(csv_path, 'LIGHTHOUSE', 'LIGHTHOUSE_REPORT.csv')
             csv_path = Item.get_items_unique(csv_path, report_type)
@@ -312,9 +311,9 @@ class Item(object):
                         i += 1
             f.close()
         except Exception as e:
-            msg = e.__str__() + ' get_items:01'
+            msg = str(e) + ' get_items:01'
             print(msg)
-            # utils.logline(self.log + '_axe_log.txt', msg)
+            # utils.log_line(self.log + '_axe_log.txt', msg)
         gdrive.GDRIVE(report_name, report_type, gdrive_items)
         return items
 
@@ -352,9 +351,7 @@ class Item(object):
                                 title[row[4]] += 1
                                 description[row[5]] += 1
                         except Exception as e:
-                            print(e.__str__())
-                        finally:
-                            print('continue')
+                            print(str(e))
 
             row_header = ['Test', 'URL', 'Error Count', 'Error', 'Error Description']
             if report_type == 'axe_c_summary':
@@ -373,9 +370,9 @@ class Item(object):
                         csv_writer.writerow([report_type, 'url', title.most_common()[i][1], title.most_common()[i][0],
                                              description.most_common()[i][0]])
                     except Exception as e:
-                        msg = e.__str__() + ' get_unique:02'
+                        msg = str(e) + ' get_unique:02'
                         print(msg)
-                        # utils.logline(self.log + '_lighthouse_log.txt', msg)
+                        # utils.log_line(self.log + '_lighthouse_log.txt', msg)
             output_file.close()
         return csv_path
 
@@ -413,7 +410,7 @@ class DashItem(object):
         report_name = ''
         if request:
             report_name = request.args.get('id')
-        csv_path = os.path.join(Globals.gbl_report_folder, report_name, 'SPIDER', 'crawl_overview.csv')
+        csv_path = os.path.join(REPORTS_FOLDER, report_name, 'SPIDER', 'crawl_overview.csv')
         gdrive_items = []
         items = []
         i = 0
@@ -458,9 +455,9 @@ class DashItem(object):
                         gdrive_items.append(DashItem(line, 'Images: ' + row[0], row[1], row[2], row[3], row[4]))
             f.close()
         except Exception as e:
-            msg = e.__str__() + ' get_items:01'
+            msg = str(e) + ' get_items:01'
             print(msg)
-            # utils.logline(self.log + '_axe_log.txt', msg)
+            # utils.log_line(self.log + '_axe_log.txt', msg)
         gdrive.GDRIVE(report_name, report_type, gdrive_items)
         return items
 
@@ -498,7 +495,7 @@ class DashItem(object):
                                 title[row[4]] += 1
                                 description[row[5]] += 1
                         except Exception as e:
-                            print(e.__str__())
+                            print(str(e))
                         finally:
                             pass
 
@@ -519,9 +516,9 @@ class DashItem(object):
                         csv_writer.writerow([report_type, 'url', title.most_common()[i][1], title.most_common()[i][0],
                                              description.most_common()[i][0]])
                     except Exception as e:
-                        msg = e.__str__() + ' get_unique:02'
+                        msg = str(e) + ' get_unique:02'
                         print(msg)
-                        # utils.logline(self.log + '_lighthouse_log.txt', msg)
+                        # utils.log_line(self.log + '_lighthouse_log.txt', msg)
             output_file.close()
         return csv_path
 

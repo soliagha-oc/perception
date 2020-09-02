@@ -1,12 +1,25 @@
-from __future__ import print_function
+# from __future__ import print_function
 import pickle
 import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 import gspread
-from globals import Globals
+# from globals import Globals
+from flask import Flask
 import os
 from google.auth.transport.requests import Request
+
+# App config
+app = Flask(__name__)
+app.config.from_object('config.Config')
+PROCESS_LOG = app.config.get('PROCESS_LOG')
+BASE_FOLDER = app.config.get('BASE_FOLDER')
+REPORTS_FOLDER = app.config.get('REPORTS_FOLDER')
+GMAIL_USER = app.config.get('GMAIL_USER')
+GMAIL_PASSWORD = app.config.get('GMAIL_PASSWORD')
+GOOGLE_FOLDER_ID = app.config.get('GOOGLE_FOLDER_ID')
+GOOGLE_TEMPLATE_ID = app.config['GOOGLE_TEMPLATE_ID']
+SENT_FROM = app.config.get('SENT_FROM')
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES_SHEETS = ['https://www.googleapis.com/auth/spreadsheets']
@@ -16,11 +29,10 @@ SCOPES_DRIVE = ['https://www.googleapis.com/auth/drive']
 SPREADSHEET_ID = '1C1ZWvl5ZKwkgkJ8aO5Jkl10tSDhT_sJQFvJ1Hf7SvlI'
 RANGE_NAME = 'Sheet1!A:A'
 
-
 class GDRIVE:
     def __init__(self, folder_name, report_type, data):
         self.name = 'PERCEPTION Evaluation: ' + folder_name.replace('_', ' ')
-        self.report_path = os.path.join(Globals.gbl_report_folder, folder_name)
+        self.report_path = os.path.join(REPORTS_FOLDER, folder_name)
         self.report_type = report_type
         self.folder_name = folder_name
         self.data = data
@@ -28,8 +40,8 @@ class GDRIVE:
 
     def main(self):
         # Set Google template and folder ID
-        template_id = Globals.template_id
-        folder_id = Globals.report_folder_id
+
+
         drive = build('drive', 'v3', credentials=self.get_creds(SCOPES_DRIVE))
         gs = gspread.authorize(self.get_creds(SCOPES_SHEETS))
         sheet_id = None
@@ -38,18 +50,12 @@ class GDRIVE:
             with open(log_gdrive) as file:
                 sheet_id = file.readline()
         else:
-            sheet_id = gs.copy(template_id, title=self.name, copy_permissions=True).id
-
-            file_metadata = {
-                'name': self.name,
-                'mimeType': 'application/vnd.google-apps.folder',
-                'parents': template_id
-            }
+            sheet_id = gs.copy(GOOGLE_TEMPLATE_ID, title=self.name, copy_permissions=True).id
             file = drive.files().get(fileId=sheet_id, fields='parents').execute()
             previous_parents = ",".join(file.get('parents'))
             # Move the file to the new folder
             file = drive.files().update(fileId=sheet_id,
-                                        addParents=folder_id,
+                                        addParents=GOOGLE_FOLDER_ID,
                                         removeParents=previous_parents,
                                         fields='id, parents').execute()
 
@@ -70,23 +76,23 @@ class GDRIVE:
                         sheet.del_worksheet(ws)
                 ts = gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
                 worksheets = sheet.worksheets()
-                mysheet = worksheets.__getitem__(worksheets.__len__() - 1)
-                mysheet.update_title('DASHBOARD')
-                mysheet.update_index(ws_index)
+                my_sheet = worksheets.__getitem__(worksheets.__len__() - 1)
+                my_sheet.update_title('DASHBOARD')
+                my_sheet.update_index(ws_index)
                 worksheet = sheet.get_worksheet(ws_index)
                 sheet_range = 'DASHBOARD!A4:Z1000'
             except Exception as e:
-                print(e.__str__())
+                print(str(e))
         if self.report_type == 'axe_c_summary':
             ws_index = 2
             for ws in worksheets:
                 if ws.title == 'AXE':
                     sheet.del_worksheet(ws)
-            ts = gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
+            gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
             worksheets = sheet.worksheets()
-            mysheet = worksheets.__getitem__(worksheets.__len__() - 1)
-            mysheet.update_title('AXE')
-            mysheet.update_index(ws_index)
+            my_sheet = worksheets.__getitem__(worksheets.__len__() - 1)
+            my_sheet.update_title('AXE')
+            my_sheet.update_index(ws_index)
             worksheet = sheet.get_worksheet(ws_index)
             sheet_range = 'AXE!A10:Z1000'
         if self.report_type == 'lighthouse':
@@ -94,11 +100,11 @@ class GDRIVE:
             for ws in worksheets:
                 if ws.title == 'LIGHTHOUSE':
                     sheet.del_worksheet(ws)
-            ts = gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
+            gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
             worksheets = sheet.worksheets()
-            mysheet = worksheets.__getitem__(worksheets.__len__() - 1)
-            mysheet.update_title('LIGHTHOUSE')
-            mysheet.update_index(ws_index)
+            my_sheet = worksheets.__getitem__(worksheets.__len__() - 1)
+            my_sheet.update_title('LIGHTHOUSE')
+            my_sheet.update_index(ws_index)
             worksheet = sheet.get_worksheet(ws_index)
             sheet_range = 'LIGHTHOUSE!A10:Z1000'
         if self.report_type == 'pdf_internal':
@@ -106,11 +112,11 @@ class GDRIVE:
             for ws in worksheets:
                 if ws.title == 'PDF INTERNAL':
                     sheet.del_worksheet(ws)
-            ts = gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
+            gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
             worksheets = sheet.worksheets()
-            mysheet = worksheets.__getitem__(worksheets.__len__() - 1)
-            mysheet.update_title('PDF INTERNAL')
-            mysheet.update_index(ws_index)
+            my_sheet = worksheets.__getitem__(worksheets.__len__() - 1)
+            my_sheet.update_title('PDF INTERNAL')
+            my_sheet.update_index(ws_index)
             worksheet = sheet.get_worksheet(ws_index)
             sheet_range = worksheet.title
         if self.report_type == 'pdf_external':
@@ -118,11 +124,10 @@ class GDRIVE:
             for ws in worksheets:
                 if ws.title == 'PDF EXTERNAL':
                     sheet.del_worksheet(ws)
-            ts = gs.open('REPORT TEMPLATE').get_worksheet(ws_index).copy_to(spreadsheet_id=sheet_id)
             worksheets = sheet.worksheets()
-            mysheet = worksheets.__getitem__(worksheets.__len__() - 1)
-            mysheet.update_title('PDF EXTERNAL')
-            mysheet.update_index(ws_index)
+            my_sheet = worksheets.__getitem__(worksheets.__len__() - 1)
+            my_sheet.update_title('PDF EXTERNAL')
+            my_sheet.update_index(ws_index)
             worksheet = sheet.get_worksheet(ws_index)
             sheet_range = worksheet.title
 
@@ -149,7 +154,8 @@ class GDRIVE:
                     values.append(value)
             body = {'values': values}
             sheets = build('sheets', 'v4', credentials=self.get_creds(SCOPES_SHEETS))
-            clear = sheets.spreadsheets().values().clear(
+            # clear sheet
+            sheets.spreadsheets().values().clear(
                 spreadsheetId=sheet.id, range=sheet_range, body={}).execute()
 
             result = sheets.spreadsheets().values().update(
@@ -162,27 +168,27 @@ class GDRIVE:
                 filepath = os.path.join(self.report_path, 'AXE', 'CHROME', 'AXE_CHROME_SUMMARY.csv')
                 self.paste_csv(filepath, sheet, 'AXE DATA (CHROME)!A1')
             except Exception as e:
-                print(e.__str__())
+                print(str(e))
             try:
                 filepath = os.path.join(self.report_path, 'AXE', 'FIREFOX', 'AXE_FIREFOX_SUMMARY.csv')
                 self.paste_csv(filepath, sheet, 'AXE DATA (FIREFOX)!A1')
             except Exception as e:
-                print(e.__str__())
+                print(str(e))
             try:
                 filepath = os.path.join(self.report_path, 'LIGHTHOUSE', 'LIGHTHOUSE_REPORT.csv')
                 self.paste_csv(filepath, sheet, 'LIGHTHOUSE DATA!A1')
             except Exception as e:
-                print(e.__str__())
+                print(str(e))
             try:
                 filepath = os.path.join(self.report_path, 'PDF', 'internal_pdf_a.csv')
                 self.paste_csv(filepath, sheet, 'PDF INTERNAL DATA!A1')
             except Exception as e:
-                print(e.__str__())
+                print(str(e))
             try:
                 filepath = os.path.join(self.report_path, 'PDF', 'external_pdf_a.csv')
                 self.paste_csv(filepath, sheet, 'PDF EXTERNAL DATA!A1')
             except Exception as e:
-                print(e.__str__())
+                print(str(e))
 
     def paste_csv(self, csvfile, sheet, cell):
         import gspread as gs
@@ -213,7 +219,7 @@ class GDRIVE:
 
     def get_creds(self, SCOPE):
         creds = None
-        json = os.path.join(Globals.base_folder, 'credentials.json')
+        json = os.path.join(BASE_FOLDER, 'credentials.json')
         path = 'token.pickle'
         if os.path.exists(path):
             with open(path, 'rb') as token:

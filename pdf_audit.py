@@ -1,13 +1,6 @@
-from globals import Globals
-
 import os
 import subprocess
-import datetime as dt
-from urllib import \
-    request as request
-# urlopen
-from io import \
-    StringIO, BytesIO
+from io import BytesIO
 import string
 import requests
 import re
@@ -16,31 +9,35 @@ import threading
 import utils as utils
 import time
 import datetime as datetime
-import multiprocessing
-from report import PDFItem
+from flask import Flask
 from PyPDF2 import PdfFileReader
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
-from pdfminer.pdfpage import PDFPage
 from pdfminer.pdfinterp import resolve1
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFTextExtractionNotAllowed
-from pdfminer.layout import LAParams  # , LTTextBox, LTTextLine
 from threading import Thread, Event
 
 stop_event = Event()
 global document
 
+# App config
+app = Flask(__name__)
+app.config.from_object('config.Config')
+PROCESS_LOG = app.config.get('PROCESS_LOG')
+BASE_FOLDER = app.config.get('BASE_FOLDER')
+REPORTS_FOLDER = app.config.get('REPORTS_FOLDER')
+GMAIL_USER = app.config.get('GMAIL_USER')
+GMAIL_PASSWORD = app.config.get('GMAIL_PASSWORD')
+SENT_FROM = app.config.get('SENT_FROM')
 
 class PDFAudit:
-
     def __init__(self):
         self.report_folder = ''
         self.document_folder = ''
         self.pdf_path = ''
         self.report_name = ''
         self.csv_header = []
-        self.gbl_report_folder = os.path.join(Globals.gbl_report_folder, self.report_folder)
+        self.gbl_report_folder = REPORTS_FOLDER
         self.log = os.path.join(self.gbl_report_folder, 'logs')
         self.document_t = PDFDocument
         self.parser = PDFParser
@@ -97,8 +94,6 @@ class PDFAudit:
         with open(csv_source, encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             # set number of threads
-            thread_count = 1
-            destination_folder = self.report_name
             # Get URL for PDF from row[1]
             # FOR EACH PDF
             first_line = True
@@ -112,20 +107,17 @@ class PDFAudit:
                 elif os.path.exists(os.path.join(self.document_folder, self.report_name)):
                     with open(os.path.join(self.document_folder, self.report_name), encoding='utf8') as completed_urls:
                         completed_urls_reader = csv.reader(completed_urls, delimiter=',')
-                        jump = True
                         fl = True
                         skip = False
                         for completed_url in completed_urls_reader:
                             if fl:
-                                jump = True
                                 fl = False
                                 continue
                             if pdf_url in completed_url[1]:
                                 msg = (' >>> Remaining PDFs: ' + row_count_i.__str__() + ' out of ' +
                                        row_count.__str__() + ' ' + (datetime.datetime.now().__str__()[:-7]))
                                 row_count_i -= 1
-                                # self.line_count += 1
-                                utils.logline(self.log, msg)
+                                utils.log_line(self.log, msg)
                                 print(msg)
                                 fl = False
                                 skip = True
@@ -137,34 +129,31 @@ class PDFAudit:
                         continue
                     self.line_count = csv_reader.line_num
                     self.url = pdf_url
-                    thread = Thread(target=self.pdf_thread,
-                                    args=(pdf_url,))
-                    thread.setDaemon(True)
+                    t = Thread(target=self.pdf_thread, args=(pdf_url,))
+                    t.setDaemon(True)
                     while threading.active_count() > 35:
                         print(' !! TAKE 5 !!')
                         time.sleep(5)
-                    print('RUN AUDIT FOR :: ' + pdf_url + ' ' + thread.getName())
-                    thread.start()
-                    i = 0
+                    print('RUN AUDIT FOR ::',  pdf_url, t.getName())
+                    t.start()
                     thread_monitor = Thread(target=self.thread_monitor,
-                                            args=('PDF', thread))
+                                            args=('PDF', t))
                     thread_monitor.setDaemon(True)
                     thread_monitor.start()
                     time.sleep(5)
                     msg = (' >>> Remaining PDFs: ' + row_count_i.__str__() + ' out of ' +
                            row_count.__str__() + ' ' + (datetime.datetime.now().__str__()[:-7]))
                     row_count_i -= 1
-                    utils.logline(self.log, msg)
+                    utils.log_line(self.log, msg)
                     print(msg)
 
                 except Exception as e:
                     msg = e.__str__() + ' PDF:01' + '\n'
                     print(msg)
-                    utils.logline(self.log, msg)
+                    utils.log_line(self.log, msg)
 
     def pdf_thread(self, url):
         pdf_name = ''
-        exit_call = ''
         csv_row = []
         # save PDF to disk
         try:
@@ -191,11 +180,10 @@ class PDFAudit:
             print(e)
             pass
 
-        my_file = os.path.join(self.document_folder + pdf_name)
         try:
             fp = open(self.pdf_path, 'rb')
             # self.pdf(fp, csv_row)
-        except Exception as e:
+        except Exception:
             print('     PDF LOAD FAILED !!! ' + self.line_count.__str__() + ' :  ' + self.pdf_path)
             csv_row.pop(3)
             csv_row.insert(3, [self.csv_header[3], 'PDF FAILED TO OPEN:' + self.pdf_path if self.pdf_path.__len__() > 0 else 'NULL'])
@@ -218,30 +206,27 @@ class PDFAudit:
         try:
             self.pdf(fp, csv_row)
         except Exception as e:
-            print('PDF FAIL')
+            print('PDF FAIL', str(e))
 
     def pdf(self, fp, csv_row):
         password = ''
-        extracted_text = ''
         self.parser = PDFParser(fp)
         self.document_t = PDFDocument
         pf = PdfFileReader
         # isEncrypted
         try:
-            i = 0
             report_path = os.path.join(self.report_folder, self.report_name)
             try:
-                thread = Thread(target=self.load_pdf,
+                t = Thread(target=self.load_pdf,
                                 args=(PDFDocument, password))
-                thread.start()
-                thread.join(timeout=90)
+                t.start()
+                # 90 SECONDS or LOAD FAIL
+                t.join(timeout=90)
             except Exception as e:
                 print('PDF I/O error: ' + e.__str__())
                 row = [self.line_count, 'PDF DOCUMENT OBJECT FAILED TO LOAD - ' + e.__str__() + ': ' +
                        self.url, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
                        '', ]
-                # self.line_count += 1
-                # 90 SECONDS or LOAD FAIL
                 with open(report_path, 'a', encoding='utf8', newline='') as csv_file:
                     writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
                     writer.dialect.lineterminator.replace('\n', '')
@@ -269,12 +254,8 @@ class PDFAudit:
         page_count = 0
         # istagged
         try:
-            pages = PDFPage.get_pages(document)
             if not document.is_extractable:
                 raise PDFTextExtractionNotAllowed
-            rsrcmgr = PDFResourceManager()
-            laparams = LAParams()
-            page_no = 0
             istagged = 'FALSE'
             try:
                 # document.catalog
@@ -390,7 +371,7 @@ class PDFAudit:
         # TODO: IMAGES
         i = 16
         try:
-            pdfImages = os.path.join(Globals.base_folder, 'cli-tools', 'pdfimages.exe')
+            # pdfImages = os.path.join(BASE_FOLDER, 'cli-tools', 'pdfimages.exe')
             img_folder = os.path.join(self.document_folder, 'images')  # + pdf_name[:-4] + '\\'
             if not os.path.exists(img_folder):
                 os.makedirs(img_folder)
@@ -533,7 +514,7 @@ class PDFAudit:
         msg = (' >>>> PDF complete:[' + self.url + '] ' + self.line_count.__str__() + ' ' +
                (datetime.datetime.now().__str__()[:-7]))
         print(msg)
-        utils.logline(self.log, msg)
+        utils.log_line(self.log, msg)
 
     def load_pdf(self, PDFDocument, password):
         i = 0
