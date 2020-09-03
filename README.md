@@ -49,7 +49,7 @@ will also read environment variables from a <code>.env</code> file.
 ## Installation
 To get all tests running, the following steps are required: 
 
-### Clone and install
+### Linux Installation
 <code>sudo apt update</code>
 
 <code>sudo apt install git</code>
@@ -66,6 +66,8 @@ To get all tests running, the following steps are required:
 
 <code>sudo apt-get install python3.6</code>
 
+#### Clone and install requirements
+
 <code>git clone https://github.com/soliagha-oc/perception.git </code>
 
 <code>sudo python -m venv venv</code>
@@ -74,7 +76,11 @@ To get all tests running, the following steps are required:
 
 <code>pip install -r requirements.txt</code>
 
+#### Run the python app and launch brwoser
+
 <code>python app.py</code>
+
+Browse to http://127.0.0.1:5000/
 
 ### CLI-TOOLS
 Install the following CLI tools for your operating system:
