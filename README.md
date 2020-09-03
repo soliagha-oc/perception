@@ -80,7 +80,7 @@ To get all tests running, the following steps are required:
 
 <code>python app.py</code>
 
-Browse to http://127.0.0.1:5000/
+Browse to http://127.0.0.1:8888/ (or alternatively to port 5000 if you didn't set 8888 in the .env file)
 
 ### CLI-TOOLS
 Install the following CLI tools for your operating system:
