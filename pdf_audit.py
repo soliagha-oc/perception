@@ -38,22 +38,23 @@ class PDFAudit:
         self.pdf_report = ''
         self.csv_header = []
         self.log = ''  # os.path.join(REPORTS_FOLDER, 'logs')
-        self.document_t = PDFDocument
+        self.pdf_document = PDFDocument
         self.parser = PDFParser
         self.url = ''
         self.line_count = 1
 
     def pdf_csv(self, so, csv_file_path):
-        # Get the URL from the log file
+
+        """ # Get the URL from the log file
         if os.path.exists(so.request_log):
             with open(so.request_log, 'r') as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=',')
                 for row in csv_reader:
                     if row == 'url':
                         # TODO:
-                        continue
+                        continue """
 
-        # Define CSV
+        # Define CSV header
         self.csv_header = (['csvline', 'url', 'filename', 'local_path',
                             'encrypted', 'decrypt_pass', 'istagged', 'pages', 'toc', 'form', 'fields', 'tables',
                             'word_count', 'char_count', 'words_per_page', 'chars_per_word', 'image_count',
@@ -84,7 +85,7 @@ class PDFAudit:
                 if write_header:
                     writer.writerow(self.csv_header)
         except Exception as e:
-            print('PDF I/O error: ' + str(e))
+            print('PDF I/O error:', str(e))
 
         # csv_source = os.path.join(source_folder, csv_to_audit)
         row_count = sum(1 for row in csv.reader(open(csv_file_path, 'r',
@@ -122,7 +123,6 @@ class PDFAudit:
                                 fl = False
                                 skip = True
                                 break
-                    # completed_urls.close()
                 try:
                     if skip:
                         skip = False
@@ -148,7 +148,7 @@ class PDFAudit:
                     print(''.join(msg))
 
                 except Exception as e:
-                    msg = (str(e), ' PDF:01',  '\n')
+                    msg = (str(e), ' PDF:01')
                     print(''.join(msg))
                     utils.log_line(self.log, ''.join(msg))
 
@@ -183,7 +183,7 @@ class PDFAudit:
             fp = open(self.pdf_path, 'rb')
             # self.pdf(fp, csv_row)
         except Exception:
-            print('     PDF LOAD FAILED !!! ' + str(self.line_count) + ' :  ' + self.pdf_path)
+            print('PDF LOAD FAILED !!!', str(self.line_count), ':', self.pdf_path)
             csv_row.pop(3)
             csv_row.insert(3, [self.csv_header[3], 'PDF FAILED TO OPEN:' + self.pdf_path if self.pdf_path.__len__() > 0 else 'NULL'])
             # Write results
@@ -209,12 +209,12 @@ class PDFAudit:
     def pdf(self, fp, csv_row):
         password = ''
         self.parser = PDFParser(fp)
-        self.document_t = PDFDocument
+        # self.document_t = PDFDocument
         pf = PdfFileReader
         # isEncrypted
         try:
             try:
-                t = Thread(target=self.load_pdf, args=(PDFDocument, password))
+                t = Thread(target=self.load_pdf, args=(password,))
                 t.start()
                 # 90 SECONDS or LOAD FAIL
                 t.join(timeout=90)
@@ -230,7 +230,7 @@ class PDFAudit:
 
             stop_event.set()
             # document = PDFDocument
-            pdf_document = self.document_t
+            # pdf_document = self.document_t
             pf = PdfFileReader(BytesIO(open(self.pdf_path, 'rb').read()))
 
             # ENCRYPTION
@@ -248,20 +248,20 @@ class PDFAudit:
             pass
 
         page_count = 0
-        # istagged
+        # is_tagged
         try:
-            if not pdf_document.is_extractable:
+            if not self.pdf_document.is_extractable:
                 raise PDFTextExtractionNotAllowed
-            istagged = 'FALSE'
+            is_tagged = 'FALSE'
             try:
                 # document.catalog
-                if pdf_document.catalog['MarkInfo']:
+                if self.pdf_document.catalog['MarkInfo']:
                     istagged = 'TRUE'
             except Exception as e:
                 exit_call = str(e) + ' tagged info failed!!'
                 print(exit_call)
-            page_count = resolve1(pdf_document.catalog['Pages'])['Count']
-            csv_row.insert(6, [self.csv_header[6], istagged])
+            page_count = resolve1(self.pdf_document.catalog['Pages'])['Count']
+            csv_row.insert(6, [self.csv_header[6], is_tagged])
             csv_row.insert(7, [self.csv_header[7], page_count])
         except Exception as e:
             csv_row.insert(6, [self.csv_header[6], 'IsTagged: ' + str(e)])
@@ -512,14 +512,14 @@ class PDFAudit:
         print(msg)
         utils.log_line(self.log, msg)
 
-    def load_pdf(self, PDFDocument, password):
+    def load_pdf(self, password):
         i = 0
         while threading.currentThread().is_alive():
             i += 1
             print('LOADING: ' + str(i))
             time.sleep(1)
             # try:
-            self.document_t = PDFDocument(self.parser)
+            self.pdf_document = PDFDocument(self.parser)
             # except Exception as e:
             # print('PDFDocument(self.parser) FAILED ::::: ' + str(e))
 

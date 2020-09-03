@@ -32,7 +32,6 @@ class CMDWriter:
                  SEOInternal, SEOExternal, CSVUpload, PDFAudit,
                  LighthouseMOBILE, LighthouseDESKTOP, AXEChrome, AXEFirefox, AXEEdge):
         # Set variable scope
-        self.spider_file = None
         self.base_folder = BASE_FOLDER
         self.report_folder = os.path.join(REPORTS_FOLDER, report_name)
         # Create report folder
@@ -47,6 +46,7 @@ class CMDWriter:
         self.url = url
         self.destination_folder = ''
         self.spider_folder = ''
+        self.spider_file = ''
         self.CSVFile = CSVUpload
         self.csv_file_path = ''
         self.SEOInternal = SEOInternal
@@ -73,13 +73,14 @@ class CMDWriter:
                          ('LighthouseMOBILE', str(LighthouseMOBILE)),
                          ('LighthouseDESKTOP', str(LighthouseDESKTOP))]
 
+        # If RESTART get the original request
         if not url == 'RESTART':
             utils.log_line(self.request_log, request_tuple)
 
         # Start master_controller
         t = Thread(target=self.master_controller)
-        print('MAIN:before STARTING Spider thread: ' + t.name + '\n')
-        t.daemon = True
+        print('Starting MASER_CONTROLLER:', t.name)
+        t.setDaemon(True)
         t.start()
 
         # Create success email message
@@ -88,40 +89,22 @@ class CMDWriter:
                ' to view your report. It may take several hours for your report to complete.', '\n')
         print(''.join(msg))
 
-        # Send confirmation email
+        # Send confirmation email after starting thread
         try:
-            utils.send_email(email, 'Audit for ' + self.report_name + ' is has started.', msg)
+            utils.send_email(email, ''.join(('Audit for', self.report_name, 'has started.')), msg)
             utils.log_line(os.path.join(self.logs, '_email_log.txt'), msg)
         except Exception as e:
-            msg = str(e) + ' EMAIL' + '\n'
-            print('PERCEPTION ' + msg)
-            utils.log_line(os.path.join(self.logs, '_email_log.txt'), msg)
+            msg = (str(e), 'EMAIL')
+            print('PERCEPTION', ''.join(msg))
+            utils.log_line(os.path.join(self.logs, '_email_log.txt'), ''.join(msg))
 
     def master_controller(self):
         # Create spider folder
         self.spider_folder = os.path.join(self.report_folder, 'SPIDER')
+        self.spider_file = os.path.join(self.spider_folder, 'crawl.seospider')
 
-        # Check for restart and archive existing crawl
-        # TODO: Archive all report data
-        spider_file = os.path.join(self.spider_folder, 'crawl.seospider')
-        if self.url == 'RESTART':
-            if self.SEOInternal or self.SEOExternal:
-                if os.path.exists(spider_file):
-                    os.rename(spider_file,
-                              spider_file + '_' +
-                              time.ctime(os.path.getctime(spider_file))
-                              .replace(' ', '_').replace(':', '_'))
-                # Get the URL from the log file
-                if os.path.exists(self.request_log):
-                    with open(self.request_log, 'r') as csv_file:
-                        csv_reader = csv.reader(csv_file, delimiter=',')
-                        for row in csv_reader:
-                            if row == 'url':
-                                # TODO:
-                                continue
-
-        # Check for crawl.seospider
-        if not os.path.exists(spider_file) and not self.url == '':
+        # Check for crawl.seospider file, request, and start spider
+        if not os.path.exists(self.spider_file) and not self.url == '':
             if self.SEOInternal or self.SEOExternal:
                 CMDWriter.spider_controller(self)
 
@@ -135,30 +118,47 @@ class CMDWriter:
                 self.csv_file_path = os.path.join(self.report_folder, 'CSV', file)
                 if self.AXEChrome or self.AXEFirefox or self.AXEEdge:
                     t = Thread(target=CMDWriter.axe_controller, args=(self,))
-                    t.daemon = True
+                    t.setDaemon(True)
                     t.start()
                 # Start Lighthouse CONTROLLER
                 if self.LighthouseMOBILE or self.LighthouseDESKTOP:
                     t = Thread(target=self.lighthouse_controller)
-                    t.daemon = True
+                    t.setDaemon(True)
                     t.start()
                 # Start PDF CONTROLLER for __pdf__ files
                 if self.PDFAudit or self.csv_file_path.find('__pdf__'):
                     t = Thread(target=self.pdf)
-                    t.daemon = True
+                    t.setDaemon(True)
                     t.start()
 
     def spider_controller(self):
-        # TODO: Move the check
+        # Check for spider folder and create if required
         if not os.path.exists(self.spider_folder):
             os.makedirs(self.spider_folder)
 
+        # Check for restart and ARCHIVE existing crawl
+        # TODO: Archive all report data
+        if self.url == 'RESTART':
+            if self.SEOInternal or self.SEOExternal:
+                if os.path.exists(self.spider_file):
+                    os.rename(self.spider_file,
+                              self.spider_file + '_' + time.ctime(os.path.getctime(self.spider_file))
+                              .replace(' ', '_').replace(':', '_'))
+                # Get the URL from the log file
+                '''if os.path.exists(self.request_log):
+                    with open(self.request_log, 'r') as csv_file:
+                        csv_reader = csv.reader(csv_file, delimiter=',')
+                        for row in csv_reader:
+                            if row == 'url':
+                                # TODO:
+                                continue'''
+
+        # If there is a request the file does not exist
         if self.SEOInternal or self.SEOExternal and not os.path.exists(os.path.join(
                 self.spider_folder, 'crawl.seospider')):  # Default crawl
 
             # RUN SPIDER!!
-            msg = (str(datetime.datetime.now())[:-7], 'New client folder created in COMPLETE:',
-                   self.spider_folder)
+            msg = (str(datetime.datetime.now())[:-7], 'New client folder created in COMPLETE:', self.spider_folder)
             # Create spider log
             utils.log_line(os.path.join(self.logs, '_spider_log.txt'), ''.join(msg))
 
@@ -190,15 +190,11 @@ class CMDWriter:
 
     def spider_thread(self, cmd):
         try:
-            # Log start
-            # msg = (str(datetime.datetime.now())[:-7], 'Crawl started:', cmd)
-            # utils.log_line(os.path.join(self.logs, '_spider_log.txt'), msg)
             # RUN THE SPIDER AND WAIT
             if 'linux' in sys.platform:
                 p = subprocess.run(cmd, stdout=subprocess.PIPE)
             else:
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-            # on exit
 
             # Log spider progress
             while True:

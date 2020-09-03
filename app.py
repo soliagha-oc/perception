@@ -11,17 +11,21 @@ app.config.from_object('config.Config')
 BASE_FOLDER = app.config['BASE_FOLDER']
 REPORTS_FOLDER = app.config['REPORTS_FOLDER']
 SPIDER = app.config['SPIDER']
+REPORT_NAME = None
+EMAIL = None
+URL = None
 
 
 class ReusableForm(Form):
+
     print(">>> REPORT STARTED!")
-    # report_name = StringField('report_name', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
-    # email = StringField('email', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
-    # url = StringField('url', validators=[validators.Length(min=-1, max=35)])
+    # REPORT_NAME = StringField('report_name', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
+    # EMAIL = StringField('email', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
+    # URL = StringField('url', validators=[validators.Length(min=-1, max=35)])
 
 @app.route('/', methods=['GET', 'POST'])
 def audit_request():
-    global report_name, email, url
+    global REPORT_NAME, EMAIL, URL
     form = ReusableForm(request.form)
     print(form.errors)
     if request.method == 'POST':
@@ -29,17 +33,17 @@ def audit_request():
         form_response = request.form
         # Report name
         try:
-            report_name = form_response['report_name'].replace(' ', '_')
+            REPORT_NAME = form_response['report_name'].replace(' ', '_')
         except Exception as e:
             print(e)
         # Email
         try:
-            email = form_response['email']
+            EMAIL = form_response['email']
         except Exception as e:
             print(e)
         # URL
         try:
-            url = form_response['url']
+            URL = form_response['url']
         except Exception as e:
             print(e)
 
@@ -71,7 +75,7 @@ def audit_request():
                     print('No selected file')
                     # return redirect(request.url)
                 if file and allowed_file(file.filename):
-                    app.config['UPLOAD_FOLDER'] = os.path.join(app.config['UPLOAD_FOLDER'], report_name, 'CSV')
+                    app.config['UPLOAD_FOLDER'] = os.path.join(app.config['UPLOAD_FOLDER'], REPORT_NAME, 'CSV')
                     if not os.path.exists(app.config['UPLOAD_FOLDER']):
                         os.makedirs(app.config['UPLOAD_FOLDER'])
                     os.chdir(REPORTS_FOLDER)
@@ -81,11 +85,13 @@ def audit_request():
                     #                         filename=filename))
             except Exception as e:
                 print(e)
+            # PDF Audit
             try:
                 PDFAudit = form_response['PDFAudit']
             except Exception as e:
                 PDFAudit = False
                 print(e)
+            # Lighthouse
             try:
                 LighthouseMOBILE = form_response['lighthouse-mobile']
             except Exception as e:
@@ -96,6 +102,7 @@ def audit_request():
             except Exception as e:
                 LighthouseDESKTOP = False
                 print(e)
+            # AXE
             try:
                 AXEChrome = form_response['AXEChrome']
             except Exception as e:
@@ -111,27 +118,28 @@ def audit_request():
             except Exception as e:
                 AXEEdge = False
                 print(e)
+                
             # Take off
-            msg = ('Your request to run audits on ' + url + ' for ' + report_name + ' has been registered. ' +
-                   'An email will be sent to ' + email + ' once the report is complete.')
-            flash(msg)
+            msg = ('Your request to run audits on', URL, 'for', REPORT_NAME, 'has been registered.',
+                   'An email will be sent to', EMAIL, 'once the report is complete.')
+            flash(''.join(msg))
 
-            threads = list()
-            t = threading.Thread(target=CMDWriter, args=(report_name, url, email, SEOInternal, SEOExternal, CSVUpload,
+            # Start main thread
+            t = threading.Thread(target=CMDWriter, args=(REPORT_NAME, URL, EMAIL, SEOInternal, SEOExternal, CSVUpload,
                                                          PDFAudit, LighthouseMOBILE, LighthouseDESKTOP,
                                                          AXEChrome, AXEFirefox, AXEEdge))
-            print('REQUEST:before STARTING thread: ' + t.name + '\n')
-            threads.append(t)
-            t.daemon = True
+            print('REQUEST:before STARTING thread:', t.name)
+            t.setDaemon(True)
             t.start()
         else:
+            # Error for required fields
             msg = 'Error: the following fields are required:'
-            if not report_name:
+            if not REPORT_NAME:
                 msg += ' [Report Name] '
-            if not email:
+            if not EMAIL:
                 msg += ' [Email] '
             if SPIDER:
-                if not url:
+                if not URL:
                     msg += ' [URL] '
             flash(msg)
     return render_template('request_form.html', form=form, spider=SPIDER)
@@ -144,10 +152,10 @@ def allowed_file(filename):
 def action_restart():
     # Set vars
     # sort = request.args.get('sort', 'id')
-    url = ''
-    email = ''
-    report_name = request.args.get('id')
-    report_folder = os.path.join(REPORTS_FOLDER, report_name)
+    # URL = ''
+    # email = ''
+    REPORT_NAME = request.args.get('id')
+    report_folder = os.path.join(REPORTS_FOLDER, REPORT_NAME)
     request_log = os.path.join(report_folder, 'logs', '_request_log.tuple')
     report_type = request.args.get('report_type')
 
@@ -164,29 +172,29 @@ def action_restart():
                 if tup[0] == 'url':
                     report_url = tup[1]
 
-    # csv_path = os.path.join(REPORTS_FOLDER, report_name, 'CSV')
+    # csv_path = os.path.join(REPORTS_FOLDER, REPORT_NAME, 'CSV')
 
     if report_type == 'spider':
-        t = threading.Thread(target=CMDWriter, args=(report_name, url, email, True, True, False, False, False, False,
+        t = threading.Thread(target=CMDWriter, args=(REPORT_NAME, URL, EMAIL, True, True, False, False, False, False,
                                                      False, False, False))
-        t.daemon = True
+        t.setDaemon(True)
         t.start()
 
     if report_type == 'axe':
-        t = threading.Thread(target=CMDWriter, args=(report_name, url, email, False, False, False, False, False, False,
+        t = threading.Thread(target=CMDWriter, args=(REPORT_NAME, URL, EMAIL, False, False, False, False, False, False,
                                                      True, True, False))
-        t.daemon = True
+        t.setDaemon(True)
         t.start()
 
     if report_type == 'lighthouse':
-        t = threading.Thread(target=CMDWriter, args=(report_name, url, email, False, False, False, False, True, True,
+        t = threading.Thread(target=CMDWriter, args=(REPORT_NAME, URL, EMAIL, False, False, False, False, True, True,
                                                      False, False, False))
-        t.daemon = True
+        t.setDaemon(True)
         t.start()
     if report_type == 'pdf':
-        t = threading.Thread(target=CMDWriter, args=(report_name, url, email, False, False, False, True, False, False,
+        t = threading.Thread(target=CMDWriter, args=(REPORT_NAME, URL, EMAIL, False, False, False, True, False, False,
                                                      False, False, False))
-        t.daemon = True
+        t.setDaemon(True)
         t.start()
 
     return reports()
@@ -197,7 +205,7 @@ def reports():
     sort = request.args.get('sort', 'id')
     id = request.args.get('id')
     reverse = (request.args.get('direction', 'asc') == 'desc')
-    # report_name = request.args.get('report_name')
+    # REPORT_NAME = request.args.get('report_name')
     if id:
         return index(id)
     else:
@@ -211,7 +219,7 @@ def reports():
 def index(id):
     sort = request.args.get('sort', 'id')
     reverse = (request.args.get('direction', 'asc') == 'desc')
-    report_name = request.args.get('id')
+    REPORT_NAME = request.args.get('id')
 
     # dash = DashTable(DashItem.get_sorted_by(sort, 'dash', reverse), sort_by=sort, sort_reverse=reverse)
     lighthouse = Table(Item.get_sorted_by(sort, 'lighthouse', reverse), sort_by=sort, sort_reverse=reverse)
@@ -221,7 +229,7 @@ def index(id):
     # pdf_external = PDFTable(PDFItem.get_sorted_by(sort, 'pdf_external', reverse), sort_by=sort, sort_reverse=reverse)
 
     return render_template("report.html",
-                           report_name=report_name,
+                           report_name=REPORT_NAME,
                            axe_u=axe_c_summary,
                            axe_u_title='Summary AXE errors:',
                            axe_u_desc='A summary AXE errors...',
