@@ -19,12 +19,12 @@ from threading import Thread, Event
 # App config
 app = Flask(__name__)
 app.config.from_object('config.Config')
-PROCESS_LOG = app.config.get('PROCESS_LOG')
-BASE_FOLDER = app.config.get('BASE_FOLDER')
-REPORTS_FOLDER = app.config.get('REPORTS_FOLDER')
-GMAIL_USER = app.config.get('GMAIL_USER')
-GMAIL_PASSWORD = app.config.get('GMAIL_PASSWORD')
-SENT_FROM = app.config.get('SENT_FROM')
+PROCESS_LOG = app.config['PROCESS_LOG']
+BASE_FOLDER = app.config['BASE_FOLDER']
+REPORTS_FOLDER = app.config['REPORTS_FOLDER']
+GMAIL_USER = app.config['GMAIL_USER']
+GMAIL_PASSWORD = app.config['GMAIL_PASSWORD']
+SENT_FROM = app.config['SENT_FROM']
 stop_event = Event()
 
 class CMDWriter:
@@ -83,9 +83,10 @@ class CMDWriter:
         t.start()
 
         # Create success email message
-        msg = ('Email was sent to ' + str(email) + '. Please visit http://a11y-perception.ddns.net/reports?report_name=' +
-               self.report_name + ' to view your report. It may take several hours for your report to complete.' + '\n')
-        print(msg)
+        msg = ('Email was sent to ', str(email) + '.', 
+               'Please visit http://a11y-perception.ddns.net/reports?report_name=' + self.report_name, 
+               ' to view your report. It may take several hours for your report to complete.', '\n')
+        print(''.join(msg))
 
         # Send confirmation email
         try:
@@ -159,7 +160,7 @@ class CMDWriter:
             msg = (str(datetime.datetime.now())[:-7], 'New client folder created in COMPLETE:',
                    self.spider_folder)
             # Create spider log
-            utils.log_line(os.path.join(self.logs, '_spider_log.txt'), msg)
+            utils.log_line(os.path.join(self.logs, '_spider_log.txt'), ''.join(msg))
 
             # TODO: Check for upload
             # Write base cmd
@@ -190,7 +191,7 @@ class CMDWriter:
     def spider_thread(self, cmd):
         try:
             # Log start
-            msg = datetime.datetime.now().__str__()[:-7] + ' Crawl started: ' + cmd
+            # msg = (str(datetime.datetime.now())[:-7], 'Crawl started:', cmd)
             # utils.log_line(os.path.join(self.logs, '_spider_log.txt'), msg)
             # RUN THE SPIDER AND WAIT
             if 'linux' in sys.platform:
@@ -211,7 +212,7 @@ class CMDWriter:
                 if not line:
                     break
 
-            # Once complete...
+            # Once complete, move files to CSV folder
             file_list = ['internal_html.csv', 'internal_pdf.csv', 'external_html.csv', 'external_pdf.csv']
             for file in file_list:
                 if os.path.exists(os.path.join(self.spider_folder, file)):
@@ -225,12 +226,12 @@ class CMDWriter:
                     copyfile(os.path.join(self.spider_folder, file), path)
 
             # Log spider completion
-            msg = datetime.datetime.now().__str__()[:-7] + ' Crawl completed: ' + cmd
-            utils.log_line(os.path.join(self.logs, '_spider_log.txt'), msg)
+            msg = (str(datetime.datetime.now())[:-7],'Crawl completed:', cmd)
+            utils.log_line(os.path.join(self.logs, '_spider_log.txt'), ''.join(msg))
         except Exception as e:
-            msg = e.__str__() + ' SPIDER THREAD:01' + '\n'
-            print(msg)
-            utils.log_line(os.path.join(self.logs, '_spider_log.txt'), msg)
+            msg = (str(e), 'SPIDER THREAD:01', '\n')
+            print(''.join(msg))
+            utils.log_line(os.path.join(self.logs, '_spider_log.txt'), ''.join(msg))
 
     def axe_controller(self):
         # AXE count total links
@@ -266,11 +267,10 @@ class CMDWriter:
                                 row_count_i -= 1
                                 jump = True
                                 fl = False
-                                msg = (' >>> Remaining URLs for [AXE]: ' + row_count_i.__str__() +
-                                       ' out of ' + row_count.__str__() +
-                                       ' ' + (datetime.datetime.now().__str__()[:-7]))
+                                msg = (' >>> Remaining URLs for [AXE]:', str(row_count_i), 'out of', str(row_count),
+                                       str(datetime.datetime.now())[:-7])
                                 if row_count_i >= 0:
-                                    utils.log_line(os.path.join(self.logs, '_axe_chrome_log.txt'), msg)
+                                    utils.log_line(os.path.join(self.logs, '_axe_chrome_log.txt'), ''.join(msg))
                                 print(msg)
                                 break
                             else:
@@ -281,63 +281,59 @@ class CMDWriter:
                             continue
                 try:
                     # Start AXE
-                    # Set number of threads
+                    # Set sleep for excessive number of threads
                     while threading.active_count() > self.thread_limit:
-                        # print(threading.active_count().__str__() + ' THREADS RUNNING >> LIGHTHOUSE >> TAKE 10')
                         time.sleep(5)
 
                     row_count_i -= 1
                     # CHROME THREAD
                     if self.AXEChrome:
                         # TODO: Add if .pdf call pdf_audit
-                        thread = Thread(target=CMDWriter.axeChrome, args=(self, row[0]))
-                        thread.daemon = True
-                        thread.start()
-                        thread_monitor = Thread(target=CMDWriter.thread_monitor, args=('AXEChrome', thread,))
+                        t = Thread(target=CMDWriter.axeChrome, args=(self, row[0]))
+                        t.daemon = True
+                        t.start()
+                        thread_monitor = Thread(target=CMDWriter.thread_monitor, args=('AXEChrome', t,))
                         thread_monitor.setDaemon(True)
                         thread_monitor.start()
 
                         # Log "Remaining URLs" to progress log
-                        msg = (' >>> Remaining URLs for [AXE]: ' + row_count_i.__str__() +
-                               ' out of ' + row_count.__str__() +
-                               ' ' + (datetime.datetime.now().__str__()[:-7]))
-                        print(msg)
-                        utils.log_line(os.path.join(self.logs, '_axe_chrome_log.txt'), msg)
+                        msg = (' >>> Remaining URLs for [AXE]:', str(row_count_i), 'out of', str(row_count),
+                               str(datetime.datetime.now())[:-7])
+                        print(''.join(msg))
+                        utils.log_line(os.path.join(self.logs, '_axe_chrome_log.txt'), ''.join(msg))
 
                     # FIREFOX THREAD
                     if self.AXEFirefox:
-                        thread = Thread(target=CMDWriter.axeFirefox, args=(self, row[0]))
-                        thread.daemon = True
-                        thread.start()
-                        thread_monitor = Thread(target=CMDWriter.thread_monitor, args=('AXEFirefox', thread,))
+                        t = Thread(target=CMDWriter.axeFirefox, args=(self, row[0]))
+                        t.daemon = True
+                        t.start()
+                        thread_monitor = Thread(target=CMDWriter.thread_monitor, args=('AXEFirefox', t,))
                         thread_monitor.setDaemon(True)
                         thread_monitor.start()
 
                         # Log "Remaining URLs" to progress log
-                        msg = (' >>> Remaining URLs for [AXE]: ' + row_count_i.__str__() +
-                               ' out of ' + row_count.__str__() +
-                               ' ' + (datetime.datetime.now().__str__()[:-7]))
-                        print(msg)
-                        utils.log_line(os.path.join(self.logs, '_axe_firefox_log.txt'), msg)
+                        msg = (' >>> Remaining URLs for [AXE]:', str(row_count_i), 'out of', str(row_count), 
+                               str(datetime.datetime.now())[:-7])
+                        print(''.join(msg))
+                        utils.log_line(os.path.join(self.logs, '_axe_firefox_log.txt'), ''.join(msg))
 
                     # EDGE THREAD
                     if self.AXEEdge:
-                        thread = Thread(target=CMDWriter.axeEdge, args=(self, row[0]))
-                        thread.daemon = True
-                        thread.start()
-                        thread_monitor = Thread(target=CMDWriter.thread_monitor, args=('AXEEdge', thread,))
+                        t = Thread(target=CMDWriter.axeEdge, args=(self, row[0]))
+                        t.daemon = True
+                        t.start()
+                        thread_monitor = Thread(target=CMDWriter.thread_monitor, args=('AXEEdge', t,))
                         thread_monitor.setDaemon(True)
                         thread_monitor.start()
 
                     # Log "Remaining URLs" to progress log
-                    msg = (' >>> Remaining URLs for [AXE]: ' + row_count_i.__str__() +
-                           ' out of ' + row_count.__str__() +
-                           ' ' + (datetime.datetime.now().__str__()[:-7]))
-                    print(msg)
-                    utils.log_line(os.path.join(self.logs, '_axe_edge_log.txt'), msg)
+                    msg = (' >>> Remaining URLs for [AXE]:', str(row_count_i), 'out of', str(row_count),
+                           str(datetime.datetime.now())[:-7])
+                    print(''.join(msg))
+                    utils.log_line(os.path.join(self.logs, '_axe_edge_log.txt'), ''.join(msg))
 
                 except Exception as e:
-                    msg = e.__str__() + ' AXE CONTROLLER:01' + '\n'
+                    msg = str(e) + ' AXE CONTROLLER:01' + '\n'
                     # print(msg)
                     utils.log_line(os.path.join(self.logs, '_axe_edge_log.txt'), msg)
 
@@ -347,9 +343,8 @@ class CMDWriter:
             destination_folder = os.path.join(self.report_folder, 'AXE', 'CHROME')
             if not os.path.exists(destination_folder):
                 os.makedirs(destination_folder)
-                msg = (datetime.datetime.now().__str__()[:-7] + ' ' +
-                       'New folder created in COMPLETE: ' + destination_folder)
-                utils.log_line(os.path.join(self.logs, '_axe_chrome_log.txt'), msg)
+                msg = (str(datetime.datetime.now())[:-7], 'New folder created in COMPLETE: ',  destination_folder)
+                utils.log_line(os.path.join(self.logs, '_axe_chrome_log.txt'), ''.join(msg))
 
             # Load driver CHROME
             chrome_options = webdriver.ChromeOptions()
@@ -365,13 +360,13 @@ class CMDWriter:
                                     args=('AXE RUNNER CHROME', t,))
             thread_monitor.setDaemon(True)
             thread_monitor.start()
-            msg = 'AXE STARTED thread for Chrome ' + axe_url
-            print(msg)
+            msg = ('AXE STARTED thread for Chrome', axe_url)
+            print(''.join(msg))
 
         except Exception as e:
-            msg = e.__str__() + ' AXE/CHROME'
-            print(msg)
-            utils.log_line(os.path.join(self.logs, '_axe_chrome_log.txt'), msg)
+            msg = (str(e), 'AXE/CHROME')
+            print(''.join(msg))
+            utils.log_line(os.path.join(self.logs, '_axe_chrome_log.txt'), ''.join(msg))
 
     def axeFirefox(self, axe_url):
         try:
@@ -380,9 +375,8 @@ class CMDWriter:
             destination_folder = os.path.join(self.report_folder, 'AXE', 'FIREFOX')
             if not os.path.exists(destination_folder):
                 os.makedirs(destination_folder)
-                msg = (datetime.datetime.now().__str__()[:-7] + ' ' +
-                       'New folder created in COMPLETE: ' + destination_folder)
-                utils.log_line(os.path.join(self.logs, '_axe_firefox_log.txt'), msg)
+                msg = (str(datetime.datetime.now())[:-7], 'New folder created in COMPLETE: ', destination_folder)
+                utils.log_line(os.path.join(self.logs, '_axe_firefox_log.txt'), ''.join(msg))
             # Load driver FIREFOX
             options = webdriver.FirefoxOptions()
             options.set_headless(True)
@@ -397,13 +391,13 @@ class CMDWriter:
                                     args=('AXE RUNNER FIREFOX', t,))
             thread_monitor.setDaemon(True)
             thread_monitor.start()
-            msg = ' >>> Started AXE thread for Firefox ' + axe_url
-            print(msg)
+            msg = (' >>> Started AXE thread for Firefox', axe_url)
+            print(''.join(msg))
 
         except Exception as e:
-            msg = e.__str__() + ' AXE/FIREFOX'
+            msg = (str(e), ' AXE/FIREFOX')
             print(msg)
-            utils.log_line(os.path.join(self.logs, '_axe_firefox_log.txt'), msg)
+            utils.log_line(os.path.join(self.logs, '_axe_firefox_log.txt'), ''.join(msg))
 
     def axeEdge(self, axe_url):
         try:
@@ -412,9 +406,8 @@ class CMDWriter:
             destination_folder = os.path.join(self.report_folder, 'AXE', 'EDGE')
             if not os.path.exists(destination_folder):
                 os.makedirs(destination_folder)
-                msg = (datetime.datetime.now().__str__()[:-7] + ' ' +
-                       'New folder created in COMPLETE: ' + destination_folder)
-                utils.log_line(os.path.join(self.logs, '_axeEdge_log.txt'), msg)
+                msg = (str(datetime.datetime.now())[:-7], 'New folder created in COMPLETE: ', destination_folder)
+                utils.log_line(os.path.join(self.logs, '_axeEdge_log.txt'), ''.join(msg))
 
             # Load driver EDGE
             options = webdriver.Edge.desired_capabilities
@@ -430,13 +423,13 @@ class CMDWriter:
                                     args=('AXE RUNNER EDGE', t,))
             thread_monitor.setDaemon(True)
             thread_monitor.start()
-            msg = ' >>> Started AXE thread for Edge ' + axe_url + '\n'
-            print(msg)
+            msg = (' >>> Started AXE thread for Edge', axe_url)
+            print(''.join(msg))
 
         except Exception as e:
-            msg = e.__str__() + ' AXE/EDGE'
+            msg = (str(e), 'AXE/EDGE')
             print(msg)
-            utils.log_line(os.path.join(self.logs, '_axe_Edge_log.txt'), msg)
+            utils.log_line(os.path.join(self.logs, '_axe_Edge_log.txt'), ''.join(msg))
 
     def axe_runner(self, driver, axe_url, destination_folder, browser):
         # Load AXE driver
@@ -451,9 +444,9 @@ class CMDWriter:
 
                 axe.write_results(results, results_path)
             except Exception as e:
-                msg = e.__str__() + ' AXE RUNNER:01'
+                msg = (str(e), 'AXE RUNNER:01')
                 print(msg)
-                utils.log_line(os.path.join(self.logs, browser, '_axe_log.txt'), msg)
+                utils.log_line(os.path.join(self.logs, browser, '_axe_log.txt'), ''.join(msg))
             finally:
                 pass
             driver.close()
@@ -487,24 +480,24 @@ class CMDWriter:
                             continue
                     else:
                         writer.writerow(csv_row[i])
-                        msg = datetime.datetime.now().__str__()[:-7] + ' ' + csv_row[i].__str__()
-                        print(msg)
-                        utils.log_line(os.path.join(self.logs, '_axe_log.txt'), msg)
+                        msg = (str(datetime.datetime.now())[:-7], str(csv_row[i]))
+                        print(''.join(msg))
+                        utils.log_line(os.path.join(self.logs, '_axe_log.txt'), ''.join(msg))
             os.remove(results_path)
         except Exception as e:
-            msg = e.__str__() + ' AXE RUNNER:02'
-            utils.log_line(os.path.join(self.logs, browser, '_axe_log.txt'), msg)
-            print(msg)
+            msg = (str(e), 'AXE RUNNER:02')
+            print(''.join(msg))
+            utils.log_line(os.path.join(self.logs, browser, '_axe_log.txt'), ''.join(msg))
+            
 
     def pdf(self):
-        so = self
-        PDFA().pdf_csv(so, self.csv_file_path)
+        self_object = self
+        PDFA().pdf_csv(self_object, self.csv_file_path)
 
     def lighthouse_controller(self):
         first_line = True
         csv_file = self.CSVFile
-        row_count = sum(1 for row in csv.reader(open(csv_file, 'r',
-                                                     encoding='utf8'), delimiter=','))
+        row_count = sum(1 for row in csv.reader(open(csv_file, 'r', encoding='utf8'), delimiter=','))
         row_count_i = row_count - 1
         # Open HTML list
         with open(csv_file, 'r', encoding='utf8') as csv_file:
@@ -532,12 +525,11 @@ class CMDWriter:
                                 row_count_i -= 1
                                 jump = True
                                 fl = False
-                                msg = (' >>> Remaining URLs for [Lighthouse]: ' + (row_count_i - 1).__str__() +
-                                       ' out of ' + row_count.__str__() +
-                                       ' ' + (datetime.datetime.now().__str__()[:-7]))
+                                msg = (' >>> Remaining URLs for [Lighthouse]:', str(row_count_i - 1), 'out of',  
+                                       str(row_count), str(datetime.datetime.now())[:-7])
+                                print(''.join(msg))
                                 if row_count_i >= 0:
-                                    utils.log_line(os.path.join(self.logs, '_lighthouse_chrome_log.txt'), msg)
-                                print(msg)
+                                    utils.log_line(os.path.join(self.logs, '_lighthouse_chrome_log.txt'), ''.join(msg))
                                 break
                             else:
                                 jump = False
@@ -550,26 +542,25 @@ class CMDWriter:
                     row_count_i -= 1
                     # set number of threads
                     while threading.active_count() > self.thread_limit:
-                        # print(threading.active_count().__str__() + ' THREADS RUNNING >> LIGHTHOUSE >> TAKE 10')
+                        # print(threading.active_count()) + ' THREADS RUNNING >> LIGHTHOUSE >> TAKE 10')
                         time.sleep(5)
-                    thread = Thread(target=CMDWriter.lighthouse,
+                    t = Thread(target=CMDWriter.lighthouse,
                                     args=(self, row[0]))
-                    thread.daemon = True
-                    thread.start()
-                    thread_monitor = Thread(target=CMDWriter.thread_monitor, args=('LIGHTHOUSE', thread,))
+                    t.daemon = True
+                    t.start()
+                    thread_monitor = Thread(target=CMDWriter.thread_monitor, args=('LIGHTHOUSE', t,))
                     thread_monitor.setDaemon(True)
                     thread_monitor.start()
 
-                    msg = (' >>> Remaining URLs for [Lighthouse]: ' + row_count_i.__str__() +
-                           ' out of ' + row_count.__str__() +
-                           ' ' + (datetime.datetime.now().__str__()[:-7]))
-                    print(msg)
-                    utils.log_line(os.path.join(self.logs, '_lighthouse_progress_log.txt'), msg)
+                    msg = (' >>> Remaining URLs for [Lighthouse]: ', str(row_count_i), 'out of',  str(row_count), 
+                           str(datetime.datetime.now())[:-7])
+                    print(''.join(msg))
+                    utils.log_line(os.path.join(self.logs, '_lighthouse_progress_log.txt'), ''.join(msg))
 
                 except Exception as e:
-                    msg = e.__str__() + ' Lighthouse CONTROLLER:01'
-                    print(msg)
-                    utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
+                    msg = (str(e), 'Lighthouse CONTROLLER:01')
+                    print(''.join(msg))
+                    utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), ''.join(msg))
 
     def lighthouse(self, lighthouse_url):
         destination_folder = os.path.join(self.report_folder, 'LIGHTHOUSE')
@@ -577,13 +568,11 @@ class CMDWriter:
         if not os.path.exists(destination_folder):
             os.makedirs(destination_folder)
             utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'),
-                          'New client REPORTS folder created in COMPLETE: ' +
-                           self.report_folder)
+                           ('New client REPORTS folder created in COMPLETE:', self.report_folder))
 
         output_path = os.path.join(destination_folder, urllib.parse.quote_plus(lighthouse_url))
         if self.LighthouseMOBILE:
             try:
-                # os.chdir(destination_folder)
                 cmd = ('lighthouse --output=json --output=html --chrome-flags=--headless --quiet ' +
                        '--output-path=\"' + output_path +
                        '\" --emulated-form-factor=mobile ' + lighthouse_url)
@@ -591,33 +580,33 @@ class CMDWriter:
                 # print(msg)
                 # os.system('cmd /c ' + cmd)
                 os.popen(cmd)
-                msg = cmd + ' LIGHTHOUSE:01 :: MOBILE FINISHED :: '
+                msg = (cmd, 'LIGHTHOUSE:01 :: MOBILE FINISHED ::')
                 # print(msg)
-                utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
+                utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), ''.join(msg))
             except Exception as e:
-                msg = e.__str__() + ' LIGHTHOUSE:01.1'
-                print(msg)
-                utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
+                msg = (str(e), 'LIGHTHOUSE:01.1')
+                print(''.join(msg))
+                utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), ''.join(msg))
 
         if self.LighthouseDESKTOP:
             try:
                 cmd = ('lighthouse --output=json --output=html --chrome-flags=--headless --quiet ' +
                        '--output-path=\"' + output_path +
                        '\" --emulated-form-factor=desktop ' + lighthouse_url)
-                msg = cmd + ' LIGHTHOUSE:01 DESKTOP STARTED: ' + lighthouse_url
-                print(msg)
+                msg = (cmd, 'LIGHTHOUSE:01 DESKTOP STARTED:',  lighthouse_url)
+                print(''.join(msg))
                 # os.system('cmd /c ' + cmd)
                 os.popen(cmd)
-                msg = ' LIGHTHOUSE:01 DESKTOP FINISHED' + cmd
-                print(msg)
-                utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
+                msg = ('LIGHTHOUSE:01 DESKTOP FINISHED', cmd)
+                print(''.join(msg))
+                utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), ''.join(msg))
             except Exception as e:
-                msg = e.__str__() + ' LIGHTHOUSE:01.2'
-                print(msg)
-                utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
-
+                msg = (str(e), 'LIGHTHOUSE:01.2')
+                print(''.join(msg))
+                utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), ''.join(msg))
+        
+        # Look for JSON results
         try:
-            # Look for JSON results
             list_json = []
             # os.chdir(destination_folder)
             file_list = os.listdir(destination_folder)
@@ -639,7 +628,7 @@ class CMDWriter:
             # Look for violations
             for key, value in data_json['audits'].items():
                 if value['score'] == 0:
-                    dict_json = ['lighthouse', lighthouse_url, value['score'].__str__(),
+                    dict_json = ['lighthouse', lighthouse_url, str(value['score']),
                                  value['title'], value['description']]
                     csv_row.insert(csv_row.__len__() + 1, dict_json)
             # Write violations report CSV
@@ -648,34 +637,35 @@ class CMDWriter:
                     writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
                     writer.dialect.lineterminator.replace('\n', '')
                     writer.writerow(csv_row[i])
-            msg = csv_row.__str__() + ' LIGHTHOUSE:02.0'
+            msg = (str(csv_row), 'LIGHTHOUSE:02.0')
             # print(msg)
-            utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
+            utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), ''.join(msg))
             # print('COMPLETE - LIGHTHOUSE:02 ::: ')
 
         except Exception as e:
-            msg = e.__str__() + ' LIGHTHOUSE:02.1'
-            print(msg)
-            utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
+            msg = (str(e), 'LIGHTHOUSE:02.1')
+            print(''.join(msg))
+            utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), ''.join(msg))
 
+        # Random sleep to allow LightHouse/chromedriver to exit and release the file 
         time.sleep(30)
         try:
             if os.path.exists(output_path[:-5] + '.report.html'):
                 os.remove(output_path[:-5] + '.report.html')
                 print('REMOVE LH HTML')
         except Exception as e:
-            msg = e.__str__() + ' LIGHTHOUSE:02.2'
-            print(msg)
-            utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
+            msg = (str(e), 'LIGHTHOUSE:02.2')
+            print(''.join(msg))
+            utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), ''.join(msg))
 
         try:
             if os.path.exists(output_path[:-5] + '.report.json'):
                 os.remove(output_path[:-5] + '.report.json')
                 print('REMOVE LH JSON')
         except Exception as e:
-            msg = e.__str__() + ' LIGHTHOUSE:02.3'
-            print(msg)
-            utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), msg)
+            msg = (str(e), 'LIGHTHOUSE:02.3')
+            print(''.join(msg))
+            utils.log_line(os.path.join(self.logs, '_lighthouse_log.txt'), ''.join(msg))
 
     @staticmethod
     def thread_monitor(process_name, thread):
@@ -683,10 +673,11 @@ class CMDWriter:
         while thread.is_alive():
             time.sleep(10)
             i += 10
-            print(process_name + ' WORKING FOR ' + i.__str__() + ' seconds for: ' + thread.getName())
+            msg = (process_name, 'WORKING FOR' + str(i) + 'seconds for:' + thread.getName())
+            print(''.join(msg))
             # print('ACTIVE COUNT: ' + str(threading.active_count()))
             if i == 200:
-                print(process_name + ' ' + thread.getName() +
-                      ' X XX XXX XXXX XXXXX XXXXXXXXXXXXXXXXXXXXXXX> KILLED AFTER 200 SECONDS!!')
+                msg = (process_name, thread.getName(), 'X XX XXX  KILLED AFTER 200 SECONDS!!')
+                print(''.join(msg))
                 break
-        print(process_name + ':[COMPLETED IN ' + i.__str__() + ' seconds for: ' + thread.getName() + ']')
+        msg = (process_name, ':[COMPLETED IN', str(i), 'seconds for:', thread.getName(), ']')

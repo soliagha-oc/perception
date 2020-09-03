@@ -19,8 +19,10 @@ class Config:
     PORT = int(os.environ.get("PORT", "5000"))
     SECRET_KEY = os.environ.get("SECRET_KEY")
     ALLOWED_EXTENSIONS = set(os.environ.get("ALLOWED_EXTENSIONS", "csv").split(","))
+
     GMAIL_USER = os.environ.get("GMAIL_USER")
     GMAIL_PASSWORD = os.environ.get("GMAIL_PASSWORD")
+    SENT_FROM = os.environ.get("SENT_FROM")
     GOOGLE_FOLDER_ID = os.environ.get("GOOGLE_FOLDER_ID")
     GOOGLE_TEMPLATE_ID = os.environ.get("GOOGLE_TEMPLATE_ID")
     SPIDER = True

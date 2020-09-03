@@ -23,12 +23,12 @@ stop_event = Event()
 # App config
 app = Flask(__name__)
 app.config.from_object('config.Config')
-PROCESS_LOG = app.config.get('PROCESS_LOG')
-BASE_FOLDER = app.config.get('BASE_FOLDER')
-REPORTS_FOLDER = app.config.get('REPORTS_FOLDER')
-GMAIL_USER = app.config.get('GMAIL_USER')
-GMAIL_PASSWORD = app.config.get('GMAIL_PASSWORD')
-SENT_FROM = app.config.get('SENT_FROM')
+PROCESS_LOG = app.config['PROCESS_LOG']
+BASE_FOLDER = app.config['BASE_FOLDER']
+REPORTS_FOLDER = app.config['REPORTS_FOLDER']
+GMAIL_USER = app.config['GMAIL_USER']
+GMAIL_PASSWORD = app.config['GMAIL_PASSWORD']
+SENT_FROM = app.config['SENT_FROM']
 
 class PDFAudit:
     def __init__(self):

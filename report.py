@@ -8,9 +8,9 @@ import collections
 # App config
 app = Flask(__name__)
 app.config.from_object('config.Config')
-PROCESS_LOG = app.config.get('PROCESS_LOG')
-BASE_FOLDER = app.config.get('BASE_FOLDER')
-REPORTS_FOLDER = app.config.get('REPORTS_FOLDER')
+PROCESS_LOG = app.config['PROCESS_LOG']
+BASE_FOLDER = app.config['BASE_FOLDER']
+REPORTS_FOLDER = app.config['REPORTS_FOLDER']
 
 if request:  # Check for a request
     pass
@@ -118,8 +118,8 @@ class PDFItem(object):
                                 i += 1
                     f.close()
                 except Exception as e:
-                    msg = str(e) + ' get_items:01'
-                    print(msg)
+                    msg = (str(e), 'get_items:01')
+                    print(''.join(msg))
                     # utils.log_line(self.log + '_axe_log.txt', msg)
                 output_file.close()
                 gdrive.GDRIVE(report_name, report_type, gdrive_items)
@@ -290,7 +290,6 @@ class Item(object):
             csv_path = os.path.join(csv_path, 'AXE', 'Chrome', 'AXE_CHROME_DETAILS.csv')
             csv_path = Item.get_items_unique(csv_path, report_type)
 
-
         gdrive_items = []
         items = []
         i = 0
@@ -311,8 +310,8 @@ class Item(object):
                         i += 1
             f.close()
         except Exception as e:
-            msg = str(e) + ' get_items:01'
-            print(msg)
+            msg = (str(e), 'get_items:01')
+            print(''.join(msg))
             # utils.log_line(self.log + '_axe_log.txt', msg)
         gdrive.GDRIVE(report_name, report_type, gdrive_items)
         return items
@@ -370,8 +369,8 @@ class Item(object):
                         csv_writer.writerow([report_type, 'url', title.most_common()[i][1], title.most_common()[i][0],
                                              description.most_common()[i][0]])
                     except Exception as e:
-                        msg = str(e) + ' get_unique:02'
-                        print(msg)
+                        msg = (str(e), 'get_unique:02')
+                        print(''.join(msg))
                         # utils.log_line(self.log + '_lighthouse_log.txt', msg)
             output_file.close()
         return csv_path
@@ -455,8 +454,8 @@ class DashItem(object):
                         gdrive_items.append(DashItem(line, 'Images: ' + row[0], row[1], row[2], row[3], row[4]))
             f.close()
         except Exception as e:
-            msg = str(e) + ' get_items:01'
-            print(msg)
+            msg = (str(e), 'get_items:01')
+            print(''.join(msg))
             # utils.log_line(self.log + '_axe_log.txt', msg)
         gdrive.GDRIVE(report_name, report_type, gdrive_items)
         return items
@@ -516,8 +515,8 @@ class DashItem(object):
                         csv_writer.writerow([report_type, 'url', title.most_common()[i][1], title.most_common()[i][0],
                                              description.most_common()[i][0]])
                     except Exception as e:
-                        msg = str(e) + ' get_unique:02'
-                        print(msg)
+                        msg = (str(e), 'get_unique:02')
+                        print(''.join(msg))
                         # utils.log_line(self.log + '_lighthouse_log.txt', msg)
             output_file.close()
         return csv_path
