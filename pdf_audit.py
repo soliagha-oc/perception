@@ -10,7 +10,7 @@ import utils as utils
 import time
 import datetime as datetime
 from flask import Flask
-from PyPDF2 import PdfFileReader
+import PyPDF2
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfinterp import resolve1
@@ -31,11 +31,13 @@ GMAIL_PASSWORD = app.config['GMAIL_PASSWORD']
 SENT_FROM = app.config['SENT_FROM']
 
 class PDFAudit:
-    def __init__(self):
+    def __init__(self, self_object, csv_file_path):
         self.pdf_folder = ''
         self.document_folder = ''
         self.pdf_path = ''
         self.pdf_report = ''
+        self.self_object = self_object
+        self.csv_file_path = csv_file_path
         self.csv_header = []
         self.log = ''  # os.path.join(REPORTS_FOLDER, 'logs')
         self.pdf_document = PDFDocument
@@ -43,7 +45,9 @@ class PDFAudit:
         self.url = ''
         self.line_count = 1
 
-    def pdf_csv(self, so, csv_file_path):
+        self.pdf_csv()
+
+    def pdf_csv(self):
 
         """ # Get the URL from the log file
         if os.path.exists(so.request_log):
@@ -63,20 +67,19 @@ class PDFAudit:
         # self.report_folder = os.path.split(source_folder)[0].replace('SPIDER', '')
 
         # Set logs
-        if not os.path.exists(so.logs):
-            os.makedirs(so.logs)
-        self.log = os.path.join(so.logs, '_pdf_log.txt')
-        self.pdf_folder = os.path.join(so.report_folder, 'PDF')
+        if not os.path.exists(self.self_object.logs):
+            os.makedirs(self.self_object.logs)
+        self.log = os.path.join(self.self_object.logs, os.path.split(self.csv_file_path)[1][:-4] + '_pdf_log.txt')
+        self.pdf_folder = os.path.join(self.self_object.report_folder, 'PDF')
         if not os.path.exists(self.pdf_folder):
             os.makedirs(self.pdf_folder)
-        self.pdf_report = os.path.join(self.pdf_folder, 'PDF_REPORT.csv')
+        self.pdf_report = os.path.join(self.pdf_folder, os.path.split(self.csv_file_path)[1][:-4] + '_PDF_DETAILS.csv')
         self.document_folder = os.path.join(self.pdf_folder, 'PDFs')
         if not os.path.exists(self.document_folder):
             os.makedirs(self.document_folder)
 
         try:
             write_header = False
-            # report_path = os.path.join(self.report_folder, self.report_name)
             if not os.path.exists(self.pdf_report):
                 write_header = True
             os.chdir(self.pdf_folder)
@@ -87,12 +90,10 @@ class PDFAudit:
         except Exception as e:
             print('PDF I/O error:', str(e))
 
-        # csv_source = os.path.join(source_folder, csv_to_audit)
-        row_count = sum(1 for row in csv.reader(open(csv_file_path, 'r',
+        row_count = sum(1 for row in csv.reader(open(self.csv_file_path, 'r',
                                                      encoding='utf8'), delimiter=','))
-
         row_count_i = row_count - 2
-        with open(csv_file_path, encoding='utf8') as csv_file:
+        with open(self.csv_file_path, encoding='utf8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             # set number of threads
             # Get URL for PDF from row[1]
@@ -118,8 +119,8 @@ class PDFAudit:
                                 msg = (' >>> Remaining PDFs: ', str(row_count_i), ' out of ',
                                        str(row_count), (str(datetime.datetime.now())[:-7]))
                                 row_count_i -= 1
-                                utils.log_line(self.log, ''.join(msg))
-                                print(''.join(msg))
+                                utils.log_line(self.log, ' '.join(msg))
+                                print(' '.join(msg))
                                 fl = False
                                 skip = True
                                 break
@@ -144,13 +145,13 @@ class PDFAudit:
                     msg = (' >>> Remaining PDFs:', str(row_count_i), ' out of ',
                            str(row_count), str(datetime.datetime.now())[:-7])
                     row_count_i -= 1
-                    utils.log_line(self.log, ''.join(msg))
-                    print(''.join(msg))
+                    utils.log_line(self.log, ' '.join(msg))
+                    print(' '.join(msg))
 
                 except Exception as e:
                     msg = (str(e), ' PDF:01')
-                    print(''.join(msg))
-                    utils.log_line(self.log, ''.join(msg))
+                    print(' '.join(msg))
+                    utils.log_line(self.log, ' '.join(msg))
 
     def pdf_thread(self, url):
         pdf_name = ''
@@ -186,7 +187,8 @@ class PDFAudit:
             print('PDF LOAD FAILED !!!', str(self.line_count), ':', self.pdf_path)
             csv_row.pop(3)
             csv_row.insert(3, [self.csv_header[3], 'PDF FAILED TO OPEN:' + self.pdf_path if self.pdf_path.__len__() > 0 else 'NULL'])
-            # Write results
+
+            # Write FAIL results
             row = []
             for i in range(csv_row.__len__()):
                 row.append(csv_row[i][1])
@@ -195,6 +197,7 @@ class PDFAudit:
             for ii in row_append:
                 row.insert(index, ii)
                 index += 1
+
             # OPEN FAILED
             with open(self.pdf_report, 'a', encoding='utf8', newline='') as csv_file:
                 writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
@@ -210,7 +213,7 @@ class PDFAudit:
         password = ''
         self.parser = PDFParser(fp)
         # self.document_t = PDFDocument
-        pf = PdfFileReader
+        # pf = PdfFileReader
         # isEncrypted
         try:
             try:
@@ -231,7 +234,7 @@ class PDFAudit:
             stop_event.set()
             # document = PDFDocument
             # pdf_document = self.document_t
-            pf = PdfFileReader(BytesIO(open(self.pdf_path, 'rb').read()))
+            pf = PyPDF2.PdfFileReader(BytesIO(open(self.pdf_path, 'rb').read()))
 
             # ENCRYPTION
             if self.parser.doc.encryption is not None:

@@ -1,1 +1,0 @@
-('Email was sent to ', 'soli@openconcept.ca.', 'Please visit http://a11y-perception.ddns.net/reports?report_name=DRUPAL', ' to view your report. It may take several hours for your report to complete.', '\n')

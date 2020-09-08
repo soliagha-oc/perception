@@ -11,13 +11,12 @@ app.config.from_object('config.Config')
 BASE_FOLDER = app.config['BASE_FOLDER']
 REPORTS_FOLDER = app.config['REPORTS_FOLDER']
 SPIDER = app.config['SPIDER']
-REPORT_NAME = None
-EMAIL = None
-URL = None
+REPORT_NAME = ''
+EMAIL = ''
+URL = ''
 
 
 class ReusableForm(Form):
-
     print(">>> REPORT STARTED!")
     # REPORT_NAME = StringField('report_name', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
     # EMAIL = StringField('email', validators=[validators.DataRequired(), validators.Length(min=6, max=35)])
@@ -122,7 +121,7 @@ def audit_request():
             # Take off
             msg = ('Your request to run audits on', URL, 'for', REPORT_NAME, 'has been registered.',
                    'An email will be sent to', EMAIL, 'once the report is complete.')
-            flash(''.join(msg))
+            flash(' '.join(msg))
 
             # Start main thread
             t = threading.Thread(target=CMDWriter, args=(REPORT_NAME, URL, EMAIL, SEOInternal, SEOExternal, CSVUpload,
@@ -209,7 +208,7 @@ def reports():
     if id:
         return index(id)
     else:
-        reports_list = CommanderTable(CommanderItem.get_sorted_by(id, sort, 'report_list', reverse),
+        reports_list = CommanderTable(CommanderItem.get_sorted_by(sort, reverse),
                                       sort_by=sort, sort_reverse=reverse)
         return render_template("report.html", reports_list=reports_list)
 

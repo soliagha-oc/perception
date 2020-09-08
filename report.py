@@ -17,8 +17,8 @@ if request:  # Check for a request
     # report_name = request.args.get('report_name')
 
 class PDFItem(object):
-    def __init__(self, id, errors, title, description):
-        self.id = id
+    def __init__(self, ID, errors, title, description):
+        self.id = ID
         self.errors = errors
         self.title = title
         self.description = description
@@ -119,7 +119,7 @@ class PDFItem(object):
                     f.close()
                 except Exception as e:
                     msg = (str(e), 'get_items:01')
-                    print(''.join(msg))
+                    print(' '.join(msg))
                     # utils.log_line(self.log + '_axe_log.txt', msg)
                 output_file.close()
                 gdrive.GDRIVE(report_name, report_type, gdrive_items)
@@ -165,7 +165,7 @@ class CommanderItem(object):
         # self.pdf_external = pdf_external
 
     @classmethod
-    def get_sorted_by(cls, id, sort, report_type=False, reverse=False):
+    def get_sorted_by(cls, sort, reverse=False):
         return sorted(
             cls.get_reports_list(),
             key=lambda x: getattr(x, sort),
@@ -182,7 +182,7 @@ class CommanderItem(object):
             pdf_complete = 'No progress data available.'
             # pdf_external_complete = 'No progress data available.'
             logs = os.path.join(REPORTS_FOLDER, row,  'logs')
-            spider_path = os.path.join(REPORTS_FOLDER, row, 'SPIDER_', row , 'crawl.seospider')
+            spider_path = os.path.join(REPORTS_FOLDER, row, 'SPIDER_', row, 'crawl.seospider')
 
             spider_log = os.path.join(logs, '_spider_progress_log.txt')
             if os.path.exists(spider_path):
@@ -215,17 +215,17 @@ class CommanderItem(object):
                         if line.find('>>> Remaining PDFs:') > 0:
                             pdf_complete = line[21:line.rfind('2020')]
                             break
-            pdf_e_log = os.path.join(logs, '_pdf_external_log.txt')
+            '''pdf_e_log = os.path.join(logs, '_pdf_external_log.txt')
             if os.path.exists(pdf_e_log):
                 with open(pdf_e_log, 'r') as f:
                     lines = f.read().splitlines()
                     for line in reversed(lines):
                         if line.find('>>> Remaining PDFs:') > 0:
                             pdf_external_complete = line[21:line.rfind('2020')]
-                            break
+                            break'''
             items.append(CommanderItem(i, row, 'http://a11y-perception.ddns.net/report?report_name=' + row,
                                        seo_complete, axe_complete, lighthouse_complete,
-                                       pdf_complete))  #, pdf_external_complete))
+                                       pdf_complete))  # , pdf_external_complete))
             i += 1
         return items
 
@@ -246,8 +246,8 @@ class CommanderTable(Table):
     lighthouse_rs = LinkCol('RESTART Lighthouse', 'action_restart',
                             url_kwargs=dict(id='report'), url_kwargs_extra=dict(report_type='lighthouse'))
     pdf = Col('PDF Progress (remaining)')
-    pdf = LinkCol('RESTART PDF', 'action_restart',
-                              url_kwargs=dict(id='report'), url_kwargs_extra=dict(report_type='pdf'))
+    pdf_rs = LinkCol('RESTART PDF', 'action_restart',
+                     url_kwargs=dict(id='report'), url_kwargs_extra=dict(report_type='pdf'))
     '''pdf_external = Col('PDF External Progress (remaining)')
     pdf_external_rs = LinkCol('RESTART EXTERNAL PDF', 'action_restart',
                               url_kwargs=dict(id='report'), url_kwargs_extra=dict(report_type='pdf_external'))'''
@@ -263,8 +263,8 @@ class CommanderTable(Table):
 
 
 class Item(object):
-    def __init__(self, id, test, url, error_count, error, error_description):
-        self.id = id
+    def __init__(self, ID, test, url, error_count, error, error_description):
+        self.id = ID
         self.test = test
         self.url = url
         self.error_count = error_count
@@ -273,9 +273,6 @@ class Item(object):
 
     @classmethod
     def get_items(cls, report_type=False):
-        i = 0
-        i += 1
-        items = []
         report_name = ''
         if request:
             report_name = request.args.get('id')
@@ -311,7 +308,7 @@ class Item(object):
             f.close()
         except Exception as e:
             msg = (str(e), 'get_items:01')
-            print(''.join(msg))
+            print(' '.join(msg))
             # utils.log_line(self.log + '_axe_log.txt', msg)
         gdrive.GDRIVE(report_name, report_type, gdrive_items)
         return items
@@ -324,8 +321,8 @@ class Item(object):
             reverse=reverse)
 
     @classmethod
-    def get_items_by_id(cls, id):
-        return [i for i in cls.get_items() if i.id == id][0]
+    def get_items_by_id(cls, ID):
+        return [i for i in cls.get_items() if i.id == ID][0]
 
     @classmethod
     def get_items_unique(cls, csv_path, report_type):
@@ -370,7 +367,7 @@ class Item(object):
                                              description.most_common()[i][0]])
                     except Exception as e:
                         msg = (str(e), 'get_unique:02')
-                        print(''.join(msg))
+                        print(' '.join(msg))
                         # utils.log_line(self.log + '_lighthouse_log.txt', msg)
             output_file.close()
         return csv_path
@@ -393,8 +390,8 @@ class Table(Table):
 
 
 class DashItem(object):
-    def __init__(self, id, summary, url_count, percentage, urls_total, description):
-        self.id = id
+    def __init__(self, ID, summary, url_count, percentage, urls_total, description):
+        self.id = ID
         self.metric = summary
         self.url_count = url_count
         self.percentage = percentage
@@ -403,16 +400,12 @@ class DashItem(object):
 
     @classmethod
     def get_items(cls, report_type=False):
-        i = 0
-        i += 1
-        items = []
         report_name = ''
         if request:
             report_name = request.args.get('id')
         csv_path = os.path.join(REPORTS_FOLDER, report_name, 'SPIDER', 'crawl_overview.csv')
         gdrive_items = []
         items = []
-        i = 0
         try:
             # Write the dash
             with open(csv_path, encoding="utf8") as f:
@@ -455,7 +448,7 @@ class DashItem(object):
             f.close()
         except Exception as e:
             msg = (str(e), 'get_items:01')
-            print(''.join(msg))
+            print(' '.join(msg))
             # utils.log_line(self.log + '_axe_log.txt', msg)
         gdrive.GDRIVE(report_name, report_type, gdrive_items)
         return items
@@ -468,8 +461,8 @@ class DashItem(object):
             reverse=reverse)
 
     @classmethod
-    def get_items_by_id(cls, id):
-        return [i for i in cls.get_items() if i.id == id][0]
+    def get_items_by_id(cls, ID):
+        return [i for i in cls.get_items() if i.id == ID][0]
 
     @classmethod
     def get_items_unique(cls, csv_path, report_type):
@@ -516,7 +509,7 @@ class DashItem(object):
                                              description.most_common()[i][0]])
                     except Exception as e:
                         msg = (str(e), 'get_unique:02')
-                        print(''.join(msg))
+                        print(' '.join(msg))
                         # utils.log_line(self.log + '_lighthouse_log.txt', msg)
             output_file.close()
         return csv_path
