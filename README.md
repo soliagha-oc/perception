@@ -15,7 +15,7 @@ Google Sheet)
 
 Get get started, follow the installation instructions below. Once complete:
 
-1. Start the virtual environment.
+1. Start the virtual environment ( python -m venv venv && source venv/bin/activate )
 2. Run <code>start app.py</code> or <code>python app.py</code>.
 3. Navigate to http://127.0.0.1:8888/reports/ or http://localhost/reports/ where the sample "DRUPAL" report will be 
 visible.
